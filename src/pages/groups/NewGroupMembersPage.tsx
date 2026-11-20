@@ -9,8 +9,8 @@ export const NewGroupMembersPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>(['u-ayesha', 'u-hamza']);
-  const [selectedAssistantIds, setSelectedAssistantIds] = useState<string[]>(['ai-study-buddy']);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>(import.meta.env.DEV ? ['u-ayesha', 'u-hamza'] : []);
+  const [selectedAssistantIds, setSelectedAssistantIds] = useState<string[]>(import.meta.env.DEV ? ['ai-study-buddy'] : []);
 
   const q = query.trim().toLowerCase();
 

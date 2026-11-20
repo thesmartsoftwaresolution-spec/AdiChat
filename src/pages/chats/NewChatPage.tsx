@@ -87,9 +87,12 @@ export const NewChatPage: React.FC = () => {
                 type="button"
                 onClick={async () => {
                   setOpeningUserId(person.id);
-                  const conv = await getOrCreateDirectConversation(person.id);
-                  setOpeningUserId(null);
-                  if (conv) navigate(`/chats/${conv.id}`);
+                  try {
+                    const conv = await getOrCreateDirectConversation(person.id);
+                    if (conv) navigate(`/chats/${conv.id}`);
+                  } finally {
+                    setOpeningUserId(null);
+                  }
                 }}
                 disabled={openingUserId === person.id}
                 aria-busy={openingUserId === person.id}
