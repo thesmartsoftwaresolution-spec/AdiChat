@@ -118,8 +118,8 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
 - [x] Verified `authenticated` can SELECT the user's own active profile under RLS; verified `anon` still cannot SELECT `public.profiles`; RLS remains enabled.
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
-- [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit build passed and deployment was in progress at last check.
-- [x] Latest Cloudflare production deployment for commit `4c2967264dac30d4a7f4...` finished successfully; production alias/domain unchanged.
+- [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.
+- [x] Latest Cloudflare production deployment for commit `4c2967264dac30d4a7f2edb5a7afc9b3e07a4151` finished successfully; production alias/domain unchanged.
 - [ ] Owner login/session/admin browser test (password is private and must never be requested).
 
 ## 5. Overall product completion checklist
@@ -198,7 +198,7 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 1. Super Admin is assigned and email is verified. Owner browser login still needs an end-to-end confirmation after the database privilege fix.
 2. PostgreSQL logs proved the sign-in failure was caused by missing table-level `SELECT` on `public.profiles`; migration applied and authenticated-role RLS test now passes.
 3. Full authenticated chat/AI flows remain untested; no production assistant/test fixture has been seeded.
-4. Last known Supabase Advisor findings: 18 SECURITY DEFINER warnings and 24 RLS initplan performance warnings. Review individually; do not blanket suppress or weaken security.
+4. Supabase Advisor currently reports 18 authenticated-executable SECURITY DEFINER functions, 24 RLS initplan performance warnings, one intentional `bootstrap_state` no-policy info finding, and leaked-password protection disabled. Review each finding; do not blanket suppress or weaken security. Consider enabling leaked-password protection after assessing signup impact and owner approval.
 5. The earlier direct live browser smoke test could not be completed. Do not state live end-to-end behavior as verified until tested.
 6. The uploaded docs describe 140 HTML variants, while the supplied UI archive is labeled 35 Mobile Light Screens. Inspect and reconcile actual contents.
 7. `QA_REPORT.md` contains historical implementation claims and older Gemini references; treat it as historical evidence, not current truth. Update it only after new verification.
