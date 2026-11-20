@@ -666,7 +666,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...prev,
           profiles: prev.profiles.map((profile) =>
             profile.id === state.currentUserId
-              ? { ...profile, ...data, email: profile.email ?? null, avatar_path: null }
+              ? { ...profile, ...data, email: profile.email ?? null, avatar_path: updates.avatar_path === null ? null : profile.avatar_path }
               : profile
           ),
         }));
@@ -2150,6 +2150,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       quickSignInDemo,
       logout,
       updateMyProfile,
+      uploadAvatar,
       updateMySettings,
       getOrCreateDirectConversation,
       markConversationRead,
@@ -2196,6 +2197,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       quickSignInDemo,
       logout,
       updateMyProfile,
+      uploadAvatar,
       updateMySettings,
       getOrCreateDirectConversation,
       markConversationRead,

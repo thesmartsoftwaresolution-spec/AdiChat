@@ -251,3 +251,6 @@ When the owner says **"GitHub mein ADICHAT_MASTER_PLAN.md aur rules wali file pa
 
 
 - [x] Granted only safe profile-column updates (`full_name`, `about`, `title`, `theme_preference`, `avatar_path`) and only `muted_until` updates on membership rows; table-wide UPDATE remains denied and `status`/`member_role` remain protected. Verified allowed update and denied status update in a rollback-only authenticated test.
+
+
+- [x] Profile edits and user settings now persist through Supabase; avatar files upload to the private `avatars` bucket under the owner's UUID folder, are displayed with short-lived signed URLs, and old avatar objects are removed after successful replacement. Private email and account status remain unavailable to client updates.
