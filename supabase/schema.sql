@@ -1282,4 +1282,4 @@ grant execute on function public.record_assistant_response(uuid, uuid, text, tex
 
 -- 11. API privileges required for authenticated profile reads
 -- RLS remains enabled; row visibility is still controlled by profiles_select_directory.
-GRANT SELECT ON TABLE public.profiles TO authenticated;
+GRANT SELECT (id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference, created_at, updated_at) ON TABLE public.profiles TO authenticated;
