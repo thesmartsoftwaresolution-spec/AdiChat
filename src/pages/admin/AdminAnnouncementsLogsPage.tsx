@@ -24,15 +24,17 @@ export const AdminAnnouncementsLogsPage: React.FC = () => {
     });
   }, [state.auditLogs, state.profiles, logQuery]);
 
-  const handlePublish = (e: React.FormEvent) => {
+  const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !body.trim()) {
       pushToast('Title and announcement message are required.', 'error');
       return;
     }
-    adminPublishAnnouncement({ title, body, show_as_banner: showBanner });
-    setTitle('');
-    setBody('');
+    const published = await adminPublishAnnouncement({ title, body, show_as_banner: showBanner });
+    if (published) {
+      setTitle('');
+      setBody('');
+    }
   };
 
   const handleExportLogs = () => {

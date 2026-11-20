@@ -124,14 +124,14 @@ export const AdminReportsPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() =>
-                            adminResolveReport(
+                          onClick={async () => {
+                            await adminResolveReport(
                               rep.id,
                               'resolved',
                               notes[rep.id] || 'Action taken by moderator',
                               selectedAction
-                            )
-                          }
+                            );
+                          }}
                           className="h-9 px-4 rounded-xl bg-primary text-on-primary text-label-sm font-semibold"
                         >
                           Resolve &amp; Enforce
