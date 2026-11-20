@@ -83,7 +83,7 @@ export const AssistantAvatar: React.FC<{
 }> = ({ name, iconName = 'auto_awesome', src, size = 'md', showBadge = true }) => {
   const [imgFailed, setImgFailed] = useState(false);
   const outer = size === 'sm' ? 'w-9 h-9' : size === 'lg' ? 'w-16 h-16' : 'w-12 h-12';
-  const iconSize = size === 'sm' ? 'text-[18px]' : size === 'lg' ? 'text-[28px]' : 'text-[22px]';
+  const iconSize = size === 'sm' ? 'text-[16px]' : size === 'lg' ? 'text-[20px]' : 'text-[18px]';
 
   return (
     <div className="relative shrink-0 inline-flex">

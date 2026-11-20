@@ -2121,6 +2121,15 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
           return { ok: true, model: response.model, latencyMs: response.latencyMs, assistantMessageId: response.assistantMessageId };
         } catch (error) {
+          if (attachment) {
+            const { data: savedAttachment } = await supabase.from('attachments')
+              .select('id')
+              .eq('object_path', attachment.objectPath)
+              .maybeSingle();
+            if (!savedAttachment) {
+              await supabase.storage.from('chat-attachments').remove([attachment.objectPath]);
+            }
+          }
           return {
             ok: false,
             error: error instanceof Error ? error.message : 'Cloudflare Workers AI request failed.',

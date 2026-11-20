@@ -45,7 +45,7 @@ export const EmptyState: React.FC<{
 }> = ({ icon, title, description, action }) => (
   <div className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-2xl bg-surface-container-low/70">
     <div className="w-12 h-12 rounded-2xl bg-secondary-container/60 text-on-secondary-container flex items-center justify-center mb-3">
-      <span className="material-symbols-outlined text-[24px]">{icon}</span>
+      <span className="material-symbols-outlined text-[20px]">{icon}</span>
     </div>
     <h3 className="text-headline-sm text-on-surface mb-1">{title}</h3>
     <p className="text-body-sm text-on-surface-variant max-w-sm mb-4">{description}</p>

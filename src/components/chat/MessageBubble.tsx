@@ -79,6 +79,7 @@ export const MessageBubble: React.FC<{
             <AssistantAvatar
               name={senderAssistant.name}
               iconName={senderAssistant.icon_name}
+              src={senderAssistant.avatar_url}
               size="sm"
               showBadge={false}
             />

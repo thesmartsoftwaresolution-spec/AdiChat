@@ -35,7 +35,7 @@ export const MobileStackLayout: React.FC<{
               onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
               className="w-11 h-11 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container shrink-0"
             >
-              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             </button>
             <div className="min-w-0">
               <h1 className="text-headline-sm text-on-surface truncate">{title}</h1>
@@ -89,7 +89,7 @@ export const AppTabLayout: React.FC<{
             aria-label="AdiChat Home"
             className="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-sm"
           >
-            <span className="material-symbols-outlined text-[22px]">forum</span>
+            <span className="material-symbols-outlined text-[20px]">forum</span>
           </Link>
 
           <nav className="flex flex-col items-center gap-3">
@@ -106,7 +106,7 @@ export const AppTabLayout: React.FC<{
                       : 'text-on-surface-variant hover:bg-surface-container'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
+                  <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                   <span className="text-[10px] mt-0.5 leading-tight text-center">{item.label.split(' ')[0]}</span>
                 </Link>
               );
@@ -120,7 +120,7 @@ export const AppTabLayout: React.FC<{
                   : 'text-on-surface-variant hover:bg-surface-container'
               }`}
             >
-              <span className="material-symbols-outlined text-[22px]">search</span>
+              <span className="material-symbols-outlined text-[20px]">search</span>
               <span className="text-[10px] mt-0.5">Search</span>
             </Link>
             {isAdmin && (
@@ -129,7 +129,7 @@ export const AppTabLayout: React.FC<{
                 aria-label="Admin Console"
                 className="flex flex-col items-center justify-center w-14 py-2 rounded-xl text-primary hover:bg-surface-container transition-colors"
               >
-                <span className="material-symbols-outlined text-[22px]">admin_panel_settings</span>
+                <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
                 <span className="text-[10px] mt-0.5">Admin</span>
               </Link>
             )}
@@ -170,7 +170,7 @@ export const AppTabLayout: React.FC<{
                 aria-label="Search AdiChat"
                 className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
               >
-                <span className="material-symbols-outlined text-[22px]">search</span>
+                <span className="material-symbols-outlined text-[20px]">search</span>
               </Link>
               <Link
                 to="/profile"
@@ -208,7 +208,7 @@ export const AppTabLayout: React.FC<{
                   active ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                 <span className="text-label-sm leading-none">{item.label}</span>
               </Link>
             );
@@ -246,7 +246,7 @@ export const ChatWorkspaceLayout: React.FC<{
             aria-label="AdiChat Home"
             className="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-sm"
           >
-            <span className="material-symbols-outlined text-[22px]">forum</span>
+            <span className="material-symbols-outlined text-[20px]">forum</span>
           </Link>
           <nav className="flex flex-col items-center gap-3">
             {navItems.map((item) => {
@@ -264,7 +264,7 @@ export const ChatWorkspaceLayout: React.FC<{
                       : 'text-on-surface-variant hover:bg-surface-container'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
+                  <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                   <span className="text-[10px] mt-0.5 leading-tight text-center">
                     {item.label.split(' ')[0]}
                   </span>
@@ -276,7 +276,7 @@ export const ChatWorkspaceLayout: React.FC<{
               aria-label="Global Search"
               className="flex flex-col items-center justify-center w-14 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container transition-colors"
             >
-              <span className="material-symbols-outlined text-[22px]">search</span>
+              <span className="material-symbols-outlined text-[20px]">search</span>
               <span className="text-[10px] mt-0.5">Search</span>
             </Link>
             {isAdmin && (
@@ -285,7 +285,7 @@ export const ChatWorkspaceLayout: React.FC<{
                 aria-label="Admin Console"
                 className="flex flex-col items-center justify-center w-14 py-2 rounded-xl text-primary hover:bg-surface-container transition-colors"
               >
-                <span className="material-symbols-outlined text-[22px]">admin_panel_settings</span>
+                <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
                 <span className="text-[10px] mt-0.5">Admin</span>
               </Link>
             )}
@@ -485,7 +485,7 @@ export const AdminLayout: React.FC<{
                 onClick={() => navigate(-1)}
                 className="w-11 h-11 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container lg:hidden"
               >
-                <span className="material-symbols-outlined text-[22px]">arrow_back_ios_new</span>
+                <span className="material-symbols-outlined text-[20px]">arrow_back_ios_new</span>
               </button>
               <h1 className="text-headline-sm text-on-surface truncate">{title}</h1>
             </div>
