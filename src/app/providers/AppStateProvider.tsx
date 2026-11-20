@@ -2347,13 +2347,15 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           pushToast(error.message, 'error');
           return { ok: false, error: error.message };
         }
-        const [reportsResult, profilesResult, messagesResult, logsResult] = await Promise.all([
+        const targetReport = state.reports.find((report) => report.id === reportId);
+        const [reportsResult, profilesResult, messageResult, logsResult] = await Promise.all([
           sb.from('reports').select('*').eq('id', reportId).maybeSingle(),
           sb.from('profiles').select('id,status,updated_at'),
-          sb.from('messages').select('id,deleted_at').in('id', state.reports.find((report) => report.id === reportId)?.target_message_id ? [state.reports.find((report) => report.id === reportId)!.target_message_id!] : []),
+          targetReport?.target_message_id
+            ? sb.from('messages').select('id,deleted_at').eq('id', targetReport.target_message_id).maybeSingle()
+            : Promise.resolve({ data: null, error: null }),
           sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
         ]);
-        const targetReport = state.reports.find((report) => report.id === reportId);
         setState((prev) => ({
           ...prev,
           reports: reportsResult.data
@@ -2365,11 +2367,10 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 return updated ? { ...profile, status: updated.status, updated_at: updated.updated_at } : profile;
               })
             : prev.profiles,
-          messages: action === 'delete_message' && targetReport?.target_message_id && messagesResult.data
-            ? prev.messages.map((message) => {
-                const updated = messagesResult.data.find((row) => row.id === targetReport.target_message_id);
-                return updated ? { ...message, deleted_at: updated.deleted_at } : message;
-              })
+          messages: action === 'delete_message' && targetReport?.target_message_id && messageResult.data
+            ? prev.messages.map((message) => message.id === targetReport.target_message_id
+                ? { ...message, deleted_at: messageResult.data.deleted_at }
+                : message)
             : prev.messages,
           auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
         }));
