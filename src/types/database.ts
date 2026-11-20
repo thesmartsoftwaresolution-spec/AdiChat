@@ -55,6 +55,7 @@ export interface Conversation {
   title: string | null;
   created_by: string;
   direct_pair_key: string | null;
+  assistant_id?: string | null;
   last_message_id: string | null;
   last_message_at: string | null;
   created_at: string;
