@@ -85,6 +85,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120154848_harden_create_direct_conversation`
   - `20261120155036_create_group_with_settings` (initial)
   - `20261120155325_use_configured_group_size_limit`
+  - `20261120160204_group_settings_and_assistant_sync`
   - `20261120155739_grant_safe_profile_and_mute_updates`
   - `20261120155554_harden_privileged_helpers_and_group_membership`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
@@ -254,3 +255,6 @@ When the owner says **"GitHub mein ADICHAT_MASTER_PLAN.md aur rules wali file pa
 
 
 - [x] Profile edits and user settings now persist through Supabase; avatar files upload to the private `avatars` bucket under the owner's UUID folder, are displayed with short-lived signed URLs, and old avatar objects are removed after successful replacement. Private email and account status remain unavailable to client updates.
+
+
+- [x] Added `update_group_settings` and `sync_group_assistants` RPCs; group settings are updated atomically and group assistants can only be linked when owned and enabled by the caller.
