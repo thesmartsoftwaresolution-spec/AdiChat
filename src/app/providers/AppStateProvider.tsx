@@ -139,10 +139,10 @@ interface AppStateContextValue {
     groupId: string,
     updates: Partial<Pick<GroupMetadata, 'name' | 'description' | 'only_admins_send' | 'allow_ai_auto_respond'>>
   ) => { ok: boolean; error?: string };
-  addGroupMembers: (groupId: string, memberIds: string[]) => { ok: boolean; error?: string };
-  removeGroupMember: (groupId: string, targetUserId: string) => { ok: boolean; error?: string };
-  toggleGroupMute: (conversationId: string) => void;
-  toggleBlockUser: (targetUserId: string) => void;
+  addGroupMembers: (groupId: string, memberIds: string[]) => Promise<{ ok: boolean; error?: string }>;
+  removeGroupMember: (groupId: string, targetUserId: string) => Promise<{ ok: boolean; error?: string }>;
+  toggleGroupMute: (conversationId: string) => Promise<void>;
+  toggleBlockUser: (targetUserId: string) => Promise<void>;
   isUserBlocked: (targetUserId: string) => boolean;
   submitReport: (input: {
     targetType: ReportTargetType;
@@ -1361,48 +1361,111 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const updateGroupMeta = useCallback(
-    (
+    async (
       groupId: string,
       updates: Partial<Pick<GroupMetadata, 'name' | 'description' | 'only_admins_send' | 'allow_ai_auto_respond'>>
-    ) => {
+    ): Promise<{ ok: boolean; error?: string }> => {
       if (!state.currentUserId) return { ok: false, error: 'Unauthorized' };
       const allowed = isAdmin || isGroupAdmin(state.conversationMembers, groupId, state.currentUserId);
-      if (!allowed) {
-        return { ok: false, error: 'Only Group Admins or platform admins can edit group details.' };
+      if (!allowed) return { ok: false, error: 'Only Group Admins or platform admins can edit group details.' };
+
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Group service is unavailable.' };
+        const current = state.groups.find((group) => group.conversation_id === groupId);
+        if (!current) return { ok: false, error: 'Group not found.' };
+        const next = {
+          name: updates.name ?? current.name,
+          description: updates.description !== undefined ? updates.description : current.description,
+          only_admins_send: updates.only_admins_send ?? current.only_admins_send,
+          allow_ai_auto_respond: updates.allow_ai_auto_respond ?? current.allow_ai_auto_respond,
+        };
+        const { error } = await sb.rpc('update_group_settings', {
+          p_group_id: groupId,
+          p_group_name: next.name,
+          p_group_description: next.description,
+          p_only_admins_send: next.only_admins_send,
+          p_allow_ai_auto_respond: next.allow_ai_auto_respond,
+        });
+        if (error) {
+          pushToast('Group settings could not be saved. Please try again.', 'error');
+          return { ok: false, error: 'Group settings could not be saved.' };
+        }
+        const [groupResult, conversationResult] = await Promise.all([
+          sb.from('groups').select('*').eq('conversation_id', groupId).maybeSingle(),
+          sb.from('conversations').select('*').eq('id', groupId).maybeSingle(),
+        ]);
+        if (groupResult.data) {
+          setState((prev) => ({
+            ...prev,
+            groups: prev.groups.map((group) => group.conversation_id === groupId ? groupResult.data as GroupMetadata : group),
+            conversations: prev.conversations.map((conversation) => conversation.id === groupId && conversationResult.data
+              ? conversationResult.data as Conversation
+              : conversation),
+          }));
+        }
+        pushToast('Group updated', 'success');
+        return { ok: true };
       }
+
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
-        groups: prev.groups.map((g) =>
-          g.conversation_id === groupId ? { ...g, ...updates, updated_at: nowIso } : g
+        groups: prev.groups.map((group) =>
+          group.conversation_id === groupId ? { ...group, ...updates, updated_at: nowIso } : group
         ),
-        conversations: prev.conversations.map((c) =>
-          c.id === groupId && updates.name ? { ...c, title: updates.name.trim(), updated_at: nowIso } : c
+        conversations: prev.conversations.map((conversation) =>
+          conversation.id === groupId && updates.name
+            ? { ...conversation, title: updates.name.trim(), updated_at: nowIso }
+            : conversation
         ),
         auditLogs: isAdmin
-          ? appendAuditLog(prev, 'admin_update_group', 'group', groupId, {
-              fields: Object.keys(updates),
-            })
+          ? appendAuditLog(prev, 'admin_update_group', 'group', groupId, { fields: Object.keys(updates) })
           : prev.auditLogs,
       }));
       pushToast('Group updated', 'success');
       return { ok: true };
     },
-    [state.currentUserId, state.conversationMembers, isAdmin, appendAuditLog, pushToast]
+    [state.currentUserId, state.conversationMembers, state.groups, isAdmin, appendAuditLog, pushToast]
   );
 
   const addGroupMembers = useCallback(
-    (groupId: string, memberIds: string[]) => {
+    async (groupId: string, memberIds: string[]): Promise<{ ok: boolean; error?: string }> => {
       if (!state.currentUserId) return { ok: false, error: 'Unauthorized' };
-      const nowIso = new Date().toISOString();
       const existingIds = new Set(
-        state.conversationMembers.filter((m) => m.conversation_id === groupId).map((m) => m.user_id)
+        state.conversationMembers.filter((member) => member.conversation_id === groupId).map((member) => member.user_id)
       );
       const toAdd = memberIds.filter((id) => !existingIds.has(id));
-      if (toAdd.length === 0) {
-        return { ok: false, error: 'Selected users are already in this group.' };
+      if (toAdd.length === 0) return { ok: false, error: 'Selected users are already in this group.' };
+
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Group service is unavailable.' };
+        const { error } = await sb.rpc('add_group_members', { group_id: groupId, member_ids: toAdd });
+        if (error) {
+          const message = error.message.toLowerCase().includes('active accounts')
+            ? 'Only active users can be added to a group.'
+            : 'Members could not be added. Check your group permissions and try again.';
+          pushToast(message, 'error');
+          return { ok: false, error: message };
+        }
+        const { data, error: refreshError } = await sb.from('conversation_members').select('*').eq('conversation_id', groupId);
+        if (refreshError || !data) {
+          pushToast('Members were added, but the group roster could not be refreshed.', 'error');
+          return { ok: false, error: 'Group roster refresh failed.' };
+        }
+        setState((prev) => ({
+          ...prev,
+          conversationMembers: [
+            ...prev.conversationMembers.filter((member) => member.conversation_id !== groupId),
+            ...(data as AdiChatStoreState['conversationMembers']),
+          ],
+        }));
+        pushToast(`Added ${toAdd.length} member(s) to group`, 'success');
+        return { ok: true };
       }
 
+      const nowIso = new Date().toISOString();
       const newRows = toAdd.map((uid, idx) => ({
         id: `cm_${Date.now()}_${idx}`,
         conversation_id: groupId,
@@ -1414,11 +1477,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         is_blocked: false,
         created_at: nowIso,
       }));
-
-      setState((prev) => ({
-        ...prev,
-        conversationMembers: [...prev.conversationMembers, ...newRows],
-      }));
+      setState((prev) => ({ ...prev, conversationMembers: [...prev.conversationMembers, ...newRows] }));
       pushToast(`Added ${toAdd.length} member(s) to group`, 'success');
       return { ok: true };
     },
@@ -1426,7 +1485,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const removeGroupMember = useCallback(
-    (groupId: string, targetUserId: string) => {
+    async (groupId: string, targetUserId: string): Promise<{ ok: boolean; error?: string }> => {
       if (!state.currentUserId) return { ok: false, error: 'Unauthorized' };
       const check = canRemoveGroupMember(
         state.conversationMembers,
@@ -1435,20 +1494,61 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         targetUserId,
         isAdmin
       );
-      if (!check.allowed) {
-        return { ok: false, error: check.reason };
-      }
+      if (!check.allowed) return { ok: false, error: check.reason };
+
       const actedAsPlatformAdmin =
         isAdmin && !isGroupAdmin(state.conversationMembers, groupId, state.currentUserId);
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Group service is unavailable.' };
+        const { error } = await sb.rpc('remove_group_member', {
+          group_id: groupId,
+          target_user_id: targetUserId,
+        });
+        if (error) {
+          pushToast('Member could not be removed. Please check group permissions.', 'error');
+          return { ok: false, error: 'Member could not be removed.' };
+        }
+        if (targetUserId === state.currentUserId) {
+          setState((prev) => ({
+            ...prev,
+            conversations: prev.conversations.filter((conversation) => conversation.id !== groupId),
+            groups: prev.groups.filter((group) => group.conversation_id !== groupId),
+            conversationMembers: prev.conversationMembers.filter((member) => member.conversation_id !== groupId),
+            groupAssistants: prev.groupAssistants.filter((assistant) => assistant.group_conversation_id !== groupId),
+            messages: prev.messages.filter((message) => message.conversation_id !== groupId),
+          }));
+        } else {
+          const { data, error: refreshError } = await sb.from('conversation_members').select('*').eq('conversation_id', groupId);
+          if (refreshError || !data) {
+            pushToast('Member removed, but the group roster could not be refreshed.', 'error');
+            return { ok: false, error: 'Group roster refresh failed.' };
+          }
+          setState((prev) => ({
+            ...prev,
+            conversationMembers: [
+              ...prev.conversationMembers.filter((member) => member.conversation_id !== groupId),
+              ...(data as AdiChatStoreState['conversationMembers']),
+            ],
+          }));
+        }
+        if (actedAsPlatformAdmin) {
+          setState((prev) => ({
+            ...prev,
+            auditLogs: appendAuditLog(prev, 'admin_remove_group_member', 'group', groupId, { target_user_id: targetUserId }),
+          }));
+        }
+        pushToast(targetUserId === state.currentUserId ? 'You left the group' : 'Member removed from group', 'info');
+        return { ok: true };
+      }
+
       setState((prev) => ({
         ...prev,
         conversationMembers: prev.conversationMembers.filter(
-          (m) => !(m.conversation_id === groupId && m.user_id === targetUserId)
+          (member) => !(member.conversation_id === groupId && member.user_id === targetUserId)
         ),
         auditLogs: actedAsPlatformAdmin
-          ? appendAuditLog(prev, 'admin_remove_group_member', 'group', groupId, {
-              target_user_id: targetUserId,
-            })
+          ? appendAuditLog(prev, 'admin_remove_group_member', 'group', groupId, { target_user_id: targetUserId })
           : prev.auditLogs,
       }));
       pushToast('Member removed from group', 'info');
@@ -1458,46 +1558,103 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const toggleGroupMute = useCallback(
-    (conversationId: string) => {
+    async (conversationId: string): Promise<void> => {
       if (!state.currentUserId) return;
+      const currentMember = state.conversationMembers.find(
+        (member) => member.conversation_id === conversationId && member.user_id === state.currentUserId
+      );
+      const nextMutedUntil = currentMember?.muted_until ? null : '2099-01-01T00:00:00.000Z';
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return;
+        const { data, error } = await sb.from('conversation_members')
+          .update({ muted_until: nextMutedUntil })
+          .eq('conversation_id', conversationId)
+          .eq('user_id', state.currentUserId)
+          .select('*')
+          .maybeSingle();
+        if (error || !data) {
+          pushToast('Mute preference could not be saved.', 'error');
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          conversationMembers: prev.conversationMembers.map((member) =>
+            member.conversation_id === conversationId && member.user_id === prev.currentUserId
+              ? data as AdiChatStoreState['conversationMembers'][number]
+              : member
+          ),
+        }));
+        return;
+      }
       setState((prev) => ({
         ...prev,
-        conversationMembers: prev.conversationMembers.map((m) =>
-          m.conversation_id === conversationId && m.user_id === prev.currentUserId
-            ? { ...m, muted_until: m.muted_until ? null : '2099-01-01T00:00:00.000Z' }
-            : m
+        conversationMembers: prev.conversationMembers.map((member) =>
+          member.conversation_id === conversationId && member.user_id === prev.currentUserId
+            ? { ...member, muted_until: nextMutedUntil }
+            : member
         ),
       }));
     },
-    [state.currentUserId]
+    [state.currentUserId, state.conversationMembers, pushToast]
   );
 
   const toggleBlockUser = useCallback(
-    (targetUserId: string) => {
+    async (targetUserId: string): Promise<void> => {
       if (!state.currentUserId || state.currentUserId === targetUserId) return;
+      const userId = state.currentUserId;
+      const existing = state.userBlocks.find(
+        (block) => block.blocker_user_id === userId && block.blocked_user_id === targetUserId
+      );
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return;
+        if (existing) {
+          const { error } = await sb.from('user_blocks')
+            .delete()
+            .eq('blocker_user_id', userId)
+            .eq('blocked_user_id', targetUserId);
+          if (error) {
+            pushToast('User could not be unblocked.', 'error');
+            return;
+          }
+          setState((prev) => ({
+            ...prev,
+            userBlocks: prev.userBlocks.filter((block) =>
+              !(block.blocker_user_id === userId && block.blocked_user_id === targetUserId)
+            ),
+          }));
+        } else {
+          const { data, error } = await sb.from('user_blocks')
+            .insert({ blocker_user_id: userId, blocked_user_id: targetUserId })
+            .select('*')
+            .single();
+          if (error || !data) {
+            pushToast('User could not be blocked.', 'error');
+            return;
+          }
+          setState((prev) => ({ ...prev, userBlocks: [data as UserBlock, ...prev.userBlocks] }));
+        }
+        return;
+      }
       setState((prev) => {
         const exists = prev.userBlocks.some(
-          (b) => b.blocker_user_id === prev.currentUserId && b.blocked_user_id === targetUserId
+          (block) => block.blocker_user_id === userId && block.blocked_user_id === targetUserId
         );
         return {
           ...prev,
           userBlocks: exists
-            ? prev.userBlocks.filter(
-                (b) => !(b.blocker_user_id === prev.currentUserId && b.blocked_user_id === targetUserId)
-              )
-            : [
-                ...prev.userBlocks,
-                {
-                  id: `blk_${Date.now()}`,
-                  blocker_user_id: prev.currentUserId!,
-                  blocked_user_id: targetUserId,
-                  created_at: new Date().toISOString(),
-                },
-              ],
+            ? prev.userBlocks.filter((block) => !(block.blocker_user_id === userId && block.blocked_user_id === targetUserId))
+            : [...prev.userBlocks, {
+                id: `blk_${Date.now()}`,
+                blocker_user_id: userId,
+                blocked_user_id: targetUserId,
+                created_at: new Date().toISOString(),
+              }],
         };
       });
     },
-    [state.currentUserId]
+    [state.currentUserId, state.userBlocks, pushToast]
   );
 
   const isUserBlocked = useCallback(
@@ -1511,30 +1668,44 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const submitReport = useCallback(
-    (input: {
+    async (input: {
       targetType: ReportTargetType;
       targetUserId?: string | null;
       targetMessageId?: string | null;
       targetGroupConversationId?: string | null;
       reason: string;
       details?: string;
-    }) => {
+    }): Promise<{ ok: boolean; error?: string }> => {
       if (!state.currentUserId) return { ok: false, error: 'Sign in required' };
       const reasonClean = input.reason.trim();
       if (!reasonClean) return { ok: false, error: 'Please provide a reason.' };
-      const nowIso = new Date().toISOString();
-      const report: ModerationReport = {
-        id: `rep_${Date.now().toString(36)}`,
+      const payload = {
         reporter_user_id: state.currentUserId,
         target_type: input.targetType,
         target_user_id: input.targetType === 'user' ? input.targetUserId || null : null,
         target_message_id: input.targetType === 'message' ? input.targetMessageId || null : null,
-        target_group_conversation_id:
-          input.targetType === 'group' ? input.targetGroupConversationId || null : null,
+        target_group_conversation_id: input.targetType === 'group' ? input.targetGroupConversationId || null : null,
         reason: reasonClean,
         details: input.details?.trim() || null,
+      };
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Reporting service is unavailable.' };
+        const { data, error } = await sb.from('reports').insert(payload).select('*').single();
+        if (error || !data) {
+          pushToast('Report could not be submitted. Please try again.', 'error');
+          return { ok: false, error: 'Report could not be submitted.' };
+        }
+        setState((prev) => ({ ...prev, reports: [data as ModerationReport, ...prev.reports] }));
+        pushToast('Report submitted to moderation queue', 'success');
+        return { ok: true };
+      }
+      const nowIso = new Date().toISOString();
+      const report: ModerationReport = {
+        id: `rep_${Date.now().toString(36)}`,
+        ...payload,
         status: 'open',
-        assigned_to: 'u-adeel',
+        assigned_to: null,
         resolution_note: null,
         resolved_at: null,
         created_at: nowIso,
@@ -1841,33 +2012,67 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const syncGroupAssistants = useCallback(
-    (
+    async (
       groupId: string,
       selections: Array<{ assistantId: string; responseMode: AssistantResponseMode; enabled: boolean }>
-    ) => {
+    ): Promise<void> => {
+      if (!state.currentUserId) return;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return;
+        const payload = selections.map((selection) => ({
+          assistant_id: selection.assistantId,
+          response_mode: selection.responseMode,
+          enabled: selection.enabled,
+        }));
+        const { error } = await sb.rpc('sync_group_assistants', {
+          p_group_id: groupId,
+          p_selections: payload,
+        });
+        if (error) {
+          const message = error.message.toLowerCase().includes('enabled ai assistants')
+            ? 'Only your enabled AI assistants can be added to this group.'
+            : 'Group assistants could not be updated.';
+          pushToast(message, 'error');
+          return;
+        }
+        const { data, error: refreshError } = await sb.from('group_assistants')
+          .select('*')
+          .eq('group_conversation_id', groupId);
+        if (refreshError || !data) {
+          pushToast('Group assistants were saved, but the list could not be refreshed.', 'error');
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          groupAssistants: [
+            ...prev.groupAssistants.filter((assistant) => assistant.group_conversation_id !== groupId),
+            ...(data as GroupAssistant[]),
+          ],
+        }));
+        pushToast('Group AI assistants updated', 'success');
+        return;
+      }
       const nowIso = new Date().toISOString();
       setState((prev) => {
-        const remaining = prev.groupAssistants.filter((ga) => ga.group_conversation_id !== groupId);
+        const remaining = prev.groupAssistants.filter((assistant) => assistant.group_conversation_id !== groupId);
         const updatedRows: GroupAssistant[] = selections
-          .filter((s) => s.enabled)
-          .map((s, idx) => ({
-            id: `ga_${Date.now()}_${idx}`,
+          .filter((selection) => selection.enabled)
+          .map((selection, index) => ({
+            id: `ga_${Date.now()}_${index}`,
             group_conversation_id: groupId,
-            assistant_id: s.assistantId,
-            response_mode: s.responseMode,
+            assistant_id: selection.assistantId,
+            response_mode: selection.responseMode,
             added_by: prev.currentUserId || 'u-adeel',
             is_enabled: true,
             created_at: nowIso,
             updated_at: nowIso,
           }));
-        return {
-          ...prev,
-          groupAssistants: [...remaining, ...updatedRows],
-        };
+        return { ...prev, groupAssistants: [...remaining, ...updatedRows] };
       });
       pushToast('Group AI assistants updated', 'success');
     },
-    [pushToast]
+    [state.currentUserId, pushToast]
   );
 
   const adminUpdateUserStatus = useCallback(
