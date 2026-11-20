@@ -95,7 +95,20 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
   const authUser = await auth.json() as { id?: string };
   if (!authUser.id) return json({ error: 'Unable to verify session.', code: 'UNAUTHORIZED' }, 401, origin);
 
-  let body: { conversationId?: string; assistantId?: string; prompt?: string; thinkingMode?: boolean };
+  let body: {
+    conversationId?: string;
+    assistantId?: string;
+    prompt?: string;
+    thinkingMode?: boolean;
+    replyToMessageId?: string | null;
+    attachment?: {
+      bucket_id?: string;
+      object_path?: string;
+      file_name?: string;
+      mime_type?: string;
+      file_size_bytes?: number;
+    } | null;
+  };
   try {
     const rawBody = await request.text();
     if (rawBody.length > 64_000) {
@@ -111,7 +124,8 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
   const maxInput = Math.min(8000, Math.max(500, Number(env.MAX_AI_INPUT_CHARS) || DEFAULT_MAX_INPUT));
   if (!body.conversationId || !uuid.test(body.conversationId) ||
       !body.assistantId || !uuid.test(body.assistantId) ||
-      !prompt || prompt.length > maxInput) {
+      !prompt || prompt.length > maxInput ||
+      (body.replyToMessageId != null && !uuid.test(body.replyToMessageId))) {
     return json({ error: `A valid assistant, conversation and prompt (1-${maxInput} characters) are required.`, code: 'INVALID_REQUEST' }, 400, origin);
   }
 
@@ -141,13 +155,83 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
     return json({ error: 'Your rolling 24-hour AI request limit has been reached.', code: 'QUOTA_EXCEEDED' }, 429, origin);
   }
 
+  const attachment = body.attachment || null;
+  let attachmentText = '';
+  let attachmentMeta: Record<string, unknown> | null = null;
+  if (attachment) {
+    const fileName = typeof attachment.file_name === 'string' ? attachment.file_name.trim() : '';
+    const objectPath = typeof attachment.object_path === 'string' ? attachment.object_path : '';
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+    const mimeByExtension: Record<string, string> = {
+      txt: 'text/plain', md: 'text/markdown', csv: 'text/csv', json: 'application/json',
+      log: 'text/plain', xml: 'application/xml', html: 'text/html', css: 'text/css',
+      js: 'text/javascript', jsx: 'text/javascript', ts: 'text/typescript', tsx: 'text/typescript',
+      py: 'text/x-python', sql: 'application/sql', sh: 'text/x-shellscript',
+      yaml: 'text/yaml', yml: 'text/yaml',
+    };
+    const expectedMime = mimeByExtension[extension];
+    const fileSize = Number(attachment.file_size_bytes);
+    if (
+      attachment.bucket_id !== 'chat-attachments' ||
+      !fileName || fileName.length > 255 ||
+      !expectedMime || attachment.mime_type !== expectedMime ||
+      !Number.isInteger(fileSize) || fileSize < 1 || fileSize > 5 * 1024 * 1024 ||
+      !objectPath.startsWith(`${body.conversationId}/${authUser.id}/`) ||
+      objectPath.includes('..') || objectPath.includes('\\') ||
+      objectPath.split('/').length !== 3
+    ) {
+      return json({ error: 'This file type or size is not supported. Use a text-based file up to 5 MB.', code: 'ATTACHMENT_INVALID' }, 400, origin);
+    }
+
+    const encodedPath = objectPath.split('/').map((part) => encodeURIComponent(part)).join('/');
+    const fileResponse = await fetch(
+      `${env.SUPABASE_URL}/storage/v1/object/authenticated/chat-attachments/${encodedPath}`,
+      { headers: { apikey: env.SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` } }
+    );
+    if (!fileResponse.ok) {
+      return json({ error: 'The uploaded file is unavailable or you do not have access to it.', code: 'ATTACHMENT_ACCESS_DENIED' }, 403, origin);
+    }
+    const fileBytes = await fileResponse.arrayBuffer();
+    if (fileBytes.byteLength !== fileSize || fileBytes.byteLength > 5 * 1024 * 1024) {
+      return json({ error: 'The uploaded file size could not be verified.', code: 'ATTACHMENT_INVALID' }, 400, origin);
+    }
+    try {
+      attachmentText = new TextDecoder('utf-8', { fatal: true }).decode(fileBytes);
+    } catch {
+      return json({ error: 'This file is not valid UTF-8 text. Please upload a supported text document.', code: 'ATTACHMENT_UNREADABLE' }, 400, origin);
+    }
+    attachmentMeta = {
+      bucket_id: 'chat-attachments',
+      object_path: objectPath,
+      file_name: fileName,
+      mime_type: expectedMime,
+      file_size_bytes: fileSize,
+    };
+  }
+
+  let replyContext = '';
+  if (body.replyToMessageId) {
+    const referenced = await supabase<Array<{ body: string | null; sender_user_id: string | null; sender_assistant_id: string | null }>>(
+      env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
+      `messages?id=eq.${body.replyToMessageId}&conversation_id=eq.${body.conversationId}&deleted_at=is.null&select=body,sender_user_id,sender_assistant_id&limit=1`
+    );
+    if (!referenced.response.ok || !referenced.data?.[0]) {
+      return json({ error: 'The referenced message is unavailable in this conversation.', code: 'REPLY_NOT_FOUND' }, 400, origin);
+    }
+    const source = referenced.data[0];
+    const sender = source.sender_assistant_id ? 'assistant' : 'user';
+    replyContext = `The user is replying to this ${sender} message:\n${(source.body || '').slice(0, 4000)}`;
+  }
+
   const userMessage = await supabase<string>(
     env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
-    'rpc/create_assistant_user_message',
+    'rpc/create_assistant_user_message_with_context',
     { method: 'POST', body: JSON.stringify({
       p_conversation_id: body.conversationId,
       p_assistant_id: body.assistantId,
       p_body: prompt,
+      p_reply_to_message_id: body.replyToMessageId || null,
+      p_attachment: attachmentMeta,
     }) }
   );
   if (!userMessage.response.ok || typeof userMessage.data !== 'string') {
@@ -165,6 +249,15 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
     role: message.sender_assistant_id ? 'assistant' as const : 'user' as const,
     content: (message.body || '').slice(0, maxInput),
   })).filter((message) => message.content.length > 0);
+  const lastUserMessage = [...history].reverse().find((message) => message.role === 'user');
+  if (lastUserMessage && replyContext) {
+    lastUserMessage.content += `\\n\\n${replyContext}`;
+  }
+  if (lastUserMessage && attachmentText) {
+    const boundedText = attachmentText.slice(0, 20000);
+    const truncated = attachmentText.length > boundedText.length ? '\\n[File content truncated at 20,000 characters.]' : '';
+    lastUserMessage.content += `\\n\\nUploaded file: ${attachment?.file_name}\\n--- BEGIN UNTRUSTED FILE CONTENT ---\\n${boundedText}${truncated}\\n--- END UNTRUSTED FILE CONTENT ---`;
+  }
 
   const assistantRow = assistant.data[0];
   const systemPrompt = [
@@ -212,7 +305,7 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
         p_body: text,
         p_model_id: modelId,
         p_latency_ms: latencyMs,
-        p_input_units: prompt.length,
+        p_input_units: prompt.length + attachmentText.length,
         p_output_units: text.length,
         p_request_id: requestId,
         p_thinking_mode: body.thinkingMode !== false,
