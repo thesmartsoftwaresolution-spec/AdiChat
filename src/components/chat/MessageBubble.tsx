@@ -100,7 +100,7 @@ export const MessageBubble: React.FC<{
                 {displayBody ?? message.body}
               </div>
 
-              {codeSnippet && (
+              {codeSnippet && !animateIn && (
                 <div className="mt-3 bg-surface-container rounded-xl p-2.5 overflow-hidden">
                   <div className="flex items-center justify-between pb-1.5 mb-1.5 bg-surface-container-high px-2.5 py-1 rounded-lg">
                     <div className="flex items-center gap-1.5">

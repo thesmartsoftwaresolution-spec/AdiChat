@@ -100,6 +100,7 @@ export const AIChatPage: React.FC = () => {
     if (!target?.body) return;
 
     const fullText = target.body;
+    const characters = Array.from(fullText);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setDisplayedText(fullText);
       setAnimatingMessageId(null);
@@ -110,10 +111,10 @@ export const AIChatPage: React.FC = () => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     setDisplayedText('');
     const reveal = () => {
-      const step = Math.max(2, Math.ceil(fullText.length / 180));
-      index = Math.min(fullText.length, index + step);
-      setDisplayedText(fullText.slice(0, index));
-      if (index < fullText.length) {
+      const step = Math.max(2, Math.ceil(characters.length / 180));
+      index = Math.min(characters.length, index + step);
+      setDisplayedText(characters.slice(0, index).join(''));
+      if (index < characters.length) {
         timer = setTimeout(reveal, 14);
       } else {
         timer = setTimeout(() => setAnimatingMessageId(null), 180);
@@ -158,7 +159,7 @@ export const AIChatPage: React.FC = () => {
               onClick={() => navigate('/assistants')}
               className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-surface-container shrink-0"
             >
-              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             </button>
             <Link
               to={`/assistants/${assistant.id}`}
