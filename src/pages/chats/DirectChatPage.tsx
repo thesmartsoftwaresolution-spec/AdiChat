@@ -53,7 +53,11 @@ export const DirectChatPage: React.FC = () => {
     if (!draft.trim() || blocked) return;
     const text = draft;
     setDraft('');
-    await sendMessage(conversationId, text);
+    const result = await sendMessage(conversationId, text);
+    if (!result.ok) {
+      setDraft(text);
+      return;
+    }
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
 

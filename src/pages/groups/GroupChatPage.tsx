@@ -58,12 +58,16 @@ export const GroupChatPage: React.FC = () => {
     const text = draft;
     setDraft('');
     setSending(true);
-    const res = await sendMessage(groupId, text);
-    if (!res.ok && res.error) {
-      pushToast(res.error, 'error');
+    try {
+      const res = await sendMessage(groupId, text);
+      if (!res.ok) {
+        setDraft(text);
+        return;
+      }
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
+    } finally {
+      setSending(false);
     }
-    setSending(false);
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
   };
 
   if (!groupMeta) {
