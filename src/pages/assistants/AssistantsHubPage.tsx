@@ -33,7 +33,7 @@ export const AssistantsHubPage: React.FC = () => {
           aria-label="Create AI Assistant"
           className="h-14 px-5 rounded-full bg-primary text-on-primary flex items-center gap-2 shadow-[0_8px_24px_rgba(15,92,58,0.25)] hover:opacity-95"
         >
-          <span className="material-symbols-outlined text-[22px]">add</span>
+          <span className="material-symbols-outlined text-[20px]">add</span>
           <span className="text-label-md hidden sm:inline">New Assistant</span>
         </Link>
       }

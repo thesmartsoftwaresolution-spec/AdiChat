@@ -65,7 +65,7 @@ export const MediaViewerPage: React.FC = () => {
         ) : (
           <div className="p-8 rounded-2xl bg-surface-container-lowest shadow-md flex flex-col items-center gap-3 max-w-md w-full text-center">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-              <span className="material-symbols-outlined text-[22px]">description</span>
+              <span className="material-symbols-outlined text-[20px]">description</span>
             </div>
             <h2 className="text-headline-sm text-on-surface">{fileName}</h2>
             <p className="text-body-sm text-on-surface-variant">

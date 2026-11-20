@@ -128,7 +128,7 @@ export const ChatsListPage: React.FC = () => {
           aria-label="Start new chat"
           className="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_8px_24px_rgba(15,92,58,0.25)] hover:opacity-95 active:scale-95 transition-all"
         >
-          <span className="material-symbols-outlined text-[24px]">edit_square</span>
+          <span className="material-symbols-outlined text-[20px]">edit_square</span>
         </Link>
       }
     >
@@ -286,7 +286,7 @@ export const ChatsListPage: React.FC = () => {
                   />
                 ) : item.conv.type === 'group' ? (
                   <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-xs">
-                    <span className="material-symbols-outlined text-[22px]">diversity_3</span>
+                    <span className="material-symbols-outlined text-[20px]">diversity_3</span>
                   </div>
                 ) : (
                   <UserAvatar

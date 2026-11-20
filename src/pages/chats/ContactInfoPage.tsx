@@ -144,7 +144,7 @@ export const ContactInfoPage: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="material-symbols-outlined text-primary text-[22px]">
+                    <span className="material-symbols-outlined text-primary text-[20px]">
                       description
                     </span>
                   )}

@@ -94,7 +94,7 @@ export const DirectChatPage: React.FC = () => {
               onClick={() => navigate('/chats')}
               className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-surface-container shrink-0"
             >
-              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             </button>
 
             <Link
@@ -203,7 +203,7 @@ export const DirectChatPage: React.FC = () => {
                 }}
                 className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container shrink-0"
               >
-                <span className="material-symbols-outlined text-[22px]">add_circle</span>
+                <span className="material-symbols-outlined text-[20px]">add_circle</span>
               </button>
               <input
                 type="text"

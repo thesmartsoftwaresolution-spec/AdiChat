@@ -104,7 +104,7 @@ export const AttachmentVoiceSheet: React.FC<AttachmentVoiceSheetProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
               <div className="w-12 h-12 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">photo_library</span>
+                <span className="material-symbols-outlined text-[20px]">photo_library</span>
               </div>
               <span className="text-label-md text-on-surface">Photo &amp; Media</span>
               <span className="text-caption text-on-surface-variant">PNG, JPG, WebP up to 25 MB</span>
@@ -118,7 +118,7 @@ export const AttachmentVoiceSheet: React.FC<AttachmentVoiceSheetProps> = ({
 
             <label className="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">description</span>
+                <span className="material-symbols-outlined text-[20px]">description</span>
               </div>
               <span className="text-label-md text-on-surface">Document</span>
               <span className="text-caption text-on-surface-variant">PDF, TS, TXT, ZIP files</span>
