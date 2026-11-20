@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { AIAssistant, Message, Profile } from '../../types/database';
 import { formatDurationMs, formatFileSize } from '../../utils/chatLogic';
@@ -38,6 +38,17 @@ export const MessageBubble: React.FC<{
   const [playingVoice, setPlayingVoice] = useState(false);
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
+  const [showActions, setShowActions] = useState(false);
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startLongPress = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => setShowActions(true), 500);
+  };
+  const cancelLongPress = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = null;
+  };
 
   if (message.message_type === 'system') {
     return (
@@ -62,18 +73,15 @@ export const MessageBubble: React.FC<{
   if (senderAssistant) {
     const codeSnippet = message.metadata.code_snippet;
     return (
-      <div className="flex flex-col items-start self-start max-w-[92%] space-y-1">
-        {message.metadata.thinking_mode && (
-          <div className="inline-flex items-center gap-1.5 bg-surface-container-low px-3 py-1 rounded-full shadow-xs mb-1">
-            <span className="material-symbols-outlined text-primary text-[14px]">psychology</span>
-            <span className="text-caption text-on-surface-variant">
-              {message.metadata.thinking_summary ||
-                `High Thinking Mode (${message.metadata.model_id || '@cf/openai/gpt-oss-20b'})`}
-            </span>
-            <span className="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
-          </div>
-        )}
-
+      <div
+        className="flex flex-col items-start self-start max-w-[92%] space-y-1"
+        onPointerDown={startLongPress}
+        onPointerUp={cancelLongPress}
+        onPointerLeave={cancelLongPress}
+        onPointerCancel={cancelLongPress}
+        onContextMenu={(event) => { event.preventDefault(); cancelLongPress(); setShowActions(true); }}
+        onKeyDown={(event) => { if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) setShowActions(true); }}
+      >
         <div className="flex items-start gap-2.5 w-full">
           {showSenderHeader && (
             <AssistantAvatar
@@ -126,7 +134,7 @@ export const MessageBubble: React.FC<{
                 </div>
               )}
 
-              <div className="flex items-center justify-between mt-2.5 pt-1.5 border-t border-outline-variant/20">
+              <div className={`${showActions ? 'flex' : 'hidden'} items-center justify-between mt-2.5 pt-1.5 border-t border-outline-variant/20`}>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
