@@ -356,3 +356,49 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - Supplied Stitch archive is `35 Mobile Light Screens` with one `code.html` and one `screen.png` per screen group; docs claim 140 variants, so do not claim the full variant set was supplied.
 - PWA manifest/service worker files were not found in the inspected current tree; installability work remains pending.
 - Existing `src/index.css` uses Inter + Material Symbols; icon sizing is a mixture of explicit Tailwind font-size utilities and component dimensions. Do a measured shared-component pass rather than a blind global CSS override.
+
+
+---
+
+## 11. Implementation progress — 2026-11-20
+
+### Verified completed in current approved scope
+- [x] Compact icon baseline: Material Symbols default is now 20px in the Tailwind base layer so explicit utilities remain controllable; AppShell navigation icons were reduced from 22px to 20px; AssistantAvatar fallback icons are now 16/18/20px; shared empty-state icon reduced from 24px to 20px; Media Viewer document glyph reduced from 34px to 22px.
+- [x] PWA manifest at `public/manifest.webmanifest`, linked in `index.html`; app name, short name, scope, start URL, standalone display, theme color and `prefer_related_applications:false` set.
+- [x] Raster launcher icons verified in Git tree: `public/icons/adichat-192.png` (192x192 PNG, 876 bytes) and `public/icons/adichat-512.png` (512x512 PNG, 2,460 bytes); SVG scalable icon also present. Manifest declares the 192px and 512px PNG icons plus SVG fallback.
+- [x] Service worker `public/sw.js` registered only in production; offline fallback `public/offline.html`; app shell/static assets cached conservatively.
+- [x] Service worker excludes `/api/`, `/auth/`, `/rest/`, `/storage/`, token/download query URLs and cross-origin resources. Private chats, Supabase data and signed attachments are not cached.
+- [x] Global `PWAInstallPrompt` listens for Chrome's `beforeinstallprompt` and `appinstalled` events and presents an in-app Install button when the browser makes the prompt available.
+- [x] Supabase migration `20261120220000_add_ai_assistant_role_scenario_behaviour` applied; `ai_assistants.role`, `scenario`, `behaviour` columns and length constraints verified in live schema. Existing `avatar_path` and legacy persona fields retained.
+- [x] Assistant creation UI now has Name, Profile Photo, Role, Scenario, Behaviour, Custom Instructions, description, tone, language and starter prompts.
+- [x] Assistant profile/edit UI supports the same persona fields and photo replacement/removal.
+- [x] Assistant photos upload to the existing private `avatars` bucket under owner-scoped paths; 2 MB limit and JPG/PNG/WebP allowlist enforced; signed URLs are generated for display; base64 is not stored.
+- [x] Provider persists assistant role/scenario/behaviour/photo path in Supabase and hydrates signed photo URLs. AI Pages Function now incorporates Role, Scenario, Behaviour, Tone, Language and Custom Instructions into the server-side system prompt.
+- [x] AI responses use a fade-in + progressive typewriter reveal. It respects `prefers-reduced-motion`, handles Unicode code points and avoids revealing code blocks ahead of the animation.
+- [x] AI chat has a file picker, file preview and remove action. Supported text formats: TXT, MD, CSV, JSON, LOG, XML, HTML, CSS, JS/JSX, TS/TSX, PY, SQL, SH, YAML/YML. Client and server enforce a 5 MB limit.
+- [x] Files upload to existing private `chat-attachments` storage, are downloaded by the server using the signed-in user's JWT, UTF-8 validated, bounded to 20,000 extracted characters and passed to Workers AI as untrusted content. Files are never executed.
+- [x] Supabase migration `20261120223000_add_assistant_message_attachments_and_replies` applied. New RPC `create_assistant_user_message_with_context` checks active account, assistant ownership, conversation membership, reply target, bucket/path/user ownership, MIME type and file size; inserts message and attachment metadata atomically.
+- [x] AI chat messages expose an "Ask about this" reply/reference action; the quoted message preview can be removed before sending. The server verifies the referenced message belongs to the same conversation and is not deleted before including it in AI context.
+- [x] Attachment metadata and signed private URLs are hydrated into app state; Media Viewer now opens/downloads the signed private file link instead of showing a fake success toast.
+- [x] SQL rollback-only verification passed for attachment metadata persistence, message type `file`, reply reference, anon execute denied and authenticated execute granted. Test data was rolled back.
+- [x] GitHub Actions CI passed for commit `68bbcaf16ef1f1a5d7b2aabef802a3d796d39325`: `npm run lint`, `npm test` (3 tests) and `npm run build`.
+- [x] Existing Cloudflare Pages project `adichat` deployed commit `68bbcaf16ef1f1a5d7b2aabef802a3d796d39325` successfully. Project remains on `main`, subdomain and only configured domain remain `adichat.pages.dev`; production URL/domain unchanged.
+
+### Still pending / limitations — do not mark complete
+- [ ] Full visual icon inventory across every screen; current sizing pass covers shared defaults and major shared components, but all screen-specific explicit icon sizes still need review against Stitch.
+- [ ] Full mobile responsive audit across all 35 supplied Stitch mobile screens; test very narrow widths, Android Chrome viewport, safe areas, modals, navigation and chat composer.
+- [ ] Verify Chrome Android's actual install prompt and installed standalone launch on a physical device. Manifest requirements and source assets are present, but a physical device install has not been executed from this environment.
+- [ ] File analysis currently supports UTF-8 text-based files listed above. PDF, DOCX, image OCR and scanned-document extraction are not yet supported; do not imply otherwise. Add only after confirming a Cloudflare-compatible parser and updating lockfiles/build tests.
+- [ ] Run authenticated end-to-end tests for assistant creation/photo upload, AI response, text file upload/analysis, reply/reference and download. No password/token was requested or used; SQL rollback tests do not replace live user-session tests.
+- [ ] Test unauthorized storage reads, cross-conversation attachment paths, oversized files, malformed UTF-8, unsupported extensions, deleted reply targets and inactive accounts through the live Pages Function.
+- [ ] Confirm signed file download behavior in a real browser session; the app now creates signed URLs but browser download UX has not been manually smoke-tested.
+- [ ] Review remaining Supabase Security Advisor warnings from the earlier audit (SECURITY DEFINER helper/RPC notices and RLS initplan notices); no RLS controls were disabled.
+- [ ] Check mobile screenshots/light and dark theme after deployment; external live-site browser inspection is not available in this session.
+- [ ] Consider document history/context: follow-up questions after the upload currently include the latest message and its current file content only; prior uploaded file contents are not automatically re-extracted for later turns.
+
+### Latest continuation anchor
+- Latest verified code commit before this plan update: `68bbcaf16ef1f1a5d7b2aabef802a3d796d39325`.
+- GitHub CI: passed (TypeScript, 3 unit tests, Vite production build).
+- Cloudflare Pages deployment: passed; existing production domain `https://adichat.pages.dev` unchanged.
+- Live Supabase: assistant persona columns and both additive migrations are applied.
+- Next work: continue with remaining responsive/icon audit, then authenticated end-to-end testing and PDF/DOCX support assessment. Keep working directly on `main`; do not ask the owner to perform technical steps.
