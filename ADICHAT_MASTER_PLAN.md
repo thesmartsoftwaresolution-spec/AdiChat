@@ -273,3 +273,86 @@ When the owner says **"GitHub mein ADICHAT_MASTER_PLAN.md aur rules wali file pa
 
 
 - [x] Rollback-only group settings/assistant-sync test passed after correcting an ambiguous PL/pgSQL alias; group name, conversation title, and settings persisted within the test transaction, then rolled back. No test rows remain.
+
+
+---
+
+## 9. Approved enhancement scope — 2026-11-20 (owner approved: "han")
+
+This scope is approved. Continue without pausing for routine steps; ask again only if a new substantial/risky decision falls outside this approval.
+
+### Current verified identity refresh
+- [x] Auth lookup confirms `thesmartsoftwaresolution@gmail.com` exists and `email_confirmed_at` is populated.
+- [x] Profile lookup confirms `Adeel Bhatti` with status `active`.
+- [x] Role lookup confirms both `user` and `super_admin`.
+- [x] Do not re-run bootstrap or create duplicate Super Admin grants.
+
+### A. Compact, attractive icon sizing and mobile polish
+- [ ] Inventory oversized Material Symbols/Lucide icons across all screens and shared components.
+- [ ] Normalize icon sizing in shared controls, headers, navigation, buttons, empty states, assistant avatars, cards and admin pages without shrinking intentional illustrations.
+- [ ] Preserve Stitch spacing, colors, proportions and typography; this is a sizing/consistency pass, not a redesign.
+- [ ] Test responsive layouts, safe areas, composer, dialogs, forms and no horizontal overflow on narrow screens.
+
+### B. Chrome Android installable PWA
+- [ ] Add and validate Web App Manifest.
+- [ ] Add AdiChat app icons (192px, 512px and maskable variants) consistent with existing brand assets.
+- [ ] Add a safe service worker and offline fallback.
+- [ ] Never cache authenticated Supabase responses, chat messages, private attachments, signed URLs, tokens or secrets.
+- [ ] Register/update service worker without losing drafts.
+- [ ] Verify Chrome Android installability requirements and production HTTPS behavior; clearly distinguish automated validation from an actual physical-device install.
+
+### C. Advanced AI Assistant creation/profile
+- [ ] Add explicit form fields: Name, Profile Photo, Role, Scenario, Behaviour, Custom Instructions.
+- [ ] Inspect current table/RLS before additive schema migration; preserve legacy `description`, `personality`, `tone`, `language`, `instructions` and all existing assistant records.
+- [ ] Add only required DB fields; update migration, canonical schema, TypeScript types, create/edit/profile UI and data hydration.
+- [ ] Store profile images in the existing private `avatars` bucket with owner-scoped paths and MIME/size validation; store object path only (never base64).
+- [ ] Compose Role, Scenario, Behaviour and Custom Instructions into server-side AI context; client cannot override system instructions.
+
+### D. Animated AI responses
+- [ ] Smooth fade-in/typewriter reveal for new AI replies, not the entire old history on every render.
+- [ ] Keep Markdown/code formatting stable and avoid excessive layout jumps.
+- [ ] Respect `prefers-reduced-motion`.
+- [ ] Add stop/cancel only if server inference can be safely cancelled; do not fake functionality.
+
+### E. AI chat file upload and analysis
+- [ ] Add attachment picker, file preview and remove-before-send UI.
+- [ ] Use existing private `chat-attachments` bucket, scoped to authorized conversation membership.
+- [ ] Add server-side file count/size/MIME/extension checks; do not trust browser metadata alone.
+- [ ] Implement safe extraction for supported text formats (TXT, MD, CSV, JSON, PDF, DOCX as feasible); inspect actual runtime dependencies and Cloudflare compatibility before choosing parsers.
+- [ ] Treat document content as untrusted input; do not execute files/macros/scripts and do not let embedded prompt instructions override system policy.
+- [ ] Bound extracted text/context size; reject unsupported, encrypted, oversized or malformed files with clear errors.
+- [ ] Persist attachment metadata using existing `attachments` table and private object paths; no public permanent URLs.
+- [ ] Test unauthorized storage access and cross-conversation attachment access.
+
+### F. Message quote/reference and ask-about-this
+- [ ] Add message action to quote/reference any message in AI chat.
+- [ ] Show removable quote preview in composer.
+- [ ] Persist reference via existing `reply_to_message_id` where suitable.
+- [ ] Include quoted text in AI context only after server-side conversation/member/message checks.
+- [ ] Add "Ask about this" shortcut where relevant; do not leak messages across conversations or include deleted messages.
+
+### G. Additional useful AI chat features
+- [ ] Copy, regenerate, retry, edit last prompt, feedback, starter prompts and attachment status.
+- [ ] Improve keyboard/screen-reader support and mobile composer.
+- [ ] Add only features compatible with existing design and safe backend capabilities.
+
+### Required QA for this enhancement
+- [ ] `npm run lint`
+- [ ] `npm test`
+- [ ] `npm run build`
+- [ ] Mobile + desktop and light + dark visual review.
+- [ ] PWA manifest/service-worker/static asset validation.
+- [ ] Supabase RLS and storage policy verification.
+- [ ] Authenticated AI chat/file analysis tests plus unauthorized-user/file rejection tests.
+- [ ] Existing Cloudflare Pages build/deployment verification; production alias and domain must remain unchanged.
+
+## 10. Latest state at this addendum
+- Latest inspected GitHub `main` HEAD at start of this scope: `a0d7e75b9f0a0c0d77ebf08b50097c841f44e882`. Always re-fetch current HEAD before future commits.
+- Current assistant form is `src/pages/assistants/CreateAssistantPage.tsx`; it currently has name, short description, tone, language, personality, system instructions, starter prompts and default thinking mode. Requested Role/Scenario/Behaviour/Profile Photo are not yet present as separate supported fields.
+- Current AI chat is `src/pages/assistants/AIChatPage.tsx`; responses are rendered from persisted messages via `MessageBubble`, without progressive typewriter reveal.
+- Current AI message component is `src/components/chat/MessageBubble.tsx`.
+- Existing `AIAssistant` TypeScript shape is in `src/types/database.ts`; live `ai_assistants` table has `avatar_path`, `description`, `personality`, `instructions`, `tone`, `language`, `starter_prompts`, `is_enabled`, `thinking_enabled_default`; no explicit role/scenario/behaviour columns were found.
+- Existing private Storage buckets verified: `avatars`, `chat-attachments`, `voice-notes`; `developer-assets` is public. Existing chat attachment policies require conversation membership. No bucket-wide size/MIME restrictions were set in the inspected config.
+- Supplied Stitch archive is `35 Mobile Light Screens` with one `code.html` and one `screen.png` per screen group; docs claim 140 variants, so do not claim the full variant set was supplied.
+- PWA manifest/service worker files were not found in the inspected current tree; installability work remains pending.
+- Existing `src/index.css` uses Inter + Material Symbols; icon sizing is a mixture of explicit Tailwind font-size utilities and component dimensions. Do a measured shared-component pass rather than a blind global CSS override.
