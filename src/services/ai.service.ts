@@ -6,6 +6,14 @@ export interface AiChatRequest {
   assistant: AIAssistant;
   conversationId: string;
   thinkingMode: boolean;
+  replyToMessageId?: string;
+  attachment?: {
+    bucketId: 'chat-attachments';
+    objectPath: string;
+    fileName: string;
+    mimeType: string;
+    fileSizeBytes: number;
+  } | null;
 }
 
 export interface AiChatResponse {
@@ -41,6 +49,14 @@ export async function requestAssistantReply(payload: AiChatRequest): Promise<AiC
       assistantId: payload.assistant.id,
       conversationId: payload.conversationId,
       thinkingMode: payload.thinkingMode,
+      replyToMessageId: payload.replyToMessageId || null,
+      attachment: payload.attachment ? {
+        bucket_id: payload.attachment.bucketId,
+        object_path: payload.attachment.objectPath,
+        file_name: payload.attachment.fileName,
+        mime_type: payload.attachment.mimeType,
+        file_size_bytes: payload.attachment.fileSizeBytes,
+      } : null,
     }),
   });
 

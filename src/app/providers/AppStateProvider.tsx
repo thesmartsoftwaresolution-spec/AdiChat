@@ -174,7 +174,8 @@ interface AppStateContextValue {
   sendAiMessage: (
     assistantId: string,
     prompt: string,
-    thinkingMode: boolean
+    thinkingMode: boolean,
+    options?: { file?: File | null; replyToMessageId?: string | null }
   ) => Promise<{ ok: boolean; error?: string; model?: string; latencyMs?: number; assistantMessageId?: string }>;
   syncGroupAssistants: (
     groupId: string,
@@ -1369,7 +1370,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         sender_assistant_id: null,
         message_type: 'system',
         body: `Group "${input.name.trim()}" created with ${uniqueMembers.length} participants`,
-        reply_to_message_id: null,
+        reply_to_message_id: options?.replyToMessageId || null,
         delivery_status: 'read',
         metadata: {},
         created_at: nowIso,
@@ -1981,7 +1982,12 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const sendAiMessage = useCallback(
-    async (assistantId: string, prompt: string, thinkingMode: boolean) => {
+    async (
+      assistantId: string,
+      prompt: string,
+      thinkingMode: boolean,
+      options?: { file?: File | null; replyToMessageId?: string | null }
+    ) => {
       const assistant = state.assistants.find((a) => a.id === assistantId);
       if (!assistant) return { ok: false, error: 'AI Assistant not found.' };
       if (!assistant.is_enabled) return { ok: false, error: 'This AI Assistant is disabled.' };
@@ -1999,11 +2005,52 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
 
         try {
+          let attachment: {
+            bucketId: 'chat-attachments';
+            objectPath: string;
+            fileName: string;
+            mimeType: string;
+            fileSizeBytes: number;
+          } | null = null;
+          const file = options?.file || null;
+          if (file) {
+            const extension = file.name.split('.').pop()?.toLowerCase() || '';
+            const mimeByExtension: Record<string, string> = {
+              txt: 'text/plain', md: 'text/markdown', csv: 'text/csv', json: 'application/json',
+              log: 'text/plain', xml: 'application/xml', html: 'text/html', css: 'text/css',
+              js: 'text/javascript', jsx: 'text/javascript', ts: 'text/typescript', tsx: 'text/typescript',
+              py: 'text/x-python', sql: 'application/sql', sh: 'text/x-shellscript',
+              yaml: 'text/yaml', yml: 'text/yaml',
+            };
+            const mimeType = mimeByExtension[extension];
+            if (!mimeType || file.size < 1 || file.size > 5 * 1024 * 1024) {
+              return { ok: false, error: 'Supported files must be text-based formats and no larger than 5 MB.' };
+            }
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 120) || `document.${extension}`;
+            const objectPath = `${conversationId}/${state.currentUserId}/${crypto.randomUUID()}-${safeName}`;
+            const upload = await supabase.storage.from('chat-attachments').upload(objectPath, file, {
+              upsert: false,
+              contentType: mimeType,
+              cacheControl: '3600',
+            });
+            if (upload.error) {
+              return { ok: false, error: 'File upload failed. Please check the file and try again.' };
+            }
+            attachment = {
+              bucketId: 'chat-attachments',
+              objectPath,
+              fileName: safeName,
+              mimeType,
+              fileSizeBytes: file.size,
+            };
+          }
           const response = await requestAssistantReply({
             prompt,
             assistant,
             conversationId,
             thinkingMode,
+            replyToMessageId: options?.replyToMessageId || undefined,
+            attachment,
           });
           const [conversationResult, messagesResult] = await Promise.all([
             supabase.from('conversations').select('*').eq('id', conversationId).single(),
@@ -2019,6 +2066,10 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
           const savedConversation = conversationResult.data as Conversation;
           const savedMessages = (messagesResult.data || []) as Message[];
+          const savedMessageIds = savedMessages.map((message) => message.id);
+          const attachmentResult = savedMessageIds.length
+            ? await supabase.from('attachments').select('*').in('message_id', savedMessageIds)
+            : { data: [], error: null };
           setState((prev) => ({
             ...prev,
             conversations: [
@@ -2028,6 +2079,10 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             messages: [
               ...prev.messages.filter((item) => item.conversation_id !== conversationId),
               ...savedMessages,
+            ],
+            attachments: [
+              ...prev.attachments.filter((item) => item.conversation_id !== conversationId),
+              ...(attachmentResult.data || []) as Attachment[],
             ],
           }));
 
