@@ -137,9 +137,9 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
       `profiles?id=eq.${authUser.id}&select=status&limit=1`),
     supabase<Array<{ id: string }>>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
       `conversations?id=eq.${body.conversationId}&type=eq.assistant&assistant_id=eq.${body.assistantId}&select=id&limit=1`),
-    supabase<Array<{ id: string; name: string; instructions: string; role: string | null; scenario: string | null; behaviour: string | null; tone: string | null; language: string | null }>>(
+    supabase<Array<{ id: string; name: string; description: string | null; personality: string | null; instructions: string; role: string | null; scenario: string | null; behaviour: string | null; tone: string | null; language: string | null }>>(
       env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
-      `ai_assistants?id=eq.${body.assistantId}&is_enabled=eq.true&select=id,name,instructions,role,scenario,behaviour,tone,language&limit=1`),
+      `ai_assistants?id=eq.${body.assistantId}&is_enabled=eq.true&select=id,name,description,personality,instructions,role,scenario,behaviour,tone,language&limit=1`),
     supabase<Array<{ id: string }>>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
       `conversation_members?conversation_id=eq.${body.conversationId}&user_id=eq.${authUser.id}&select=id&limit=1`),
     supabase<boolean>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
