@@ -49,10 +49,10 @@ export const CreateAssistantPage: React.FC = () => {
       if (created) {
         navigate(`/assistants/${created.id}/chat`);
       } else {
-        setError('Assistant save nahi ho saka. Apni session aur connection check karke dobara koshish karein.');
+        setError('Could not save the assistant. Check your session and connection, then try again.');
       }
     } catch {
-      setError('Assistant save nahi ho saka. Dobara koshish karein.');
+      setError('Could not save the assistant. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -205,7 +205,7 @@ export const CreateAssistantPage: React.FC = () => {
           className="w-full h-12 rounded-xl bg-primary text-on-primary text-label-md flex items-center justify-center gap-2 shadow-md"
         >
           <span className="material-symbols-outlined text-[20px]">check</span>
-          <span>{saving ? 'Saving...' : 'Save &amp; Open Chat'}</span>
+          <span>{saving ? 'Saving...' : 'Save & Open Chat'}</span>
         </button>
       </form>
     </MobileStackLayout>
