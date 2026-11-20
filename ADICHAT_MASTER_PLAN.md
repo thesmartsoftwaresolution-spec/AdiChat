@@ -76,6 +76,9 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120150900_secure_profile_access`
   - `20261120151448_cloudflare_ai_assistant_chat`
   - `20261120151931_index_foreign_keys`
+  - `20261120153635_grant_profiles_select_authenticated` (temporary broad grant, superseded)
+  - `20261120154054_tighten_profiles_column_select`
+  - `20261120154113_restore_safe_profile_column_select`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
 - [ ] Reconcile canonical `supabase/schema.sql` fully against all applied migrations.
@@ -114,9 +117,9 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] `src/pages/public/SignUpPage.tsx`: show confirmation-required notice when no authenticated session is returned.
 - [x] `supabase/bootstrap_super_admin.md`: correct target email and add explicit verified-email guard.
 - [x] Root cause found in PostgreSQL logs: authenticated profile SELECT failed with `permission denied for table profiles` (SQLSTATE `42501`), causing the app to sign out immediately after successful password authentication.
-- [x] Applied migration `20261120153635_grant_profiles_select_authenticated`; grants only `SELECT` on `public.profiles` to `authenticated` (no anon grant, no RLS change).
+- [x] Login root cause fixed with least-privilege profile grants: `authenticated` can SELECT only `id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference, created_at, updated_at`; the `email` column remains inaccessible. The temporary table-wide grant was superseded by migrations `20261120154054` and `20261120154113`.
 - [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
-- [x] Verified `authenticated` can SELECT the user's own active profile under RLS; verified `anon` still cannot SELECT `public.profiles`; RLS remains enabled.
+- [x] Verified the complete profile projection used by the login/session provider succeeds under `SET ROLE authenticated` + the owner's JWT subject; `email` remains unselectable; RLS remains enabled and `anon` cannot SELECT `public.profiles`.
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
 - [x] Under an authenticated-role test context for this exact user, database helpers return `is_admin() = true` and `is_super_admin() = true`.
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.
