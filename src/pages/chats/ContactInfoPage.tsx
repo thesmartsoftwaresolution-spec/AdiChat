@@ -230,9 +230,11 @@ export const ContactInfoPage: React.FC = () => {
         destructive={!blocked}
         onCancel={() => setConfirmBlockOpen(false)}
         onConfirm={async () => {
-          await toggleBlockUser(contact.id);
-          setConfirmBlockOpen(false);
-          pushToast(blocked ? 'Contact unblocked' : 'Contact blocked', 'info');
+          const saved = await toggleBlockUser(contact.id);
+          if (saved) {
+            setConfirmBlockOpen(false);
+            pushToast(blocked ? 'Contact unblocked' : 'Contact blocked', 'info');
+          }
         }}
       />
 

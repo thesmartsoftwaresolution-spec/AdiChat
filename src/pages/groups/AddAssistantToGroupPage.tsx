@@ -8,7 +8,7 @@ import type { AssistantResponseMode } from '../../types/database';
 export const AddAssistantToGroupPage: React.FC = () => {
   const { groupId = '' } = useParams();
   const navigate = useNavigate();
-  const { state, syncGroupAssistants } = useAppState();
+  const { state, currentUser, syncGroupAssistants } = useAppState();
 
   const existingMap = new Map(
     state.groupAssistants
@@ -20,7 +20,7 @@ export const AddAssistantToGroupPage: React.FC = () => {
     Record<string, { enabled: boolean; responseMode: AssistantResponseMode }>
   >(() => {
     const init: Record<string, { enabled: boolean; responseMode: AssistantResponseMode }> = {};
-    for (const a of state.assistants) {
+    for (const a of state.assistants.filter((assistant) => assistant.owner_user_id === currentUser?.id)) {
       const existing = existingMap.get(a.id);
       init[a.id] = {
         enabled: Boolean(existing?.is_enabled),
@@ -36,8 +36,8 @@ export const AddAssistantToGroupPage: React.FC = () => {
       enabled: cfg.enabled,
       responseMode: cfg.responseMode,
     }));
-    await syncGroupAssistants(groupId, payload);
-    navigate(`/groups/${groupId}/info`);
+    const saved = await syncGroupAssistants(groupId, payload);
+    if (saved) navigate(`/groups/${groupId}/info`);
   };
 
   return (
@@ -49,7 +49,7 @@ export const AddAssistantToGroupPage: React.FC = () => {
 
         <div className="space-y-3">
           {state.assistants
-            .filter((a) => a.is_enabled)
+            .filter((a) => a.is_enabled && a.owner_user_id === currentUser?.id)
             .map((a) => {
               const cfg = selections[a.id] || {
                 enabled: false,

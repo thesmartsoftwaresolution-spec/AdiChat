@@ -21,6 +21,7 @@ import type {
   ReportStatus,
   ReportTargetType,
   UserSettings,
+  UserBlock,
   UserStatus,
 } from '../../types/database';
 import { buildDirectPairKey, resolveTriggeredGroupAssistants, shouldRecommendThinkingMode } from '../../utils/chatLogic';
@@ -142,7 +143,7 @@ interface AppStateContextValue {
   addGroupMembers: (groupId: string, memberIds: string[]) => Promise<{ ok: boolean; error?: string }>;
   removeGroupMember: (groupId: string, targetUserId: string) => Promise<{ ok: boolean; error?: string }>;
   toggleGroupMute: (conversationId: string) => Promise<void>;
-  toggleBlockUser: (targetUserId: string) => Promise<void>;
+  toggleBlockUser: (targetUserId: string) => Promise<boolean>;
   isUserBlocked: (targetUserId: string) => boolean;
   submitReport: (input: {
     targetType: ReportTargetType;
@@ -1600,15 +1601,15 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const toggleBlockUser = useCallback(
-    async (targetUserId: string): Promise<void> => {
-      if (!state.currentUserId || state.currentUserId === targetUserId) return;
+    async (targetUserId: string): Promise<boolean> => {
+      if (!state.currentUserId || state.currentUserId === targetUserId) return false;
       const userId = state.currentUserId;
       const existing = state.userBlocks.find(
         (block) => block.blocker_user_id === userId && block.blocked_user_id === targetUserId
       );
       if (!IS_DEMO_MODE) {
         const sb = getSupabaseClient();
-        if (!sb) return;
+        if (!sb) return false;
         if (existing) {
           const { error } = await sb.from('user_blocks')
             .delete()
@@ -1616,7 +1617,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             .eq('blocked_user_id', targetUserId);
           if (error) {
             pushToast('User could not be unblocked.', 'error');
-            return;
+            return false;
           }
           setState((prev) => ({
             ...prev,
@@ -1631,11 +1632,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             .single();
           if (error || !data) {
             pushToast('User could not be blocked.', 'error');
-            return;
+            return false;
           }
           setState((prev) => ({ ...prev, userBlocks: [data as UserBlock, ...prev.userBlocks] }));
         }
-        return;
+        return true;
       }
       setState((prev) => {
         const exists = prev.userBlocks.some(
@@ -1653,6 +1654,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               }],
         };
       });
+      return true;
     },
     [state.currentUserId, state.userBlocks, pushToast]
   );
@@ -2015,11 +2017,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     async (
       groupId: string,
       selections: Array<{ assistantId: string; responseMode: AssistantResponseMode; enabled: boolean }>
-    ): Promise<void> => {
-      if (!state.currentUserId) return;
+    ): Promise<boolean> => {
+      if (!state.currentUserId) return false;
       if (!IS_DEMO_MODE) {
         const sb = getSupabaseClient();
-        if (!sb) return;
+        if (!sb) return false;
         const payload = selections.map((selection) => ({
           assistant_id: selection.assistantId,
           response_mode: selection.responseMode,
@@ -2034,14 +2036,14 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ? 'Only your enabled AI assistants can be added to this group.'
             : 'Group assistants could not be updated.';
           pushToast(message, 'error');
-          return;
+          return false;
         }
         const { data, error: refreshError } = await sb.from('group_assistants')
           .select('*')
           .eq('group_conversation_id', groupId);
         if (refreshError || !data) {
           pushToast('Group assistants were saved, but the list could not be refreshed.', 'error');
-          return;
+          return false;
         }
         setState((prev) => ({
           ...prev,
@@ -2051,7 +2053,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ],
         }));
         pushToast('Group AI assistants updated', 'success');
-        return;
+        return true;
       }
       const nowIso = new Date().toISOString();
       setState((prev) => {
@@ -2071,6 +2073,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return { ...prev, groupAssistants: [...remaining, ...updatedRows] };
       });
       pushToast('Group AI assistants updated', 'success');
+      return true;
     },
     [state.currentUserId, pushToast]
   );
