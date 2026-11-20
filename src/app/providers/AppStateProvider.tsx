@@ -535,7 +535,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       )
       .subscribe((status) => {
         if (!active || status !== 'SUBSCRIBED') return;
-        if (hasConnected) {
+        if (hasConnected && lastSeenAt) {
           // Recover events missed while the device was offline or the socket reconnected.
           void sb.from('messages')
             .select('*')
