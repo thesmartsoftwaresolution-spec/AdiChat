@@ -3,8 +3,8 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
-**Last verified main commit before this plan update:** `869b39bd9475594380e799db26fd7e25384601fd`  
-**Last verified Cloudflare deployment:** `e1240a6a-1de8-4506-9ec3-6664c6013a3e` — build/deploy success; production alias unchanged.  
+**Last verified main commit before this plan update:** `a9d66b29efb6304fc7ca81d8aaf5fa603c683890`  
+**Last verified Cloudflare deployment:** `7bdaa122-d3ac-4c0e-a87c-68050aee89d8` — build/deploy success; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
 **Production URL:** https://adichat.pages.dev  
@@ -85,10 +85,10 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120154848_harden_create_direct_conversation`
   - `20261120155036_create_group_with_settings` (initial)
   - `20261120155325_use_configured_group_size_limit`
+  - `20261120155554_harden_privileged_helpers_and_group_membership`
+  - `20261120155739_grant_safe_profile_and_mute_updates`
   - `20261120160204_group_settings_and_assistant_sync`
   - `20261120160615_fix_sync_group_assistants_alias`
-  - `20261120155739_grant_safe_profile_and_mute_updates`
-  - `20261120155554_harden_privileged_helpers_and_group_membership`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
 - [x] Verified all 16 applied migration files exist in `supabase/migrations/` and their SQL exactly matches the recorded Supabase migration statements.
@@ -192,10 +192,11 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 ### AI assistants
 - [x] Cloudflare Workers AI server-side integration deployed.
 - [x] Assistant conversation and message RPC foundation.
-- [ ] Persist create/update/delete assistant operations safely.
-- [ ] Assistant visibility/ownership and prompt isolation.
-- [ ] Fast/Thinking modes and response persistence.
-- [ ] Quota enforcement, usage reporting, failure/timeout behavior.
+- [x] Create assistant records persist to Supabase under owner RLS; update/delete actions remain local-only.
+- [x] Server AI route validates assistant ownership/visibility and loads conversation history server-side.
+- [x] Fast/Thinking modes are passed to Cloudflare Workers AI and assistant responses/usage are persisted.
+- [x] Server-side quota enforces 50 successful requests per rolling 24 hours; usage records include model, thinking mode, tokens, and latency.
+- [ ] Persist assistant update/delete actions and complete lifecycle management.
 - [ ] Group assistant invocation and response modes.
 - [ ] End-to-end test after owner account verification.
 
