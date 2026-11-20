@@ -139,7 +139,7 @@ interface AppStateContextValue {
   updateGroupMeta: (
     groupId: string,
     updates: Partial<Pick<GroupMetadata, 'name' | 'description' | 'only_admins_send' | 'allow_ai_auto_respond'>>
-  ) => { ok: boolean; error?: string };
+  ) => Promise<{ ok: boolean; error?: string }>;
   addGroupMembers: (groupId: string, memberIds: string[]) => Promise<{ ok: boolean; error?: string }>;
   removeGroupMember: (groupId: string, targetUserId: string) => Promise<{ ok: boolean; error?: string }>;
   toggleGroupMute: (conversationId: string) => Promise<void>;
@@ -152,7 +152,7 @@ interface AppStateContextValue {
     targetGroupConversationId?: string | null;
     reason: string;
     details?: string;
-  }) => { ok: boolean; error?: string };
+  }) => Promise<{ ok: boolean; error?: string }>;
   // AI Assistants
   createAssistant: (input: {
     name: string;
@@ -175,7 +175,7 @@ interface AppStateContextValue {
   syncGroupAssistants: (
     groupId: string,
     selections: Array<{ assistantId: string; responseMode: AssistantResponseMode; enabled: boolean }>
-  ) => void;
+  ) => Promise<boolean>;
   // Admin Operations
   adminUpdateUserStatus: (userId: string, status: UserStatus, reason?: string) => void;
   adminBulkUpdateUserStatus: (userIds: string[], status: UserStatus, reason?: string) => void;
