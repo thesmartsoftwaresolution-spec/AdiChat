@@ -80,6 +80,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120154054_tighten_profiles_column_select`
   - `20261120154113_restore_safe_profile_column_select`
   - `20261120154502_harden_set_message_read`
+  - `20261120154639_send_conversation_message`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
 - [ ] Reconcile canonical `supabase/schema.sql` fully against all applied migrations.
