@@ -85,6 +85,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120154848_harden_create_direct_conversation`
   - `20261120155036_create_group_with_settings` (initial)
   - `20261120155325_use_configured_group_size_limit`
+  - `20261120155739_grant_safe_profile_and_mute_updates`
   - `20261120155554_harden_privileged_helpers_and_group_membership`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
@@ -247,3 +248,6 @@ When the owner says **"GitHub mein ADICHAT_MASTER_PLAN.md aur rules wali file pa
 
 **Owner's preferred short hand-off phrase:**  
 `GitHub mein ADICHAT_MASTER_PLAN.md aur project rules parho, current GitHub/Supabase/Cloudflare state verify karo, aur pehle pending task se AdiChat ka kaam jari rakho.`
+
+
+- [x] Granted only safe profile-column updates (`full_name`, `about`, `title`, `theme_preference`, `avatar_path`) and only `muted_until` updates on membership rows; table-wide UPDATE remains denied and `status`/`member_role` remain protected. Verified allowed update and denied status update in a rollback-only authenticated test.
