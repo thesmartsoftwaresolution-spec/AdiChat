@@ -478,3 +478,17 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [x] Loaded saved custom rules server-side into direct AI chat and group assistant prompts.
 - [x] Extended the guarded group assistant context RPC to return custom rules while preserving active-account, membership, group setting and authenticated-only execution checks.
 - [ ] Verify production UI save/reload and authenticated direct/group assistant replies with custom rules; do not claim end-to-end verification until tested.
+
+
+## Real-time messaging delivery repair — 2026-11-21
+
+- [x] Production inspection confirmed that the `supabase_realtime` publication had no tables before this repair.
+- [x] Added `public.messages` and `public.conversations` to the existing `supabase_realtime` publication using the additive migration `20261120200108_enable_message_realtime_publication`.
+- [x] Verified the live publication now contains exactly the two intended public tables; existing RLS policies were not changed.
+- [x] Added authenticated-client Supabase Postgres Changes subscriptions for message INSERT/UPDATE/DELETE and conversation INSERT/UPDATE events in `src/app/providers/AppStateProvider.tsx`.
+- [x] Client event handling checks the signed-in user's locally hydrated conversation membership before adding or updating records in app state; database RLS remains the server-side row visibility control.
+- [x] Added reconnect catch-up for messages newer than the last observed message timestamp, with ID-based deduplication.
+- [ ] Run `npm run lint`, `npm test`, and `npm run build` against the final commit; Cloudflare Pages deployment must complete successfully.
+- [ ] Validate two real authenticated accounts on separate browsers/devices for direct and group message delivery, message edits/deletes, network loss/reconnect and read receipts. No real user sessions were available during this change, so end-to-end latency is not yet verified.
+- [ ] Initial production hydration still fetches up to 1,000 messages globally and performs many parallel data reads. Conversation-scoped cursor pagination and load-time optimization remain a separate follow-up; do not claim those are fixed by this Realtime patch.
+- [ ] Supabase Performance Advisor still reports existing RLS initplan and unused-index notices; no broad RLS/index changes were made as part of this latency fix.
