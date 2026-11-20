@@ -106,8 +106,8 @@ export const AIChatPage: React.FC = () => {
                 </div>
                 <p className="text-caption text-on-surface-variant truncate">
                   {thinkingMode
-                    ? 'High Thinking Mode • Gemini 4 Hydrogen'
-                    : 'Fast Mode • Gemini 4 Hydrogen (Low Thinking)'}
+                    ? 'High Thinking Mode • Cloudflare Workers AI · GPT-OSS 20B'
+                    : 'Fast Mode • Cloudflare Workers AI · GPT-OSS 20B (Low Thinking)'}
                 </p>
               </div>
             </Link>
@@ -211,7 +211,7 @@ export const AIChatPage: React.FC = () => {
             </span>
             <span className="text-caption text-on-surface-variant font-medium">
               {thinkingMode
-                ? `${assistant.name} is deep reasoning (Gemini 4 Hydrogen • Thinking HIGH)...`
+                ? `${assistant.name} is deep reasoning (Cloudflare Workers AI · GPT-OSS 20B • Thinking HIGH)...`
                 : `${assistant.name} is generating reply...`}
             </span>
           </div>
@@ -260,7 +260,7 @@ export const AIChatPage: React.FC = () => {
                   ? 'bg-secondary-container text-on-secondary-container'
                   : 'text-on-surface-variant hover:bg-surface-container'
               }`}
-              title="Toggle High Thinking Mode (gemini-4-hydrogen)"
+              title="Toggle High Thinking Mode (@cf/openai/gpt-oss-20b)"
             >
               <span className="material-symbols-outlined text-[20px]">psychology</span>
             </button>
@@ -287,8 +287,8 @@ export const AIChatPage: React.FC = () => {
                 {thinkingMode ? 'neurology' : 'bolt'}
               </span>
               {thinkingMode
-                ? 'High Thinking Mode active (gemini-4-hydrogen • ThinkingLevel.HIGH)'
-                : 'Fast Mode active (gemini-4-hydrogen • ThinkingLevel.LOW)'}
+                ? 'High Thinking Mode active (@cf/openai/gpt-oss-20b • Reasoning HIGH)'
+                : 'Fast Mode active (@cf/openai/gpt-oss-20b • Reasoning LOW)'}
             </span>
             <span>Markdown ready</span>
           </div>
