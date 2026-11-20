@@ -3,8 +3,8 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
-**Last verified main commit before this plan update:** `3b7fba9f2acac36568ffd3010534d3a7a0e9bea5`  
-**Last verified Cloudflare deployment:** `a94f0dce-ac89-4227-a20f-59fcfb5b6836` — build/deploy success; production alias unchanged.  
+**Last verified main commit before this plan update:** `c36d4c5b1045bf06c479e47359d0ad7ae29448e7`  
+**Last verified Cloudflare deployment:** `a9f293fd-7e2a-4dce-bcee-7dbad8bc8425` — build/deploy success; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
 **Production URL:** https://adichat.pages.dev  
@@ -64,7 +64,8 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Wrangler Pages configuration committed.
 - [x] Latest deployment previously verified successful at immutable URL `https://6c461022.adichat.pages.dev`, commit `828ad0c16a90c990856261180364741af62118d4`. **Re-check current deployment after later commits.**
 - [ ] Authenticated AI chat end-to-end test with a verified user and real assistant.
-- [ ] Re-check latest deployment build and production smoke test after auth fixes.
+- [x] Cloudflare Pages builds/deployments passed for direct messaging and group creation commits (`e84b677`, `10305d5`, `8e000db`, `863ce27`, `c36d4c5`).
+- [ ] Production browser smoke test for login, direct chat, group creation, and AI chat; browser interaction is not available through the current connected tools.
 
 ### Supabase
 
@@ -91,7 +92,9 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [ ] Review remaining Performance Advisor RLS initplan findings (last known: 24).
 - [ ] Review `public.rls_auto_enable()` trigger function and `bootstrap_state` access controls.
 - [ ] Verify all relevant RLS policies, storage policies, realtime publication tables, and functions against the approved schema.
-- [ ] Test real authenticated flows and record evidence.
+- [x] Rollback-only SQL test verified message insertion, conversation last-message update, read receipt insertion, group only-admins-send rejection, and cross-conversation read-receipt rejection; transaction rolled back and no test data persisted.
+- [x] Rollback-only SQL validation confirmed invalid self-DM and group-without-other-member requests are rejected.
+- [ ] Test real authenticated flows with a second active account and record evidence.
 
 ### Existing account and Super Admin bootstrap
 
@@ -131,6 +134,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.
 - [x] Latest Cloudflare production deployment for commit `4c2967264dac30d4a7f2edb5a7afc9b3e07a4151` finished successfully; production alias/domain unchanged.
 - [ ] Owner login/session/admin browser test (password is private and must never be requested).
+- [ ] Owner confirms successful login after the profile column grant fix; do not request password.
 
 ## 5. Overall product completion checklist
 
@@ -144,19 +148,22 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 - [ ] Super Admin one-time bootstrap and admin route authorization.
 
 ### Direct messaging
-- [ ] Hydrate direct conversations, memberships, messages, and receipts from Supabase on session restore (current provider hydration is not yet comprehensive).
-- [ ] Create/find direct conversations safely.
-- [ ] Persist and retrieve messages (current `sendMessage` path is still local-state only).
-- [ ] Delivery/read receipts and unread counts.
-- [ ] Realtime subscriptions limited to authorized conversations.
-- [ ] Reactions, blocks, reports, search, shared media, and disappearing messages.
+- [x] Hydrate active profile directory, user's conversations, memberships, groups, messages, attachments, assistant mappings, user settings, blocks, and usage from Supabase on session restore.
+- [x] Create/find direct conversations through the guarded `create_direct_conversation` RPC (active target, block check, duplicate-safe).
+- [x] Persist text messages through `send_conversation_message`; server enforces active account, membership, block status, group only-admins-send, reply-target membership, and input limits.
+- [x] Persist last-read marker through hardened `set_message_read`; invalid cross-conversation message IDs are rejected.
+- [ ] Delivery receipts, unread counters, and realtime subscriptions limited to authorized conversations.
+- [ ] Reactions, blocks, reports, search, secure media/voice storage, and disappearing messages.
+- [ ] End-to-end direct chat test requires a second real active account; production test records were not created.
 
 ### Groups
-- [ ] Hydrate group conversations, group metadata, memberships, and group-assistant mappings from Supabase.
-- [ ] Create groups and persist metadata; audit existing `createGroup` branch and make it consistently DB-backed.
+- [x] Hydrate group conversations, group metadata, memberships, and group-assistant mappings from Supabase.
+- [x] Create groups and persist metadata through atomic `create_group_with_settings`; validate active members and owned/enabled assistants, store group settings and initial system message.
+- [x] Use `app_settings.group_size_limit` for the group cap, with 256 as the current UI-aligned fallback; no hard-coded group-assistant count cap.
 - [ ] Add/remove members with server-side authorization.
 - [ ] Group owner/admin/member permissions.
-- [ ] Only-admins-send enforcement in UI and database/backend.
+- [x] Only-admins-send enforcement in the message RPC/database; UI shows posting restriction.
+- [ ] Add/remove group members with server-side authorization and audit trail.
 - [ ] Group metadata editing, mute, mentions, reports, and audit events.
 - [ ] Group AI assistant membership and response modes.
 
