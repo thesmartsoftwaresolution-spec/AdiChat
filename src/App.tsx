@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
 import { AppStateProvider, useAppState } from './app/providers/AppStateProvider';
 import { ThemeProvider } from './app/providers/ThemeProvider';
 import { EmptyState, ToastViewport } from './components/ui/Feedback';
+import { PWAInstallPrompt } from './components/pwa/PWAInstallPrompt';
 
 // Public & Auth Screens (1-5, 26)
 import { WelcomeLandingPage } from './pages/public/WelcomeLandingPage';
@@ -189,6 +190,7 @@ const AppRoutes: React.FC = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ToastViewport toasts={toasts} onDismiss={dismissToast} />
+      <PWAInstallPrompt />
     </>
   );
 };
