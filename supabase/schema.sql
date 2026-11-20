@@ -106,6 +106,7 @@ create table public.ai_assistants (
   behaviour text,
   personality text,
   instructions text not null,
+  custom_rules text check (custom_rules is null or char_length(custom_rules) <= 12000),
   tone text,
   language text,
   starter_prompts jsonb not null default '[]'::jsonb,
@@ -2480,6 +2481,7 @@ RETURNS TABLE (
   behaviour text,
   personality text,
   instructions text,
+  custom_rules text,
   tone text,
   language text,
   response_mode public.assistant_response_mode
@@ -2514,8 +2516,8 @@ BEGIN
 
   RETURN QUERY
   SELECT a.id, a.name, coalesce(a.handle, ''), a.description, a.role,
-         a.scenario, a.behaviour, a.personality, a.instructions, a.tone,
-         a.language, ga.response_mode
+         a.scenario, a.behaviour, a.personality, a.instructions,
+         a.custom_rules, a.tone, a.language, ga.response_mode
   FROM public.group_assistants ga
   JOIN public.ai_assistants a ON a.id = ga.assistant_id
   WHERE ga.group_conversation_id = p_group_id
