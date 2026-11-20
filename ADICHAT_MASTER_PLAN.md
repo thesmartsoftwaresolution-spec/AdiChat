@@ -79,6 +79,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120153635_grant_profiles_select_authenticated` (temporary broad grant, superseded)
   - `20261120154054_tighten_profiles_column_select`
   - `20261120154113_restore_safe_profile_column_select`
+  - `20261120154502_harden_set_message_read`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
 - [ ] Reconcile canonical `supabase/schema.sql` fully against all applied migrations.
@@ -120,6 +121,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Login root cause fixed with least-privilege profile grants: `authenticated` can SELECT only `id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference, created_at, updated_at`; the `email` column remains inaccessible. The temporary table-wide grant was superseded by migrations `20261120154054` and `20261120154113`.
 - [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
 - [x] Verified the complete profile projection used by the login/session provider succeeds under `SET ROLE authenticated` + the owner's JWT subject; `email` remains unselectable; RLS remains enabled and `anon` cannot SELECT `public.profiles`.
+- [x] Hardened `set_message_read`: it now requires an active member, validates that `last_msg_id` belongs to the supplied conversation, uses a fixed `pg_catalog, public` search path, and is executable only by `authenticated` (not `anon`).
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
 - [x] Under an authenticated-role test context for this exact user, database helpers return `is_admin() = true` and `is_super_admin() = true`.
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.

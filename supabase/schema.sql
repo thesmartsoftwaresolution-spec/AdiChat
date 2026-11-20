@@ -946,35 +946,51 @@ end;
 $$;
 
 -- Mark Conversation / Message Read RPC
-create or replace function public.set_message_read(conv_id uuid, last_msg_id uuid)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
+CREATE OR REPLACE FUNCTION public.set_message_read(conv_id uuid, last_msg_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $function$
+DECLARE
   caller_id uuid := auth.uid();
   receipts_on boolean := true;
-begin
-  if not public.is_conversation_member(conv_id) then
-    raise exception 'Forbidden';
-  end if;
+BEGIN
+  IF caller_id IS NULL
+     OR NOT public.is_active_account()
+     OR NOT public.is_conversation_member(conv_id) THEN
+    RAISE EXCEPTION 'Forbidden';
+  END IF;
 
-  update public.conversation_members
-  set last_read_at = now()
-  where conversation_id = conv_id and user_id = caller_id;
+  IF last_msg_id IS NOT NULL AND NOT EXISTS (
+    SELECT 1
+    FROM public.messages m
+    WHERE m.id = last_msg_id
+      AND m.conversation_id = conv_id
+  ) THEN
+    RAISE EXCEPTION 'Message does not belong to this conversation.';
+  END IF;
 
-  select read_receipts_enabled into receipts_on
-  from public.user_settings where user_id = caller_id;
+  UPDATE public.conversation_members
+  SET last_read_at = now()
+  WHERE conversation_id = conv_id
+    AND user_id = caller_id;
 
-  if coalesce(receipts_on, true) and last_msg_id is not null then
-    insert into public.message_receipts (message_id, user_id, delivered_at, read_at)
-    values (last_msg_id, caller_id, now(), now())
-    on conflict (message_id, user_id)
-    do update set read_at = now();
-  end if;
-end;
-$$;
+  SELECT read_receipts_enabled INTO receipts_on
+  FROM public.user_settings
+  WHERE user_id = caller_id;
+
+  IF COALESCE(receipts_on, true) AND last_msg_id IS NOT NULL THEN
+    INSERT INTO public.message_receipts (message_id, user_id, delivered_at, read_at)
+    VALUES (last_msg_id, caller_id, now(), now())
+    ON CONFLICT (message_id, user_id)
+    DO UPDATE SET read_at = now();
+  END IF;
+END;
+$function$;
+
+REVOKE EXECUTE ON FUNCTION public.set_message_read(uuid, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.set_message_read(uuid, uuid) TO authenticated;
 
 
 -- Assistant conversation and authenticated AI persistence RPCs
