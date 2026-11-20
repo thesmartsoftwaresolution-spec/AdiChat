@@ -385,7 +385,14 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           password,
         });
         if (error || !data.user) {
-          return { ok: false, error: 'Invalid login credentials.' };
+          const message = (error?.message || '').toLowerCase();
+          if (message.includes('email not confirmed') || message.includes('email_not_confirmed')) {
+            return { ok: false, error: 'Your email address is not verified yet. Use the resend confirmation option below, then check your inbox.' };
+          }
+          if (message.includes('invalid login credentials')) {
+            return { ok: false, error: 'Email or password is incorrect. Please check both and try again.' };
+          }
+          return { ok: false, error: error?.message || 'Unable to sign in right now. Please try again.' };
         }
 
         const [profileResult, rolesResult] = await Promise.all([
@@ -451,13 +458,13 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const normalizedEmail = email.trim().toLowerCase();
       const sb = getSupabaseClient();
       if (sb) {
-        const { error } = await sb.auth.signUp({
+        const { data, error } = await sb.auth.signUp({
           email: normalizedEmail,
           password,
           options: { data: { full_name: fullName.trim() } },
         });
         if (error) return { ok: false, error: error.message };
-        return { ok: true };
+        return { ok: true, requiresEmailVerification: !data.session };
       }
 
       if (!IS_DEMO_MODE) {
