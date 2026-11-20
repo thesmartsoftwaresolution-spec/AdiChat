@@ -157,14 +157,18 @@ interface AppStateContextValue {
   createAssistant: (input: {
     name: string;
     description: string;
+    role: string;
+    scenario: string;
+    behaviour: string;
     personality: string;
     instructions: string;
     tone: string;
     language: string;
     starter_prompts: string[];
+    avatarFile?: File | null;
     thinking_enabled_default?: boolean;
   }) => Promise<AIAssistant | null>;
-  updateAssistant: (assistantId: string, updates: Partial<AIAssistant>) => void;
+  updateAssistant: (assistantId: string, updates: Partial<AIAssistant>, avatarFile?: File | null) => Promise<boolean>;
   deleteAssistant: (assistantId: string) => void;
   openAssistantConversation: (assistantId: string) => Conversation | null;
   sendAiMessage: (
@@ -361,7 +365,22 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const attachmentsResult = messageIds.length
         ? await sb.from('attachments').select('*').in('message_id', messageIds)
         : { data: [], error: null };
+      const rawAssistants = (assistantsResult.data || []) as AIAssistant[];
+      const assistantAvatarPaths = Array.from(new Set(rawAssistants
+        .map((assistant) => assistant.avatar_path)
+        .filter((path): path is string => Boolean(path))));
+      const signedAssistantAvatarMap = new Map<string, string>();
+      if (assistantAvatarPaths.length) {
+        const { data: signedAssistantAvatars } = await sb.storage.from('avatars').createSignedUrls(assistantAvatarPaths, 604800);
+        (signedAssistantAvatars || []).forEach((item) => {
+          if (item.path && item.signedUrl) signedAssistantAvatarMap.set(item.path, item.signedUrl);
+        });
+      }
       if (!active) return;
+      const assistants = rawAssistants.map((assistant) => ({
+        ...assistant,
+        avatar_url: assistant.avatar_path ? signedAssistantAvatarMap.get(assistant.avatar_path) || null : null,
+      })) as AIAssistant[];
       const sortedMessages = [...messageRows].sort((a, b) => a.created_at.localeCompare(b.created_at));
 
       setState((prev) => ({
@@ -370,7 +389,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         profiles,
         userRoles: allRoleRows,
         userSettings: { ...prev.userSettings, [user.id]: userSettings as UserSettings },
-        assistants: (assistantsResult.data || []) as AIAssistant[],
+        assistants,
         conversations: (conversationsResult.data || []) as Conversation[],
         conversationMembers: (conversationMembersResult.data || []) as AdiChatStoreState['conversationMembers'],
         groups: (groupsResult.data || []) as GroupMetadata[],
@@ -1735,26 +1754,59 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     async (input: {
       name: string;
       description: string;
+      role: string;
+      scenario: string;
+      behaviour: string;
       personality: string;
       instructions: string;
       tone: string;
       language: string;
       starter_prompts: string[];
+      avatarFile?: File | null;
       thinking_enabled_default?: boolean;
     }): Promise<AIAssistant | null> => {
       if (!state.currentUserId) return null;
       const nowIso = new Date().toISOString();
+      const id = crypto.randomUUID();
       const handle = input.name.replace(/[^a-zA-Z0-9]/g, '') || 'CustomAI';
+      const file = input.avatarFile || null;
+      const extensionByType: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+      };
+      if (file && (!extensionByType[file.type] || file.size > 2 * 1024 * 1024)) {
+        pushToast('Assistant photo must be JPG, PNG or WebP and under 2 MB.', 'error');
+        return null;
+      }
 
       if (!IS_DEMO_MODE) {
         const sb = getSupabaseClient();
         if (!sb) return null;
+        let avatarPath: string | null = null;
+        if (file) {
+          avatarPath = `${state.currentUserId}/assistants/${id}.${extensionByType[file.type]}`;
+          const upload = await sb.storage.from('avatars').upload(avatarPath, file, {
+            upsert: false,
+            contentType: file.type,
+            cacheControl: '3600',
+          });
+          if (upload.error) {
+            pushToast('Assistant photo upload failed. Please try another image.', 'error');
+            return null;
+          }
+        }
         const { data, error } = await sb.from('ai_assistants').insert({
+          id,
           owner_user_id: state.currentUserId,
           name: input.name.trim(),
           handle,
+          avatar_path: avatarPath,
           description: input.description.trim() || null,
-          personality: input.personality.trim() || null,
+          role: input.role.trim() || null,
+          scenario: input.scenario.trim() || null,
+          behaviour: input.behaviour.trim() || null,
+          personality: input.behaviour.trim() || input.personality.trim() || null,
           instructions: input.instructions.trim(),
           tone: input.tone.trim() || 'Helpful',
           language: input.language.trim() || 'English',
@@ -1763,25 +1815,32 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           thinking_enabled_default: input.thinking_enabled_default ?? true,
         }).select('*').single();
         if (error || !data) {
+          if (avatarPath) await sb.storage.from('avatars').remove([avatarPath]);
           pushToast(error?.message || 'Unable to save assistant.', 'error');
           return null;
         }
-        const savedAssistant = data as AIAssistant;
+        const signed = avatarPath
+          ? await sb.storage.from('avatars').createSignedUrl(avatarPath, 604800)
+          : { data: null };
+        const savedAssistant = { ...(data as AIAssistant), avatar_url: signed.data?.signedUrl || null };
         setState((prev) => ({ ...prev, assistants: [savedAssistant, ...prev.assistants] }));
         pushToast(`${savedAssistant.name} created`, 'success');
         return savedAssistant;
       }
 
-      const id = `ai-${Date.now().toString(36)}`;
       const newAssistant: AIAssistant = {
         id,
         owner_user_id: state.currentUserId,
         name: input.name.trim(),
         handle,
         avatar_path: null,
+        avatar_url: file ? URL.createObjectURL(file) : null,
         icon_name: 'auto_awesome',
         description: input.description.trim() || null,
-        personality: input.personality.trim() || null,
+        role: input.role.trim() || null,
+        scenario: input.scenario.trim() || null,
+        behaviour: input.behaviour.trim() || null,
+        personality: input.behaviour.trim() || input.personality.trim() || null,
         instructions: input.instructions.trim(),
         tone: input.tone.trim() || 'Helpful',
         language: input.language.trim() || 'English',
@@ -1799,17 +1858,77 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const updateAssistant = useCallback(
-    (assistantId: string, updates: Partial<AIAssistant>) => {
+    async (assistantId: string, updates: Partial<AIAssistant>, avatarFile?: File | null): Promise<boolean> => {
+      const existing = state.assistants.find((assistant) => assistant.id === assistantId);
+      if (!existing) return false;
       const nowIso = new Date().toISOString();
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const extensionByType: Record<string, string> = {
+          'image/jpeg': 'jpg',
+          'image/png': 'png',
+          'image/webp': 'webp',
+        };
+        if (avatarFile && (!extensionByType[avatarFile.type] || avatarFile.size > 2 * 1024 * 1024)) {
+          pushToast('Assistant photo must be JPG, PNG or WebP and under 2 MB.', 'error');
+          return false;
+        }
+        let uploadedPath: string | null = null;
+        if (avatarFile) {
+          uploadedPath = `${state.currentUserId}/assistants/${assistantId}-${crypto.randomUUID()}.${extensionByType[avatarFile.type]}`;
+          const upload = await sb.storage.from('avatars').upload(uploadedPath, avatarFile, {
+            upsert: false,
+            contentType: avatarFile.type,
+            cacheControl: '3600',
+          });
+          if (upload.error) {
+            pushToast('Assistant photo upload failed. Please try again.', 'error');
+            return false;
+          }
+        }
+        const { avatar_url: _avatarUrl, ...safeUpdates } = updates;
+        const payload: Record<string, unknown> = { ...safeUpdates, updated_at: nowIso };
+        if (uploadedPath) payload.avatar_path = uploadedPath;
+        const { data, error } = await sb.from('ai_assistants')
+          .update(payload)
+          .eq('id', assistantId)
+          .select('*')
+          .maybeSingle();
+        if (error || !data) {
+          if (uploadedPath) await sb.storage.from('avatars').remove([uploadedPath]);
+          pushToast('Assistant settings could not be saved.', 'error');
+          return false;
+        }
+        if ((uploadedPath || updates.avatar_path === null) && existing.avatar_path) {
+          await sb.storage.from('avatars').remove([existing.avatar_path]);
+        }
+        const savedPath = (data as AIAssistant).avatar_path;
+        const signed = savedPath
+          ? await sb.storage.from('avatars').createSignedUrl(savedPath, 604800)
+          : { data: null };
+        const savedAssistant = { ...(data as AIAssistant), avatar_url: signed.data?.signedUrl || null };
+        setState((prev) => ({
+          ...prev,
+          assistants: prev.assistants.map((assistant) => assistant.id === assistantId ? savedAssistant : assistant),
+        }));
+        pushToast('Assistant settings updated', 'success');
+        return true;
+      }
+
+      const avatarUrl = avatarFile ? URL.createObjectURL(avatarFile) : updates.avatar_path === null ? null : existing.avatar_url;
       setState((prev) => ({
         ...prev,
-        assistants: prev.assistants.map((a) =>
-          a.id === assistantId ? { ...a, ...updates, updated_at: nowIso } : a
+        assistants: prev.assistants.map((assistant) =>
+          assistant.id === assistantId
+            ? { ...assistant, ...updates, avatar_url: avatarUrl, updated_at: nowIso }
+            : assistant
         ),
       }));
       pushToast('Assistant settings updated', 'success');
+      return true;
     },
-    [pushToast]
+    [state.assistants, state.currentUserId, pushToast]
   );
 
   const deleteAssistant = useCallback(
