@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../app/providers/AppStateProvider';
 import { MobileStackLayout } from '../../components/layout/AppShells';
+import { getSupabaseClient } from '../../lib/supabase/client';
 
 export const LoginPage: React.FC = () => {
   const { login, quickSignInDemo } = useAppState();
@@ -12,10 +13,33 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
+  const handleResendConfirmation = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setResendMessage('Enter your email address first.');
+      return;
+    }
+    const sb = getSupabaseClient();
+    if (!sb) {
+      setResendMessage('Email verification service is currently unavailable.');
+      return;
+    }
+    setResending(true);
+    setResendMessage(null);
+    const { error } = await sb.auth.resend({ type: 'signup', email: normalizedEmail });
+    setResending(false);
+    setResendMessage(error
+      ? 'We could not resend the email right now. Please wait a little and try again.'
+      : 'If this account can receive a confirmation email, a new verification link has been sent. Check your inbox and spam folder.');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setResendMessage(null);
     setSubmitting(true);
     const res = await login(email, password);
     setSubmitting(false);
@@ -47,6 +71,19 @@ export const LoginPage: React.FC = () => {
             <span className="material-symbols-outlined text-[18px]">error</span>
             <span>{error}</span>
           </div>
+        )}
+        {error?.toLowerCase().includes('not verified') && (
+          <button
+            type="button"
+            onClick={handleResendConfirmation}
+            disabled={resending}
+            className="w-full h-10 rounded-xl border border-primary/30 text-primary text-label-sm font-semibold disabled:opacity-60"
+          >
+            {resending ? 'Sending confirmation...' : 'Resend confirmation email'}
+          </button>
+        )}
+        {resendMessage && (
+          <p role="status" className="text-body-sm text-on-surface-variant">{resendMessage}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
