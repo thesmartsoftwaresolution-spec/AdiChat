@@ -1056,6 +1056,7 @@ grant select on public.developer_profile, public.announcements to anon;
 
 grant select, insert, update, delete on all tables in schema public to authenticated;
 grant select on public.profile_directory to authenticated;
+revoke insert, update, delete on public.profile_directory from authenticated;
 
 -- Profiles: users can update only safe self-service columns.
 revoke all on public.profiles from anon;
@@ -1072,7 +1073,7 @@ revoke update on public.messages from authenticated;
 grant update (body, metadata, edited_at, deleted_at) on public.messages to authenticated;
 
 -- Public helper functions are read-only authorization predicates.
-revoke execute on all functions in schema public from public;
+revoke execute on all functions in schema public from public, anon, authenticated;
 grant execute on function public.get_user_role() to anon, authenticated;
 grant execute on function public.is_admin() to anon, authenticated;
 grant execute on function public.is_super_admin() to anon, authenticated;
