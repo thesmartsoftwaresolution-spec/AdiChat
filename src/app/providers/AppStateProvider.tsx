@@ -133,7 +133,7 @@ interface AppStateContextValue {
     assistantIds: string[];
     onlyAdminsSend?: boolean;
     allowAiAutoRespond?: boolean;
-  }) => Conversation | null;
+  }) => Promise<Conversation | null>;
   updateGroupMeta: (
     groupId: string,
     updates: Partial<Pick<GroupMetadata, 'name' | 'description' | 'only_admins_send' | 'allow_ai_auto_respond'>>
@@ -1034,7 +1034,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const createGroup = useCallback(
-    (input: {
+    async (input: {
       name: string;
       description: string;
       memberIds: string[];
@@ -1043,6 +1043,67 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       allowAiAutoRespond?: boolean;
     }): Conversation | null => {
       if (!state.currentUserId) return null;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return null;
+        const { data: conversationId, error } = await sb.rpc('create_group_with_settings', {
+          p_group_name: input.name.trim(),
+          p_group_description: input.description.trim() || null,
+          p_member_ids: input.memberIds,
+          p_assistant_ids: input.assistantIds,
+          p_only_admins_send: Boolean(input.onlyAdminsSend),
+          p_allow_ai_auto_respond: input.allowAiAutoRespond ?? true,
+        });
+        if (error || !conversationId) {
+          const raw = (error?.message || '').toLowerCase();
+          const message = raw.includes('at least one other active group member')
+            ? 'Select at least one other active member.'
+            : raw.includes('active accounts')
+              ? 'One or more selected members are not active.'
+              : raw.includes('enabled ai assistants')
+                ? 'Only your enabled AI assistants can be added.'
+                : 'Group could not be created. Please review your selections and try again.';
+          pushToast(message, 'error');
+          return null;
+        }
+
+        const [conversationResult, groupResult, membersResult, assistantsResult, messagesResult] = await Promise.all([
+          sb.from('conversations').select('*').eq('id', conversationId).maybeSingle(),
+          sb.from('groups').select('*').eq('conversation_id', conversationId).maybeSingle(),
+          sb.from('conversation_members').select('*').eq('conversation_id', conversationId),
+          sb.from('group_assistants').select('*').eq('group_conversation_id', conversationId),
+          sb.from('messages').select('*').eq('conversation_id', conversationId).order('created_at', { ascending: true }),
+        ]);
+        if (
+          conversationResult.error || !conversationResult.data ||
+          groupResult.error || !groupResult.data ||
+          membersResult.error || assistantsResult.error || messagesResult.error
+        ) {
+          pushToast('Group created, but its details could not be loaded. Refresh the page to continue.', 'error');
+          return null;
+        }
+
+        const savedConversation = conversationResult.data as Conversation;
+        setState((prev) => ({
+          ...prev,
+          conversations: [savedConversation, ...prev.conversations.filter((item) => item.id !== savedConversation.id)],
+          groups: [groupResult.data as GroupMetadata, ...prev.groups.filter((item) => item.conversation_id !== conversationId)],
+          conversationMembers: [
+            ...prev.conversationMembers.filter((item) => item.conversation_id !== conversationId),
+            ...(membersResult.data || []) as AdiChatStoreState['conversationMembers'],
+          ],
+          groupAssistants: [
+            ...prev.groupAssistants.filter((item) => item.group_conversation_id !== conversationId),
+            ...(assistantsResult.data || []) as GroupAssistant[],
+          ],
+          messages: [
+            ...prev.messages.filter((item) => item.conversation_id !== conversationId),
+            ...(messagesResult.data || []) as Message[],
+          ],
+        }));
+        pushToast(`Group "${input.name.trim()}" created`, 'success');
+        return savedConversation;
+      }
       const nowIso = new Date().toISOString();
       const convId = `conv-grp-${Date.now().toString(36)}`;
       const uniqueMembers = Array.from(new Set([state.currentUserId, ...input.memberIds]));

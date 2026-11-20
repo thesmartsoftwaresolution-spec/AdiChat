@@ -17,32 +17,43 @@ export const NewGroupDetailsPage: React.FC = () => {
   const location = useLocation();
   const selection = (location.state || {}) as LocationSelectionState;
 
-  const memberIds = selection.memberIds || ['u-ayesha', 'u-hamza'];
-  const assistantIds = selection.assistantIds || ['ai-study-buddy'];
+  const memberIds = selection.memberIds || (import.meta.env.DEV ? ['u-ayesha', 'u-hamza'] : []);
+  const assistantIds = selection.assistantIds || (import.meta.env.DEV ? ['ai-study-buddy'] : []);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [onlyAdminsSend, setOnlyAdminsSend] = useState(false);
   const [allowAiAutoRespond, setAllowAiAutoRespond] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (creating) return;
     const validationError = validateGroupName(name);
     if (validationError) {
       setError(validationError);
       return;
     }
-    const conv = createGroup({
-      name,
-      description,
-      memberIds,
-      assistantIds,
-      onlyAdminsSend,
-      allowAiAutoRespond,
-    });
-    if (conv) {
-      navigate(`/groups/${conv.id}`);
+    if (!memberIds.length) {
+      setError('Select at least one other active member before creating the group.');
+      return;
+    }
+    setError(null);
+    setCreating(true);
+    try {
+      const conv = await createGroup({
+        name,
+        description,
+        memberIds,
+        assistantIds,
+        onlyAdminsSend,
+        allowAiAutoRespond,
+      });
+      if (conv) navigate(`/groups/${conv.id}`);
+      else setError('Group could not be created. Please try again.');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -208,10 +219,11 @@ export const NewGroupDetailsPage: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full h-12 rounded-xl bg-primary text-on-primary text-label-md flex items-center justify-center gap-2 shadow-md"
+          disabled={creating}
+          className="w-full h-12 rounded-xl bg-primary text-on-primary text-label-md flex items-center justify-center gap-2 shadow-md disabled:opacity-60"
         >
-          <span className="material-symbols-outlined text-[20px]">group_add</span>
-          <span>Create Group</span>
+          <span className="material-symbols-outlined text-[20px]">{creating ? 'hourglass_top' : 'group_add'}</span>
+          <span>{creating ? 'Creating...' : 'Create Group'}</span>
         </button>
       </form>
     </MobileStackLayout>
