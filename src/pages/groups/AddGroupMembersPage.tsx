@@ -36,12 +36,12 @@ export const AddGroupMembersPage: React.FC = () => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selected.length === 0) {
       pushToast('Select at least one person to add.', 'error');
       return;
     }
-    const res = addGroupMembers(groupId, selected);
+    const res = await addGroupMembers(groupId, selected);
     if (!res.ok) {
       pushToast(res.error || 'Could not add members', 'error');
       return;

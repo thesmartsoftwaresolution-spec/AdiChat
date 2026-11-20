@@ -271,7 +271,7 @@ export const GroupInfoPage: React.FC = () => {
             </div>
             <ToggleSwitch
               checked={Boolean(ownMember?.muted_until)}
-              onChange={() => toggleGroupMute(groupId)}
+              onChange={() => void toggleGroupMute(groupId)}
               label="Mute group notifications"
             />
           </div>
@@ -287,14 +287,11 @@ export const GroupInfoPage: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
               if (!currentUser) return;
-              const res = removeGroupMember(groupId, currentUser.id);
-              if (!res.ok) {
-                pushToast(res.error || 'Could not leave group', 'error');
-              } else {
-                navigate('/chats');
-              }
+              const res = await removeGroupMember(groupId, currentUser.id);
+              if (!res.ok) pushToast(res.error || 'Could not leave group', 'error');
+              else navigate('/chats');
             }}
             className="w-full flex items-center gap-3 p-4 text-left text-error hover:bg-error-container/20"
           >
@@ -311,9 +308,9 @@ export const GroupInfoPage: React.FC = () => {
         confirmLabel="Remove"
         destructive
         onCancel={() => setConfirmTarget(null)}
-        onConfirm={() => {
+        onConfirm={async () => {
           if (confirmTarget) {
-            const res = removeGroupMember(groupId, confirmTarget);
+            const res = await removeGroupMember(groupId, confirmTarget);
             if (!res.ok) pushToast(res.error || 'Unable to remove member', 'error');
           }
           setConfirmTarget(null);
@@ -328,13 +325,13 @@ export const GroupInfoPage: React.FC = () => {
           aria-label="Edit group details"
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!editName.trim()) {
                 pushToast('Group name is required', 'error');
                 return;
               }
-              const res = updateGroupMeta(groupId, {
+              const res = await updateGroupMeta(groupId, {
                 name: editName.trim(),
                 description: editDesc.trim() || null,
                 only_admins_send: editOnlyAdmins,
@@ -418,9 +415,9 @@ export const GroupInfoPage: React.FC = () => {
           aria-label="Report group"
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              const res = submitReport({
+              const res = await submitReport({
                 targetType: 'group',
                 targetGroupConversationId: groupId,
                 reason: reportReason,

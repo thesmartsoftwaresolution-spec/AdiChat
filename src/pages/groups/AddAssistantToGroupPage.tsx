@@ -30,13 +30,13 @@ export const AddAssistantToGroupPage: React.FC = () => {
     return init;
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload = Object.entries(selections).map(([assistantId, cfg]) => ({
       assistantId,
       enabled: cfg.enabled,
       responseMode: cfg.responseMode,
     }));
-    syncGroupAssistants(groupId, payload);
+    await syncGroupAssistants(groupId, payload);
     navigate(`/groups/${groupId}/info`);
   };
 

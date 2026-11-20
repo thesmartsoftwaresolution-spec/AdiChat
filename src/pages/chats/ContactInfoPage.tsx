@@ -229,8 +229,8 @@ export const ContactInfoPage: React.FC = () => {
         confirmLabel={blocked ? 'Unblock' : 'Block User'}
         destructive={!blocked}
         onCancel={() => setConfirmBlockOpen(false)}
-        onConfirm={() => {
-          toggleBlockUser(contact.id);
+        onConfirm={async () => {
+          await toggleBlockUser(contact.id);
           setConfirmBlockOpen(false);
           pushToast(blocked ? 'Contact unblocked' : 'Contact blocked', 'info');
         }}
@@ -244,9 +244,9 @@ export const ContactInfoPage: React.FC = () => {
           aria-label={`Report ${contact.full_name}`}
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              const res = submitReport({
+              const res = await submitReport({
                 targetType: 'user',
                 targetUserId: contact.id,
                 reason: reportReason,
