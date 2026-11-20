@@ -16,6 +16,7 @@ export const SignUpPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmationNotice, setConfirmationNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const strength = evaluatePasswordStrength(password);
@@ -23,6 +24,7 @@ export const SignUpPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setConfirmationNotice(null);
 
     if (fullName.trim().length < 2) {
       setError('Please enter your full name.');
@@ -52,6 +54,10 @@ export const SignUpPage: React.FC = () => {
       setError(res.error || 'Could not create account.');
       return;
     }
+    if ('requiresEmailVerification' in res && res.requiresEmailVerification) {
+      setConfirmationNotice('Your account has been created. Please verify your email using the link we sent before logging in. Check your inbox and spam folder.');
+      return;
+    }
     navigate('/chats');
   };
 
@@ -76,6 +82,12 @@ export const SignUpPage: React.FC = () => {
           >
             <span className="material-symbols-outlined text-[18px]">error</span>
             <span>{error}</span>
+          </div>
+        )}
+        {confirmationNotice && (
+          <div role="status" className="p-3 rounded-xl bg-primary/10 text-on-surface text-body-sm space-y-2">
+            <p>{confirmationNotice}</p>
+            <Link to="/login" className="inline-flex text-primary font-semibold hover:underline">Go to login</Link>
           </div>
         )}
 
