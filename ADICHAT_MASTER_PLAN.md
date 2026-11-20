@@ -454,3 +454,16 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [ ] GitHub combined status endpoint returned no check statuses for the model migration commits; CI conclusion is not independently verified.
 - [ ] Authenticated end-to-end AI chat test remains pending; no production user session was used in the direct model smoke test.
 - [ ] The Llama 3.3 model does not expose the previous GPT-OSS `reasoning_effort` option. The existing Thinking Mode preference is retained as metadata/configuration only and does not change inference behavior with this model.
+
+
+## Group assistant behavior and character consistency (2026-11-21)
+
+- [x] Direct AI chat now applies the complete saved assistant character profile: name, description, role, scenario, behaviour, personality, tone and custom instructions.
+- [x] Direct and group assistant prompts explicitly avoid unnecessary refusals while preserving platform safety, privacy and security boundaries. Absolute refusal bypass is intentionally not implemented.
+- [x] Roman Urdu remains mandatory for every assistant response.
+- [x] Added authenticated Cloudflare Pages Function `functions/api/ai/group-chat.ts`; it validates the caller session, active profile, group membership, originating user message, group auto-response setting, enabled group assistant membership and rolling quota.
+- [x] Existing `mentioned_only` and `every_message` group response modes now execute in the production message flow. Replies are saved as assistant messages linked to the triggering group message.
+- [x] Added guarded Supabase RPCs `get_group_assistant_context` and `record_group_assistant_response`; they require active group membership, enforce assistant/group membership and AI auto-response settings, preserve the 50 successful replies / rolling 24-hour quota, and avoid duplicate replies to a message.
+- [x] Existing assistants need no profile rewrite or data migration: saved character fields are loaded dynamically for each reply, so all current assistants inherit the updated prompt behavior without overwriting their saved details.
+- [ ] Verify authenticated production group conversation with both response modes, multiple assistants, non-owner group member message, quota boundary, and disabled auto-response setting.
+- [ ] Run current GitHub CI and Cloudflare Pages deployment verification for this change set; no deployment is claimed until verified.
