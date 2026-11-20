@@ -21,6 +21,7 @@ export const CreateAssistantPage: React.FC = () => {
   const [scenario, setScenario] = useState('');
   const [behaviour, setBehaviour] = useState('Friendly, clear, practical and proactive.');
   const [instructions, setInstructions] = useState('');
+  const [customRules, setCustomRules] = useState('');
   const [tone, setTone] = useState('Friendly');
   const [language, setLanguage] = useState('English');
   const [starterPrompts, setStarterPrompts] = useState([
@@ -80,6 +81,7 @@ export const CreateAssistantPage: React.FC = () => {
         behaviour,
         personality: behaviour,
         instructions,
+        custom_rules: customRules.trim() || null,
         tone,
         language,
         avatarFile,
@@ -167,6 +169,11 @@ export const CreateAssistantPage: React.FC = () => {
             </div>
             <p className="text-timestamp text-on-surface-variant mb-1">Define how this assistant should reason, reply and behave.</p>
             <textarea id="ai-instructions" required rows={5} maxLength={12000} value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="You are an encouraging assistant. Break down complex topics into clear steps..." className="w-full p-3.5 rounded-xl bg-surface-container-lowest outline-none text-body-md text-on-surface resize-y" />
+          </div>
+          <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-primary/15 space-y-2">
+            <div className="flex items-center justify-between gap-2"><label htmlFor="ai-custom-rules" className="text-label-md text-on-surface">Custom Rules</label><span className="text-timestamp text-on-surface-variant tabular-nums">{customRules.length} / 12,000</span></div>
+            <p className="text-timestamp text-on-surface-variant">Apne assistant ke liye extra behavior aur response rules likhein. Inhein baad mein Assistant Profile se edit ya clear kar sakte hain.</p>
+            <textarea id="ai-custom-rules" rows={5} maxLength={12000} value={customRules} onChange={(e) => setCustomRules(e.target.value)} placeholder="Is assistant ke liye apne khaas rules likhein..." className="w-full p-3.5 rounded-xl bg-surface-container-low outline-none text-body-md text-on-surface resize-y" />
           </div>
         </section>
 
