@@ -153,6 +153,7 @@ export interface AIAssistant {
   behaviour?: string | null;
   personality: string | null;
   instructions: string;
+  custom_rules?: string | null;
   tone: string | null;
   language: string | null;
   starter_prompts: string[];
