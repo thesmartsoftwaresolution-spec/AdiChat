@@ -22,6 +22,7 @@ export const MessageBubble: React.FC<{
   onRegenerate?: () => void;
   displayBody?: string;
   animateIn?: boolean;
+  onReply?: (message: Message) => void;
 }> = ({
   message,
   isOwn,
@@ -32,6 +33,7 @@ export const MessageBubble: React.FC<{
   onRegenerate,
   displayBody,
   animateIn = false,
+  onReply,
 }) => {
   const [playingVoice, setPlayingVoice] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -135,6 +137,16 @@ export const MessageBubble: React.FC<{
                       {copied ? 'check' : 'content_copy'}
                     </span>
                   </button>
+                  {onReply && (
+                    <button
+                      type="button"
+                      onClick={() => onReply(message)}
+                      className="inline-flex items-center gap-1 h-8 px-2.5 rounded-full text-caption text-on-surface-variant hover:text-primary hover:bg-surface-container"
+                    >
+                      <span className="material-symbols-outlined text-[15px]">reply</span>
+                      <span>Ask about this</span>
+                    </button>
+                  )}
                   {onRegenerate && (
                     <button
                       type="button"
@@ -276,6 +288,16 @@ export const MessageBubble: React.FC<{
             )
           )}
 
+          {onReply && (
+            <button
+              type="button"
+              onClick={() => onReply(message)}
+              className="mt-1 inline-flex items-center gap-1 text-timestamp text-on-surface-variant hover:text-primary"
+            >
+              <span className="material-symbols-outlined text-[14px]">reply</span>
+              <span>Ask about this</span>
+            </button>
+          )}
           <div className="flex items-center justify-end gap-1 mt-1">
             <span className="text-timestamp text-on-surface-variant">
               {formatMessageTime(message.created_at)}

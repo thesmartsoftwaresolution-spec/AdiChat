@@ -21,6 +21,9 @@ export const AIChatPage: React.FC = () => {
   const [lastFailedPrompt, setLastFailedPrompt] = useState<string | null>(null);
   const [animatingMessageId, setAnimatingMessageId] = useState<string | null>(null);
   const [displayedText, setDisplayedText] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [replyToMessage, setReplyToMessage] = useState<(typeof state.messages)[number] | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const conv = useMemo(
@@ -40,8 +43,29 @@ export const AIChatPage: React.FC = () => {
       .sort((a, b) => a.created_at.localeCompare(b.created_at));
   }, [state.messages, conv]);
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const supportedExtensions = new Set([
+      'txt','md','csv','json','log','xml','html','css','js','jsx','ts','tsx','py','sql','sh','yaml','yml',
+    ]);
+    const extension = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!supportedExtensions.has(extension)) {
+      setErrorMsg('Supported files: TXT, MD, CSV, JSON, LOG, XML, HTML, CSS, JS/TS, PY, SQL, SH and YAML.');
+      event.target.value = '';
+      return;
+    }
+    if (file.size < 1 || file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Please choose a file smaller than 5 MB.');
+      event.target.value = '';
+      return;
+    }
+    setErrorMsg(null);
+    setSelectedFile(file);
+  };
+
   const submitPrompt = async (promptText: string) => {
-    const clean = promptText.trim();
+    const clean = promptText.trim() || (selectedFile ? 'Please analyze the attached file and summarize its key points.' : '');
     if (!clean || !assistant || loading) return;
 
     const autoDeep = thinkingMode;
@@ -50,14 +74,22 @@ export const AIChatPage: React.FC = () => {
     setDraft('');
     setLoading(true);
 
-    const res = await sendAiMessage(assistant.id, clean, autoDeep);
+    const res = await sendAiMessage(assistant.id, clean, autoDeep, {
+      file: selectedFile,
+      replyToMessageId: replyToMessage?.id || null,
+    });
     setLoading(false);
     if (!res.ok) {
       setErrorMsg(res.error || 'Could not reach AI service.');
       setLastFailedPrompt(clean);
-    } else if (res.assistantMessageId) {
-      setDisplayedText('');
-      setAnimatingMessageId(res.assistantMessageId);
+    } else {
+      setSelectedFile(null);
+      setReplyToMessage(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (res.assistantMessageId) {
+        setDisplayedText('');
+        setAnimatingMessageId(res.assistantMessageId);
+      }
     }
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
   };
@@ -228,6 +260,7 @@ export const AIChatPage: React.FC = () => {
               senderAssistant={m.sender_assistant_id ? assistant : undefined}
               displayBody={m.id === animatingMessageId ? displayedText : undefined}
               animateIn={m.id === animatingMessageId}
+              onReply={(message) => setReplyToMessage(message)}
               onRegenerate={
                 m.sender_assistant_id
                   ? () => {
@@ -282,13 +315,55 @@ export const AIChatPage: React.FC = () => {
       {/* Fixed Bottom Composer */}
       <footer className="sticky bottom-0 z-30 bg-surface/90 backdrop-blur-xl pb-safe border-t border-outline-variant/20">
         <div className="max-w-4xl mx-auto p-3 md:px-6 space-y-1.5">
+          {replyToMessage && (
+            <div className="mb-2 flex items-start gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 py-2">
+              <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">reply</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-timestamp font-semibold text-primary">
+                  {replyToMessage.sender_assistant_id ? assistant.name : 'You'}
+                </p>
+                <p className="text-caption text-on-surface-variant line-clamp-2 break-words">{replyToMessage.body || 'Attachment'}</p>
+              </div>
+              <button type="button" onClick={() => setReplyToMessage(null)} aria-label="Remove message reference" className="w-7 h-7 rounded-full hover:bg-surface-container flex items-center justify-center">
+                <span className="material-symbols-outlined text-[15px]">close</span>
+              </button>
+            </div>
+          )}
+          {selectedFile && (
+            <div className="mb-2 flex items-center gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 py-2">
+              <span className="material-symbols-outlined text-[18px] text-primary">description</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-caption font-semibold text-on-surface truncate">{selectedFile.name}</p>
+                <p className="text-timestamp text-on-surface-variant">{(selectedFile.size / 1024).toFixed(0)} KB · Private attachment</p>
+              </div>
+              <button type="button" onClick={() => { setSelectedFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} aria-label="Remove attachment" className="w-7 h-7 rounded-full hover:bg-surface-container flex items-center justify-center">
+                <span className="material-symbols-outlined text-[15px]">close</span>
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               void submitPrompt(draft);
             }}
-            className="flex items-center gap-1.5 bg-surface-container-lowest rounded-2xl p-1.5 shadow-md"
+            className="flex items-center gap-1 bg-surface-container-lowest rounded-2xl p-1.5 shadow-md"
           >
+            <button
+              type="button"
+              aria-label="Attach a text document"
+              title="Attach a text document (up to 5 MB)"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container shrink-0"
+            >
+              <span className="material-symbols-outlined text-[18px]">attach_file</span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".txt,.md,.csv,.json,.log,.xml,.html,.css,.js,.jsx,.ts,.tsx,.py,.sql,.sh,.yaml,.yml"
+              onChange={handleFileChange}
+              className="sr-only"
+            />
             <button
               type="button"
               aria-label="Toggle Thinking Mode"
@@ -300,7 +375,7 @@ export const AIChatPage: React.FC = () => {
               }`}
               title="Toggle High Thinking Mode (@cf/openai/gpt-oss-20b)"
             >
-              <span className="material-symbols-outlined text-[20px]">psychology</span>
+              <span className="material-symbols-outlined text-[18px]">psychology</span>
             </button>
             <input
               type="text"
@@ -308,13 +383,13 @@ export const AIChatPage: React.FC = () => {
               onChange={(e) => setDraft(e.target.value)}
               placeholder={`Ask ${assistant.name} anything...`}
               aria-label="AI prompt input"
-              className="flex-1 min-w-0 bg-transparent outline-none px-2 text-body-md text-on-surface placeholder:text-outline"
+              className="flex-1 min-w-0 bg-transparent outline-none px-1.5 text-body-md text-on-surface placeholder:text-outline"
             />
             <button
               type="submit"
               disabled={loading || !draft.trim()}
               aria-label="Send prompt"
-              className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 disabled:opacity-50"
+              className="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-[20px]">send</span>
             </button>
