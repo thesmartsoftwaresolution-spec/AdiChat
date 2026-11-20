@@ -49,7 +49,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - Database, authentication, storage, realtime: Supabase.
 - Hosting: existing Cloudflare Pages project.
 - Application AI: Cloudflare Workers AI through a server-side Pages Function.
-- Current AI model configured: `@cf/openai/gpt-oss-20b` via binding `AI`; configured model is a Cloudflare-hosted Workers AI model, not an OpenAI API integration.
+- Current AI model configured: `@cf/meta/llama-3.3-70b-instruct-fp8-fast` via binding `AI`; configured model is a Cloudflare-hosted Workers AI model, not an OpenAI API integration.
 - Never expose service-role credentials; server-side AI route uses user JWT and public publishable key with database permission checks.
 
 ## 4. Current production and implementation snapshot
@@ -59,7 +59,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Existing Cloudflare Pages project `adichat` retained.
 - [x] Production URL remains `https://adichat.pages.dev`.
 - [x] Production AI binding `AI` configured.
-- [x] Model ID `@cf/openai/gpt-oss-20b` configured.
+- [x] Model ID `@cf/meta/llama-3.3-70b-instruct-fp8-fast` configured.
 - [x] Server-side `functions/api/ai/chat.ts` deployed; origin, JWT, active profile, assistant visibility, conversation membership, quota, and persistence checks implemented.
 - [x] Wrangler Pages configuration committed.
 - [x] Latest deployment previously verified successful at immutable URL `https://6c461022.adichat.pages.dev`, commit `828ad0c16a90c990856261180364741af62118d4`. **Re-check current deployment after later commits.**
@@ -413,7 +413,7 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [x] Removed all in-chat and footer Thinking Mode toggles/status. The assistant's High Thinking default remains configurable only from its Edit Assistant settings; the chat uses that saved preference.
 - [x] Added natural conversational style guidance to the server-side persona prompt while preserving the assistant's configured Role, Scenario, Behaviour, Tone, Language and Custom Instructions. Safety boundaries and hidden-reasoning protection remain in place.
 - [x] Improved Workers AI error diagnostics: logs now include a stable request ID, model ID, error name and bounded diagnostic message; client response includes the request ID without exposing internal provider details.
-- [x] Confirmed the existing Cloudflare-hosted model @cf/openai/gpt-oss-20b can answer a direct Workers AI API smoke request. No model migration or provider change was necessary.
+- [x] Previous model @cf/openai/gpt-oss-20b direct API smoke test succeeded before the model change; this is historical verification only.
 - [x] GitHub Actions run 44793771866 passed: dependency install, TypeScript check, unit tests and production Vite build.
 - [x] Existing Cloudflare Pages project adichat successfully deployed commit c1d2abf3c87b5808496a012241703204fb1e383b as deployment 8f340ace-6747-4372-b398-d0042023fa6f. Existing production domain and bindings remain unchanged.
 - [x] Changed files: src/app/providers/AppStateProvider.tsx, src/App.tsx, src/pages/assistants/AIChatPage.tsx, functions/api/ai/chat.ts.
@@ -443,3 +443,13 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [ ] Verify actual assistant response language and persona behavior with a signed-in AI conversation; no user password or session token was requested.
 - [ ] Confirm production alias after the latest documentation-triggered deployment.
 
+
+## Latest maintenance update — Llama 3.3 70B chat model (2026-11-21)
+
+- [x] Owner requested the Cloudflare Workers AI model `@cf/meta/llama-3.3-70b-instruct-fp8-fast` for AdiChat AI assistant chat.
+- [x] `functions/api/ai/chat.ts`: server-side model allowlist/default updated to Llama 3.3 70B; removed the previous model-specific `reasoning_effort` argument, which is not part of this model's documented chat input.
+- [x] `wrangler.jsonc`: `AI_MODEL_ID` updated to the same model ID. Existing `AI` binding, Pages project, and hosting remain unchanged.
+- [x] Direct Cloudflare Workers AI API smoke test passed for the requested model; sample Roman Urdu prompt returned a valid Roman Urdu response.
+- [ ] Run GitHub CI and verify the new Pages deployment build/deploy.
+- [ ] Authenticated end-to-end AI chat test remains pending; no production user session was used in the direct model smoke test.
+- [ ] The Llama 3.3 model does not expose the previous GPT-OSS `reasoning_effort` option. The existing Thinking Mode preference is retained as metadata/configuration only and does not change inference behavior with this model.
