@@ -164,6 +164,7 @@ interface AppStateContextValue {
     behaviour: string;
     personality: string;
     instructions: string;
+    custom_rules?: string | null;
     tone: string;
     language: string;
     starter_prompts: string[];
