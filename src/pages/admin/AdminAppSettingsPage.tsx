@@ -13,6 +13,7 @@ export const AdminAppSettingsPage: React.FC = () => {
     'feature_groups_enabled',
     'feature_voice_notes_enabled',
     'feature_ai_enabled',
+    'feature_reactions_enabled',
     'maintenance_mode',
   ];
 
@@ -36,7 +37,7 @@ export const AdminAppSettingsPage: React.FC = () => {
 
   const getSetting = (key: string) => state.appSettings.find((s) => s.key === key);
 
-  const handleSaveSetting = (key: string) => {
+  const handleSaveSetting = async (key: string) => {
     const raw = (drafts[key] ?? '').trim();
     if (numericKeys.has(key)) {
       const parsed = Number(raw);
@@ -44,15 +45,14 @@ export const AdminAppSettingsPage: React.FC = () => {
         pushToast(`Please enter a valid positive number for ${key}`, 'error');
         return;
       }
-      adminUpdateAppSetting(key, Math.floor(parsed));
+      await adminUpdateAppSetting(key, Math.floor(parsed));
     } else {
       if (!raw) {
         pushToast(`${key} cannot be empty`, 'error');
         return;
       }
-      adminUpdateAppSetting(key, raw);
+      await adminUpdateAppSetting(key, raw);
     }
-    pushToast(`Saved ${key}`, 'success');
   };
 
   return (
@@ -107,7 +107,7 @@ export const AdminAppSettingsPage: React.FC = () => {
 
                   {isModelBinding ? (
                     <span className="px-3 py-1.5 rounded-xl bg-surface-container-low text-caption font-mono text-primary self-start sm:self-center shrink-0">
-                      PENDING_OWNER_MODEL_SELECTION
+                      @cf/openai/gpt-oss-20b · managed by Cloudflare
                     </span>
                   ) : (
                     <div className="flex items-center gap-2 shrink-0">

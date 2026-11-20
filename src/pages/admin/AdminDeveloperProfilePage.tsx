@@ -42,9 +42,9 @@ export const AdminDeveloperProfilePage: React.FC = () => {
     e.target.value = '';
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    adminUpdateDeveloperProfile({
+    await adminUpdateDeveloperProfile({
       name: name.trim() || 'Adeel Bhatti',
       subtitle: subtitle.trim(),
       bio: bio.trim() || null,
