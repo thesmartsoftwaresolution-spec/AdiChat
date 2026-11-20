@@ -1839,6 +1839,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       behaviour: string;
       personality: string;
       instructions: string;
+      custom_rules?: string | null;
       tone: string;
       language: string;
       starter_prompts: string[];
@@ -1888,6 +1889,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           behaviour: input.behaviour.trim() || null,
           personality: input.behaviour.trim() || input.personality.trim() || null,
           instructions: input.instructions.trim(),
+          custom_rules: input.custom_rules?.trim() || null,
           tone: input.tone.trim() || 'Helpful',
           language: input.language.trim() || 'English',
           starter_prompts: input.starter_prompts.filter(Boolean),
@@ -1922,6 +1924,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         behaviour: input.behaviour.trim() || null,
         personality: input.behaviour.trim() || input.personality.trim() || null,
         instructions: input.instructions.trim(),
+        custom_rules: input.custom_rules?.trim() || null,
         tone: input.tone.trim() || 'Helpful',
         language: input.language.trim() || 'English',
         starter_prompts: input.starter_prompts.filter(Boolean),
