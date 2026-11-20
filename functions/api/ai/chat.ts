@@ -187,7 +187,11 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
       max_tokens: 1024,
       reasoning_effort: body.thinkingMode === false ? 'low' : 'high',
     });
-    const text = (result.response || '').trim();
+    const completion = result as {
+      response?: string;
+      choices?: Array<{ message?: { content?: string | null; reasoning_content?: string | null } }>;
+    };
+    const text = (completion.response || completion.choices?.[0]?.message?.content || '').trim();
     if (!text) throw new Error('Model returned an empty response.');
 
     const latencyMs = Date.now() - startedAt;
