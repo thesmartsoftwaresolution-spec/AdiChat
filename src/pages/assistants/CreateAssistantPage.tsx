@@ -20,8 +20,9 @@ export const CreateAssistantPage: React.FC = () => {
   );
   const [thinkingDefault, setThinkingDefault] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErr = validateAssistantInput({ name, instructions });
     if (validationErr) {
@@ -29,7 +30,8 @@ export const CreateAssistantPage: React.FC = () => {
       return;
     }
 
-    const created = createAssistant({
+    setSaving(true);
+    const created = await createAssistant({
       name,
       description,
       personality,
@@ -42,9 +44,12 @@ export const CreateAssistantPage: React.FC = () => {
         .filter(Boolean),
       thinking_enabled_default: thinkingDefault,
     });
+    setSaving(false);
 
     if (created) {
       navigate(`/assistants/${created.id}/chat`);
+    } else {
+      setError('Assistant save nahi ho saka. Apni session aur connection check karke dobara koshish karein.');
     }
   };
 
@@ -178,7 +183,7 @@ export const CreateAssistantPage: React.FC = () => {
                 Default to High Thinking Mode
               </p>
               <p className="text-caption text-on-surface-variant">
-                Uses Gemini 4 Hydrogen (ThinkingLevel.HIGH) for complex queries
+                Uses Cloudflare Workers AI GPT-OSS 20B with High Reasoning for complex queries
               </p>
             </div>
             <ToggleSwitch
@@ -191,10 +196,11 @@ export const CreateAssistantPage: React.FC = () => {
 
         <button
           type="submit"
+          disabled={saving}
           className="w-full h-12 rounded-xl bg-primary text-on-primary text-label-md flex items-center justify-center gap-2 shadow-md"
         >
           <span className="material-symbols-outlined text-[20px]">check</span>
-          <span>Save &amp; Open Chat</span>
+          <span>{saving ? 'Saving...' : 'Save &amp; Open Chat'}</span>
         </button>
       </form>
     </MobileStackLayout>
