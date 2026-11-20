@@ -2024,14 +2024,14 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return { ok: false, error: conversationError?.message || 'Unable to open assistant conversation.' };
         }
 
+        let attachment: {
+          bucketId: 'chat-attachments';
+          objectPath: string;
+          fileName: string;
+          mimeType: string;
+          fileSizeBytes: number;
+        } | null = null;
         try {
-          let attachment: {
-            bucketId: 'chat-attachments';
-            objectPath: string;
-            fileName: string;
-            mimeType: string;
-            fileSizeBytes: number;
-          } | null = null;
           const file = options?.file || null;
           if (file) {
             const extension = file.name.split('.').pop()?.toLowerCase() || '';
@@ -2409,7 +2409,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (isTargetSuper) return { ok: false, error: 'Super Admin account cannot be deleted.' };
       if (!IS_DEMO_MODE) {
         const error = 'Permanent user deletion is disabled in production to protect account history. Use suspend or ban instead.';
-        pushToast(error, 'warning');
+        pushToast(error, 'info');
         return { ok: false, error };
       }
       setState((prev) => ({
@@ -2470,7 +2470,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     (groupId: string) => {
       if (!isAdmin) return;
       if (!IS_DEMO_MODE) {
-        pushToast('Permanent group deletion is disabled in production to preserve messages and audit history.', 'warning');
+        pushToast('Permanent group deletion is disabled in production to preserve messages and audit history.', 'info');
         return;
       }
       setState((prev) => ({
@@ -2529,7 +2529,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     (assistantId: string) => {
       if (!isAdmin) return;
       if (!IS_DEMO_MODE) {
-        pushToast('Permanent assistant deletion is disabled in production. Disable the assistant instead.', 'warning');
+        pushToast('Permanent assistant deletion is disabled in production. Disable the assistant instead.', 'info');
         return;
       }
       setState((prev) => ({
@@ -2632,7 +2632,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const safeUpdates: Record<string, unknown> = { ...updates };
         if (typeof safeUpdates.photo_path === 'string' && safeUpdates.photo_path.startsWith('data:')) {
           delete safeUpdates.photo_path;
-          pushToast('Developer photo upload is not available yet; other profile fields will still be saved.', 'warning');
+          pushToast('Developer photo upload is not available yet; other profile fields will still be saved.', 'info');
         }
         if (!Object.keys(safeUpdates).length) return false;
         const { data, error } = await sb.rpc('admin_update_developer_profile', { p_updates: safeUpdates });
