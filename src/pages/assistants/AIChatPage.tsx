@@ -41,6 +41,18 @@ export const AIChatPage: React.FC = () => {
       .sort((a, b) => a.created_at.localeCompare(b.created_at));
   }, [state.messages, conv]);
 
+  // Scroll when a new message arrives or the active assistant conversation changes.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [conv?.id, messages.length]);
+
+  // Follow the assistant's progressively revealed response without repeated smooth-scroll animation.
+  useEffect(() => {
+    if (animatingMessageId) {
+      bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }
+  }, [animatingMessageId, displayedText]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -89,7 +101,6 @@ export const AIChatPage: React.FC = () => {
         setAnimatingMessageId(res.assistantMessageId);
       }
     }
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
   };
 
   useEffect(() => {
