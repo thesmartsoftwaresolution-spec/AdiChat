@@ -18,7 +18,7 @@ export const AdminAssistantsPage: React.FC = () => {
               Platform AI Runtime Boundary
             </p>
             <p className="text-caption text-on-surface-variant">
-              Server Thinking Mode: <strong>gemini-4-hydrogen (HIGH)</strong> • Cloudflare Workers AI
+              Server Thinking Mode: <strong>@cf/openai/gpt-oss-20b (HIGH)</strong> • Cloudflare Workers AI
               model: <strong>Pending owner selection</strong>
             </p>
           </div>
@@ -71,7 +71,7 @@ export const AdminAssistantsPage: React.FC = () => {
                   </button>
                   <ToggleSwitch
                     checked={a.is_enabled}
-                    onChange={(enabled) => adminToggleAssistant(a.id, enabled)}
+                    onChange={(enabled) => void adminToggleAssistant(a.id, enabled)}
                     label={`Enable ${a.name}`}
                   />
                 </div>
@@ -84,7 +84,7 @@ export const AdminAssistantsPage: React.FC = () => {
       <ConfirmDialog
         open={Boolean(confirmDeleteId)}
         title="Delete AI Assistant?"
-        description="This removes the assistant and unbinds it from any groups. The action is recorded in the audit log."
+        description="Permanent deletion is disabled in production to preserve assistant history. Use the enable switch to disable an assistant instead."
         confirmLabel="Delete Assistant"
         destructive
         onCancel={() => setConfirmDeleteId(null)}

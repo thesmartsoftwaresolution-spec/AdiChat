@@ -110,13 +110,13 @@ export const AdminGroupsPage: React.FC = () => {
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (!renameDraft.trim()) {
                   pushToast('Group name cannot be empty', 'error');
                   return;
                 }
-                const res = updateGroupMeta(managedGroup.conversation_id, {
+                const res = await updateGroupMeta(managedGroup.conversation_id, {
                   name: renameDraft.trim(),
                 });
                 if (!res.ok) pushToast(res.error || 'Rename failed', 'error');
@@ -163,8 +163,8 @@ export const AdminGroupsPage: React.FC = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => {
-                        const res = removeGroupMember(managedGroup.conversation_id, prof.id);
+                      onClick={async () => {
+                        const res = await removeGroupMember(managedGroup.conversation_id, prof.id);
                         if (!res.ok) pushToast(res.error || 'Unable to remove member', 'error');
                       }}
                       className="h-8 px-2.5 rounded-lg bg-error-container text-on-error-container text-caption font-semibold"
