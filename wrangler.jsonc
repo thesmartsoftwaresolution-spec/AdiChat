@@ -7,7 +7,7 @@
     "binding": "AI"
   },
   "vars": {
-    "AI_MODEL_ID": "@cf/openai/gpt-oss-20b",
+    "AI_MODEL_ID": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     "SUPABASE_URL": "https://qqaxxpjzkbhofjlmbvrf.supabase.co",
     "SUPABASE_ANON_KEY": "sb_publishable_RznOywvm6GemXs1eDH_IHw_5jRXSQux",
     "VITE_SUPABASE_URL": "https://qqaxxpjzkbhofjlmbvrf.supabase.co",
