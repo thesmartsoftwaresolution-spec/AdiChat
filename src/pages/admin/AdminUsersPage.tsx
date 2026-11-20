@@ -73,8 +73,8 @@ export const AdminUsersPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  adminBulkUpdateUserStatus(selectedIds, 'suspended', 'Bulk suspend from Admin Users');
+                onClick={async () => {
+                  await adminBulkUpdateUserStatus(selectedIds, 'suspended', 'Bulk suspend from Admin Users');
                   setSelectedIds([]);
                 }}
                 className="h-9 px-3 rounded-xl bg-error-container text-on-error-container text-label-sm font-semibold"
@@ -83,8 +83,8 @@ export const AdminUsersPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  adminBulkUpdateUserStatus(selectedIds, 'active', 'Bulk reactivate from Admin Users');
+                onClick={async () => {
+                  await adminBulkUpdateUserStatus(selectedIds, 'active', 'Bulk reactivate from Admin Users');
                   setSelectedIds([]);
                 }}
                 className="h-9 px-3 rounded-xl bg-primary text-on-primary text-label-sm font-semibold"
@@ -166,13 +166,11 @@ export const AdminUsersPage: React.FC = () => {
                   {selectable && (
                     <button
                       type="button"
-                      onClick={() =>
-                        adminUpdateUserStatus(
-                          u.id,
-                          u.status === 'active' ? 'suspended' : 'active',
-                          'Toggled from Admin Users directory'
-                        )
-                      }
+                      onClick={() => void adminUpdateUserStatus(
+                        u.id,
+                        u.status === 'active' ? 'suspended' : 'active',
+                        'Toggled from Admin Users directory'
+                      )}
                       className="h-9 px-3 rounded-xl bg-surface-container-low text-on-surface text-label-sm hover:bg-surface-container"
                     >
                       {u.status === 'active' ? 'Suspend' : 'Reactivate'}

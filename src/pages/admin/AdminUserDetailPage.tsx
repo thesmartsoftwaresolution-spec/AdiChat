@@ -80,7 +80,7 @@ export const AdminUserDetailPage: React.FC = () => {
                 key={st}
                 type="button"
                 disabled={userRole === 'super_admin' && st !== 'active'}
-                onClick={() => adminUpdateUserStatus(user.id, st, 'Updated from User Detail')}
+                onClick={() => void adminUpdateUserStatus(user.id, st, 'Updated from User Detail')}
                 className={`h-10 px-4 rounded-xl text-label-sm font-semibold capitalize ${
                   user.status === st
                     ? 'bg-primary text-on-primary'
@@ -95,6 +95,8 @@ export const AdminUserDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setConfirmDeleteOpen(true)}
+                disabled={!import.meta.env.DEV}
+                title={!import.meta.env.DEV ? 'Permanent deletion is disabled in production.' : undefined}
                 className="h-10 px-4 rounded-xl bg-error-container text-on-error-container text-label-sm font-semibold ml-auto"
               >
                 Delete User
@@ -106,12 +108,12 @@ export const AdminUserDetailPage: React.FC = () => {
             <div className="pt-3 border-t border-outline-variant/20 space-y-2">
               <p className="text-label-md text-on-surface">Role Assignment (Super Admin only)</p>
               <div className="flex flex-wrap gap-2">
-                {(['user', 'admin'] as AppRole[]).map((r) => (
+                {(['user', 'admin', 'super_admin'] as AppRole[]).map((r) => (
                   <button
                     key={r}
                     type="button"
-                    onClick={() => {
-                      const res = adminSetUserRole(user.id, r);
+                    onClick={async () => {
+                      const res = await adminSetUserRole(user.id, r);
                       if (!res.ok) pushToast(res.error || 'Role update failed', 'error');
                     }}
                     className={`h-9 px-4 rounded-xl text-label-sm font-semibold uppercase ${
