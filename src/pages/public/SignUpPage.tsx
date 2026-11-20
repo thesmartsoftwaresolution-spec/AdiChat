@@ -218,7 +218,7 @@ export const SignUpPage: React.FC = () => {
 
         <div className="p-3.5 rounded-xl bg-surface-container-low flex items-center gap-3">
           <div className="relative w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-[22px]">smart_toy</span>
+            <span className="material-symbols-outlined text-[20px]">smart_toy</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">

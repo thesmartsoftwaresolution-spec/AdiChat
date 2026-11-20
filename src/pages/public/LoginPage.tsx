@@ -55,7 +55,7 @@ export const LoginPage: React.FC = () => {
       <div className="max-w-md w-full mx-auto px-margin-mobile py-8 space-y-6">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center mx-auto shadow-sm">
-            <span className="material-symbols-outlined text-[24px]">forum</span>
+            <span className="material-symbols-outlined text-[20px]">forum</span>
           </div>
           <h2 className="text-headline-lg text-on-surface">Welcome back</h2>
           <p className="text-body-sm text-on-surface-variant">

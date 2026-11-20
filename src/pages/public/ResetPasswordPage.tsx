@@ -139,7 +139,7 @@ export const ResetPasswordPage: React.FC = () => {
         {updated && (
           <div className="p-4 rounded-2xl bg-secondary-container/40 space-y-3">
             <div className="flex items-start gap-2.5">
-              <span className="material-symbols-outlined text-primary text-[22px]">check_circle</span>
+              <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
               <div>
                 <p className="text-label-md text-on-surface">Password updated successfully!</p>
                 <p className="text-body-sm text-on-surface-variant">

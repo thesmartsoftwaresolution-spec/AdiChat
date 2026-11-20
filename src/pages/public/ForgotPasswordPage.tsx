@@ -40,7 +40,7 @@ export const ForgotPasswordPage: React.FC = () => {
         {submitted ? (
           <div className="p-4 rounded-2xl bg-secondary-container/40 space-y-3">
             <div className="flex items-start gap-2.5">
-              <span className="material-symbols-outlined text-primary text-[22px]">mark_email_read</span>
+              <span className="material-symbols-outlined text-primary text-[20px]">mark_email_read</span>
               <div>
                 <p className="text-label-md text-on-surface">Check your inbox</p>
                 <p className="text-body-sm text-on-surface-variant mt-0.5">
