@@ -3,7 +3,7 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
-**Last verified main commit:** `4c2967264dac30d4a7f2edb5a7afc9b3e07a4151`  
+**Last verified main commit before this plan update:** `3b7fba9f2acac36568ffd3010534d3a7a0e9bea5`  
 **Last verified Cloudflare deployment:** `a94f0dce-ac89-4227-a20f-59fcfb5b6836` — build/deploy success; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
@@ -39,7 +39,7 @@ Read these project specifications from the owner-provided archive / repository c
 - `05_Backend_Schema.md`
 - `06_Implementation_Plan.md`
 
-Google Stitch screens are the visual source of truth. The supplied archive was titled **35 Mobile Light Screens**. Some specifications describe 35 screens and 140 HTML variants; inspect the actual archive and reconcile this discrepancy before claiming all variants have been implemented.
+Google Stitch screens are the visual source of truth. The supplied archive was inspected: it contains exactly **35 HTML screens + 35 matching PNG screenshots** (70 files total), consistent with the title **35 Mobile Light Screens**. The TRD/implementation docs claim 140 variants (mobile/desktop × light/dark); those additional 105 design variants are not present in the supplied archive. Do not claim 140 variants are available or implemented; record this as a source-asset gap and use the 35 supplied mobile-light designs as the current visual baseline until the owner supplies additional variants or confirms a derived responsive/theme strategy.
 
 The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main` is the source of truth for application code. Supabase project `qqaxxpjzkbhofjlmbvrf` is the source of truth for the live database. Existing Cloudflare Pages project `adichat` and `https://adichat.pages.dev` are the source of truth for hosting.
 
@@ -118,6 +118,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
 - [x] Verified `authenticated` can SELECT the user's own active profile under RLS; verified `anon` still cannot SELECT `public.profiles`; RLS remains enabled.
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
+- [x] Under an authenticated-role test context for this exact user, database helpers return `is_admin() = true` and `is_super_admin() = true`.
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.
 - [x] Latest Cloudflare production deployment for commit `4c2967264dac30d4a7f2edb5a7afc9b3e07a4151` finished successfully; production alias/domain unchanged.
 - [ ] Owner login/session/admin browser test (password is private and must never be requested).
