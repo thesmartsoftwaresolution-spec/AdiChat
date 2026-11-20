@@ -430,8 +430,14 @@ alter table public.bootstrap_state enable row level security;
 -- 6. Explicit RLS Policies (All 18 Tables)
 
 -- profiles
-create policy "profiles_select_authenticated" on public.profiles
-  for select to authenticated using (true);
+create policy "profiles_select_own_or_admin" on public.profiles
+  for select to authenticated using (id = auth.uid() or public.is_admin());
+
+-- Safe directory projection; never expose private profile columns through the base table.
+create or replace view public.profile_directory with (security_invoker = false) as
+select id, full_name, avatar_path, about, title, is_online, last_seen_at
+from public.profiles
+where status = 'active';
 create policy "profiles_update_own" on public.profiles
   for update to authenticated
   using (id = auth.uid() and public.is_active_account())
@@ -463,10 +469,10 @@ create policy "conversations_admin_delete" on public.conversations
 create policy "conversation_members_select" on public.conversation_members
   for select to authenticated
   using (user_id = auth.uid() or public.is_conversation_member(conversation_id) or public.is_admin());
-create policy "conversation_members_update_own" on public.conversation_members
+create policy "conversation_members_update_own_preferences" on public.conversation_members
   for update to authenticated
-  using (user_id = auth.uid() or public.is_group_admin(conversation_id))
-  with check (user_id = auth.uid() or public.is_group_admin(conversation_id));
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
 
 -- groups
 create policy "groups_member_or_admin_select" on public.groups
@@ -504,7 +510,14 @@ create policy "message_receipts_select" on public.message_receipts
   );
 create policy "message_receipts_upsert_own" on public.message_receipts
   for insert to authenticated
-  with check (user_id = auth.uid());
+  with check (
+    user_id = auth.uid()
+    and exists (
+      select 1 from public.messages m
+      where m.id = message_id
+        and public.is_conversation_member(m.conversation_id)
+    )
+  );
 create policy "message_receipts_update_own" on public.message_receipts
   for update to authenticated
   using (user_id = auth.uid())
@@ -519,6 +532,12 @@ create policy "attachments_member_insert" on public.attachments
     public.is_active_account()
     and public.is_conversation_member(conversation_id)
     and uploaded_by = auth.uid()
+    and exists (
+      select 1 from public.messages m
+      where m.id = message_id
+        and m.conversation_id = attachments.conversation_id
+        and m.sender_user_id = auth.uid()
+    )
   );
 create policy "attachments_owner_or_admin_delete" on public.attachments
   for delete to authenticated
@@ -561,7 +580,9 @@ create policy "group_assistants_group_admin_insert" on public.group_assistants
     )
   );
 create policy "group_assistants_group_admin_update" on public.group_assistants
-  for update to authenticated using (public.is_group_admin(group_conversation_id) or public.is_admin());
+  for update to authenticated
+  using (public.is_group_admin(group_conversation_id) or public.is_admin())
+  with check (public.is_group_admin(group_conversation_id) or public.is_admin());
 create policy "group_assistants_group_admin_delete" on public.group_assistants
   for delete to authenticated using (public.is_group_admin(group_conversation_id) or public.is_admin());
 
@@ -1027,3 +1048,44 @@ begin
   );
 end;
 $$;
+
+
+-- 9. Explicit API grants and column-level mutation boundaries
+revoke all on all tables in schema public from anon;
+grant select on public.developer_profile, public.announcements to anon;
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on public.profile_directory to authenticated;
+
+-- Profiles: users can update only safe self-service columns.
+revoke all on public.profiles from anon;
+revoke update on public.profiles from authenticated;
+grant update (full_name, avatar_path, about, title, theme_preference, last_seen_at, is_online)
+  on public.profiles to authenticated;
+
+-- Membership role changes are trusted RPC operations, never direct row updates.
+revoke update on public.conversation_members from authenticated;
+grant update (last_read_at, muted_until) on public.conversation_members to authenticated;
+
+-- Message identity, ownership, routing and delivery fields are immutable to clients.
+revoke update on public.messages from authenticated;
+grant update (body, metadata, edited_at, deleted_at) on public.messages to authenticated;
+
+-- Public helper functions are read-only authorization predicates.
+revoke execute on all functions in schema public from public;
+grant execute on function public.get_user_role() to anon, authenticated;
+grant execute on function public.is_admin() to anon, authenticated;
+grant execute on function public.is_super_admin() to anon, authenticated;
+grant execute on function public.is_conversation_member(uuid) to anon, authenticated;
+grant execute on function public.is_group_admin(uuid) to anon, authenticated;
+grant execute on function public.is_active_account() to anon, authenticated;
+
+-- Authenticated users may call guarded RPCs; trigger functions remain non-callable directly.
+grant execute on function public.create_direct_conversation(uuid) to authenticated;
+grant execute on function public.create_group(text, text, uuid[]) to authenticated;
+grant execute on function public.add_group_members(uuid, uuid[]) to authenticated;
+grant execute on function public.remove_group_member(uuid, uuid) to authenticated;
+grant execute on function public.set_message_read(uuid, uuid) to authenticated;
+grant execute on function public.admin_update_user_status(uuid, public.user_status, text) to authenticated;
+grant execute on function public.admin_resolve_report(uuid, public.report_status, text) to authenticated;
+grant execute on function public.admin_update_app_settings(text, jsonb) to authenticated;
