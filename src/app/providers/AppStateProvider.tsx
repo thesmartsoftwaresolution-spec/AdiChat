@@ -27,9 +27,48 @@ import { buildDirectPairKey, resolveTriggeredGroupAssistants, shouldRecommendThi
 import { canRemoveGroupMember, hasAdminAccess, isGroupAdmin, isSuperAdmin } from '../../utils/permissions';
 
 const STORAGE_KEY = 'adichat_workspace_state_v1';
+const IS_DEMO_MODE = import.meta.env.DEV;
+
+function createEmptyProductionState(): AdiChatStoreState {
+  return {
+    ...SEED_DATA,
+    profiles: [],
+    userRoles: [],
+    userSettings: {},
+    conversations: [],
+    conversationMembers: [],
+    groups: [],
+    messages: [],
+    attachments: [],
+    assistants: [],
+    groupAssistants: [],
+    assistantUsage: [],
+    reports: [],
+    developerProfile: {
+      id: 1,
+      name: '',
+      subtitle: '',
+      bio: null,
+      why_built: null,
+      photo_path: null,
+      email_url: null,
+      whatsapp_url: null,
+      github_url: null,
+      linkedin_url: null,
+      is_visible: false,
+      updated_by: null,
+      updated_at: new Date(0).toISOString(),
+    },
+    appSettings: [],
+    announcements: [],
+    auditLogs: [],
+    userBlocks: [],
+    currentUserId: null,
+  };
+}
 
 function loadInitialState(): AdiChatStoreState {
-  if (typeof window === 'undefined') return SEED_DATA;
+  if (!IS_DEMO_MODE || typeof window === 'undefined') return createEmptyProductionState();
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -162,6 +201,14 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   useEffect(() => {
+    if (!IS_DEMO_MODE) {
+      try {
+        window.localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        // Ignore storage access errors
+      }
+      return;
+    }
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
@@ -169,14 +216,70 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [state]);
 
-  // Handle ?autostart=1 for instant demo session boot when testing authenticated shells
+  // Demo-only shortcut: never create a production session from a query parameter.
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!IS_DEMO_MODE || typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('autostart') === '1' && !state.currentUserId) {
       setState((prev) => ({ ...prev, currentUserId: 'u-adeel' }));
     }
   }, [state.currentUserId]);
+
+  // Restore and synchronize the real Supabase identity; local seed identities are dev-only.
+  useEffect(() => {
+    const sb = getSupabaseClient();
+    if (!sb) return;
+    let active = true;
+
+    const hydrateIdentity = async (user: { id: string; email?: string | null } | null) => {
+      if (!user) {
+        if (active) setState((prev) => ({ ...prev, currentUserId: null }));
+        return;
+      }
+
+      const [profileResult, rolesResult] = await Promise.all([
+        sb.from('profiles')
+          .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
+          .eq('id', user.id)
+          .maybeSingle(),
+        sb.from('user_roles').select('role').eq('user_id', user.id),
+      ]);
+
+      if (!active) return;
+      if (profileResult.error || !profileResult.data || rolesResult.error) {
+        setState((prev) => ({ ...prev, currentUserId: null }));
+        return;
+      }
+
+      const profile = { ...profileResult.data, email: user.email ?? null } as Profile;
+      const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
+      setState((prev) => ({
+        ...prev,
+        currentUserId: user.id,
+        profiles: [profile, ...prev.profiles.filter((item) => item.id !== user.id)],
+        userRoles: [
+          ...prev.userRoles.filter((item) => item.user_id !== user.id),
+          ...roles.map((role, index) => ({
+            id: `auth-role-${user.id}-${index}`,
+            user_id: user.id,
+            role,
+            granted_by: null,
+            created_at: profile.created_at,
+          })),
+        ],
+      }));
+    };
+
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
+      void Promise.resolve().then(() => hydrateIdentity(session?.user ?? null));
+    });
+    void sb.auth.getSession().then(({ data }) => hydrateIdentity(data.session?.user ?? null));
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -240,22 +343,54 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       const sb = getSupabaseClient();
       if (sb) {
-        const { data, error } = await sb.auth.signInWithPassword({ email: normalizedEmail, password });
-        if (error) return { ok: false, error: 'Invalid login credentials.' };
-        if (data.user) {
-          const matched = state.profiles.find((p) => p.email?.toLowerCase() === normalizedEmail);
-          if (matched && matched.status !== 'active') {
-            return {
-              ok: false,
-              error: `Your account is currently ${matched.status}. Please contact workspace support.`,
-            };
-          }
-          setState((prev) => ({
-            ...prev,
-            currentUserId: matched ? matched.id : 'u-adeel',
-          }));
-          return { ok: true };
+        const { data, error } = await sb.auth.signInWithPassword({
+          email: normalizedEmail,
+          password,
+        });
+        if (error || !data.user) {
+          return { ok: false, error: 'Invalid login credentials.' };
         }
+
+        const [profileResult, rolesResult] = await Promise.all([
+          sb.from('profiles')
+            .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
+            .eq('id', data.user.id)
+            .maybeSingle(),
+          sb.from('user_roles').select('role').eq('user_id', data.user.id),
+        ]);
+
+        if (profileResult.error || !profileResult.data || rolesResult.error) {
+          await sb.auth.signOut();
+          return { ok: false, error: 'Your AdiChat profile is not ready. Please contact support.' };
+        }
+
+        const profile = { ...profileResult.data, email: data.user.email ?? null } as Profile;
+        if (profile.status !== 'active') {
+          await sb.auth.signOut();
+          return { ok: false, error: `Your account is currently ${profile.status}.` };
+        }
+
+        const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
+        setState((prev) => ({
+          ...prev,
+          currentUserId: data.user!.id,
+          profiles: [profile, ...prev.profiles.filter((item) => item.id !== profile.id)],
+          userRoles: [
+            ...prev.userRoles.filter((item) => item.user_id !== profile.id),
+            ...roles.map((role, index) => ({
+              id: `auth-role-${profile.id}-${index}`,
+              user_id: profile.id,
+              role,
+              granted_by: null,
+              created_at: profile.created_at,
+            })),
+          ],
+        }));
+        return { ok: true };
+      }
+
+      if (!IS_DEMO_MODE) {
+        return { ok: false, error: 'Authentication service is not configured yet.' };
       }
 
       const profile = state.profiles.find((p) => p.email?.toLowerCase() === normalizedEmail);
@@ -285,6 +420,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           options: { data: { full_name: fullName.trim() } },
         });
         if (error) return { ok: false, error: error.message };
+        return { ok: true };
+      }
+
+      if (!IS_DEMO_MODE) {
+        return { ok: false, error: 'Registration service is not configured yet.' };
       }
 
       const existing = state.profiles.find((p) => p.email?.toLowerCase() === normalizedEmail);
@@ -340,6 +480,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const quickSignInDemo = useCallback((userId = 'u-adeel') => {
+    if (!IS_DEMO_MODE) return;
     setState((prev) => ({ ...prev, currentUserId: userId }));
   }, []);
 
@@ -1423,6 +1564,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const resetDemoWorkspace = useCallback(() => {
+    if (!IS_DEMO_MODE) return;
     window.localStorage.removeItem(STORAGE_KEY);
     setState(SEED_DATA);
     pushToast('Workspace reset to baseline', 'info');
