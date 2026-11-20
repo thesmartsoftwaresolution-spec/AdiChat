@@ -450,6 +450,7 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [x] `functions/api/ai/chat.ts`: server-side model allowlist/default updated to Llama 3.3 70B; removed the previous model-specific `reasoning_effort` argument, which is not part of this model's documented chat input.
 - [x] `wrangler.jsonc`: `AI_MODEL_ID` updated to the same model ID. Existing `AI` binding, Pages project, and hosting remain unchanged.
 - [x] Direct Cloudflare Workers AI API smoke test passed for the requested model; sample Roman Urdu prompt returned a valid Roman Urdu response.
-- [ ] Run GitHub CI and verify the new Pages deployment build/deploy.
+- [x] Cloudflare Pages build and deployment succeeded for the combined model/config migration commit `ff2c9abaa422a8bf4192672c2451ce207682ee0f` (deployment `f9232b71-13ab-4943-aa5f-15ec753e3fc1`). Existing Pages project `adichat` and production domain `adichat.pages.dev` retained.
+- [ ] GitHub combined status endpoint returned no check statuses for the model migration commits; CI conclusion is not independently verified.
 - [ ] Authenticated end-to-end AI chat test remains pending; no production user session was used in the direct model smoke test.
 - [ ] The Llama 3.3 model does not expose the previous GPT-OSS `reasoning_effort` option. The existing Thinking Mode preference is retained as metadata/configuration only and does not change inference behavior with this model.
