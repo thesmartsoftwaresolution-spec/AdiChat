@@ -430,11 +430,12 @@ alter table public.bootstrap_state enable row level security;
 -- 6. Explicit RLS Policies (All 18 Tables)
 
 -- profiles
-create policy "profiles_select_own_or_admin" on public.profiles
-  for select to authenticated using (id = auth.uid() or public.is_admin());
+create policy "profiles_select_directory" on public.profiles
+  for select to authenticated
+  using (status = 'active' or id = auth.uid() or public.is_admin());
 
 -- Safe directory projection; never expose private profile columns through the base table.
-create or replace view public.profile_directory with (security_invoker = false) as
+create or replace view public.profile_directory with (security_invoker = true) as
 select id, full_name, avatar_path, about, title, is_online, last_seen_at
 from public.profiles
 where status = 'active';
@@ -611,7 +612,9 @@ create policy "reports_super_admin_delete" on public.reports
 
 -- developer_profile
 create policy "developer_profile_public_read" on public.developer_profile
-  for select using (is_visible = true or public.is_admin());
+  for select to anon using (is_visible = true);
+create policy "developer_profile_authenticated_read" on public.developer_profile
+  for select to authenticated using (is_visible = true or public.is_admin());
 create policy "developer_profile_admin_update" on public.developer_profile
   for update to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "developer_profile_super_admin_insert" on public.developer_profile
@@ -634,8 +637,10 @@ create policy "app_settings_super_admin_insert" on public.app_settings
   for insert to authenticated with check (public.is_super_admin());
 
 -- announcements
-create policy "announcements_read" on public.announcements
-  for select using (status = 'published' or public.is_admin());
+create policy "announcements_public_read" on public.announcements
+  for select to anon using (status = 'published');
+create policy "announcements_authenticated_read" on public.announcements
+  for select to authenticated using (status = 'published' or public.is_admin());
 create policy "announcements_admin_insert" on public.announcements
   for insert to authenticated with check (public.is_admin() and created_by = auth.uid());
 create policy "announcements_admin_update" on public.announcements
@@ -698,7 +703,8 @@ create policy "developer_assets_admin_write" on storage.objects
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
-as $$
+set search_path = public
+as $
 begin
   new.updated_at = now();
   return new;
@@ -1060,6 +1066,9 @@ revoke insert, update, delete on public.profile_directory from authenticated;
 
 -- Profiles: users can update only safe self-service columns.
 revoke all on public.profiles from anon;
+revoke select on public.profiles from authenticated;
+grant select (id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference)
+  on public.profiles to authenticated;
 revoke update on public.profiles from authenticated;
 grant update (full_name, avatar_path, about, title, theme_preference, last_seen_at, is_online)
   on public.profiles to authenticated;
@@ -1074,12 +1083,13 @@ grant update (body, metadata, edited_at, deleted_at) on public.messages to authe
 
 -- Public helper functions are read-only authorization predicates.
 revoke execute on all functions in schema public from public, anon, authenticated;
-grant execute on function public.get_user_role() to anon, authenticated;
-grant execute on function public.is_admin() to anon, authenticated;
-grant execute on function public.is_super_admin() to anon, authenticated;
-grant execute on function public.is_conversation_member(uuid) to anon, authenticated;
-grant execute on function public.is_group_admin(uuid) to anon, authenticated;
-grant execute on function public.is_active_account() to anon, authenticated;
+grant execute on function public.get_user_role() to authenticated;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_super_admin() to authenticated;
+grant execute on function public.is_conversation_member(uuid) to authenticated;
+grant execute on function public.is_group_admin(uuid) to authenticated;
+grant execute on function public.is_active_account() to authenticated;
+revoke all on public.bootstrap_state from anon, authenticated;
 
 -- Authenticated users may call guarded RPCs; trigger functions remain non-callable directly.
 grant execute on function public.create_direct_conversation(uuid) to authenticated;
