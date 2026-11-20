@@ -319,6 +319,27 @@ create index audit_logs_created_idx on public.audit_logs (created_at desc);
 create index audit_logs_actor_created_idx on public.audit_logs (actor_user_id, created_at desc);
 create index audit_logs_target_idx on public.audit_logs (target_type, target_id);
 
+create index announcements_created_by_idx on public.announcements(created_by);
+create index app_settings_updated_by_idx on public.app_settings(updated_by);
+create index assistant_usage_conversation_id_idx on public.assistant_usage(conversation_id);
+create index attachments_message_id_idx on public.attachments(message_id);
+create index bootstrap_state_consumed_by_user_id_idx on public.bootstrap_state(consumed_by_user_id);
+create index conversations_assistant_id_idx on public.conversations(assistant_id) where assistant_id is not null;
+create index conversations_last_message_id_idx on public.conversations(last_message_id);
+create index developer_profile_updated_by_idx on public.developer_profile(updated_by);
+create index group_assistants_added_by_idx on public.group_assistants(added_by);
+create index group_assistants_assistant_id_idx on public.group_assistants(assistant_id);
+create index groups_created_by_idx on public.groups(created_by);
+create index messages_reply_to_message_id_idx on public.messages(reply_to_message_id);
+create index messages_sender_assistant_id_idx on public.messages(sender_assistant_id);
+create index reports_assigned_to_idx on public.reports(assigned_to);
+create index reports_reporter_user_id_idx on public.reports(reporter_user_id);
+create index reports_target_group_conversation_id_idx on public.reports(target_group_conversation_id);
+create index reports_target_message_id_idx on public.reports(target_message_id);
+create index reports_target_user_id_idx on public.reports(target_user_id);
+create index user_blocks_blocked_user_id_idx on public.user_blocks(blocked_user_id);
+create index user_roles_granted_by_idx on public.user_roles(granted_by);
+
 -- 4. Security & Role Helpers (fixed search_path, recursion-safe)
 create or replace function public.get_user_role()
 returns public.app_role
