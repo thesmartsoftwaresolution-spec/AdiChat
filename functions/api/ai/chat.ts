@@ -40,6 +40,10 @@ function json(data: unknown, status: number, origin: string | null) {
 function isAllowedOrigin(origin: string | null, configured: string): boolean {
   if (!origin) return true;
   if (origin === configured) return true;
+  if (origin === 'http://localhost:8788' ||
+      origin === 'http://127.0.0.1:8788' ||
+      origin === 'http://localhost:5173' ||
+      origin === 'http://localhost:3000') return true;
   try {
     const parsed = new URL(origin);
     return parsed.protocol === 'https:' &&
