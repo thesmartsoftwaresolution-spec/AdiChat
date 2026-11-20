@@ -387,7 +387,7 @@ export const AIChatPage: React.FC = () => {
             />
             <button
               type="submit"
-              disabled={loading || !draft.trim()}
+              disabled={loading || (!draft.trim() && !selectedFile)}
               aria-label="Send prompt"
               className="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 disabled:opacity-50"
             >
