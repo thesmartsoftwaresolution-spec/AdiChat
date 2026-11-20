@@ -6,12 +6,30 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#fcf8f8",
   "theme_color": "#004327",
-  "categories": ["communication", "productivity"],
+  "categories": [
+    "communication",
+    "productivity"
+  ],
   "icons": [
+    {
+      "src": "/icons/adichat-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/adichat-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/icons/adichat.svg",
       "sizes": "any",
