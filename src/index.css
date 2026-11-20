@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-surface: var(--adichat-surface);
+  --color-surface-bright: var(--adichat-surface-bright);
+  --color-surface-dim: var(--adichat-surface-dim);
+  --color-surface-container-lowest: var(--adichat-surface-lowest);
+  --color-surface-container-low: var(--adichat-surface-low);
+  --color-surface-container: var(--adichat-surface-container);
+  --color-surface-container-high: var(--adichat-surface-high);
+  --color-surface-container-highest: var(--adichat-surface-highest);
+  --color-surface-variant: var(--adichat-surface-variant);
+  --color-background: var(--adichat-surface);
+
+  --color-on-surface: var(--adichat-on-surface);
+  --color-on-surface-variant: var(--adichat-on-surface-variant);
+  --color-on-background: var(--adichat-on-surface);
+  --color-outline: var(--adichat-outline);
+  --color-outline-variant: var(--adichat-outline-variant);
+
+  --color-primary: var(--adichat-primary);
+  --color-on-primary: var(--adichat-on-primary);
+  --color-primary-container: var(--adichat-primary-container);
+  --color-on-primary-container: var(--adichat-on-primary-container);
+  --color-primary-fixed: var(--adichat-primary-fixed);
+  --color-primary-fixed-dim: var(--adichat-primary-fixed-dim);
+  --color-on-primary-fixed: var(--adichat-on-primary-fixed);
+  --color-on-primary-fixed-variant: var(--adichat-on-primary-fixed-variant);
+
+  --color-secondary: var(--adichat-secondary);
+  --color-on-secondary: var(--adichat-on-secondary);
+  --color-secondary-container: var(--adichat-secondary-container);
+  --color-on-secondary-container: var(--adichat-on-secondary-container);
+  --color-secondary-fixed: var(--adichat-secondary-fixed);
+  --color-secondary-fixed-dim: var(--adichat-secondary-fixed-dim);
+  --color-on-secondary-fixed: var(--adichat-on-secondary-fixed);
+
+  --color-tertiary: var(--adichat-tertiary);
+  --color-on-tertiary: var(--adichat-on-tertiary);
+  --color-tertiary-container: var(--adichat-tertiary-container);
+  --color-on-tertiary-container: var(--adichat-on-tertiary-container);
+  --color-tertiary-fixed: var(--adichat-tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--adichat-tertiary-fixed-dim);
+
+  --color-error: var(--adichat-error);
+  --color-on-error: var(--adichat-on-error);
+  --color-error-container: var(--adichat-error-container);
+  --color-on-error-container: var(--adichat-on-error-container);
+
+  --color-inverse-surface: var(--adichat-inverse-surface);
+  --color-inverse-on-surface: var(--adichat-inverse-on-surface);
+  --color-inverse-primary: var(--adichat-inverse-primary);
+
+  --color-msg-sent: var(--adichat-msg-sent);
+  --color-msg-received: var(--adichat-msg-received);
+  --color-online: var(--adichat-online);
+
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+  --spacing-space-2xl: 3rem;
+  --spacing-gutter: 1rem;
+  --spacing-gutter-mobile: 0.75rem;
+  --spacing-margin: 1.5rem;
+  --spacing-margin-mobile: 1rem;
+}
+
+@layer base {
+  html,
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background-color: var(--adichat-surface);
+    color: var(--adichat-on-surface);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  a,
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  user-select: none;
+}
+
+.material-symbols-filled {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+  user-select: none;
+}
+
+/* Stitch Typography Helpers */
+.text-headline-xl { font-size: 32px; line-height: 40px; letter-spacing: -0.02em; font-weight: 600; }
+.text-headline-lg { font-size: 24px; line-height: 32px; letter-spacing: -0.015em; font-weight: 600; }
+.text-headline-lg-mobile { font-size: 22px; line-height: 28px; letter-spacing: -0.015em; font-weight: 600; }
+.text-headline-md { font-size: 20px; line-height: 26px; letter-spacing: -0.01em; font-weight: 600; }
+.text-headline-sm { font-size: 17px; line-height: 22px; letter-spacing: -0.005em; font-weight: 600; }
+.text-body-lg { font-size: 16px; line-height: 24px; font-weight: 400; }
+.text-body-md-medium { font-size: 15px; line-height: 22px; letter-spacing: -0.004em; font-weight: 500; }
+.text-body-md { font-size: 15px; line-height: 22px; letter-spacing: -0.004em; font-weight: 400; }
+.text-body-sm { font-size: 13px; line-height: 18px; font-weight: 400; }
+.text-label-md { font-size: 14px; line-height: 20px; font-weight: 600; }
+.text-label-sm { font-size: 12px; line-height: 16px; font-weight: 500; }
+.text-caption { font-size: 12px; line-height: 16px; font-weight: 400; }
+.text-timestamp { font-size: 11px; line-height: 14px; letter-spacing: 0.01em; font-weight: 400; }

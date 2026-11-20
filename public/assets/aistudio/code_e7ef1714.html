@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-background": "#1c1b1b", "on-primary": "#ffffff", "secondary-fixed-dim": "#6adc9c", "primary-fixed": "#aaf2c5", "secondary-container": "#84f6b3", "on-secondary-fixed": "#002110", "inverse-surface": "#313030", "on-tertiary-fixed": "#3c070c", "on-secondary": "#ffffff", "surface-container-high": "#ebe7e7", "error": "#ba1a1a", "inverse-on-surface": "#f3f0ef", "surface": "#fcf8f8", "surface-tint": "#236b47", "on-tertiary-container": "#ffaeae", "tertiary-fixed": "#ffdad9", "outline": "#707971", "on-error-container": "#93000a", "on-error": "#ffffff", "on-secondary-fixed-variant": "#005230", "secondary-fixed": "#87f9b6", "on-tertiary-fixed-variant": "#743234", "inverse-primary": "#8ed6aa", "primary-container": "#0f5c3a", "surface-dim": "#dcd9d9", "on-primary-fixed-variant": "#005231", "outline-variant": "#bfc9c0", "surface-container-lowest": "#ffffff", "on-secondary-container": "#007144", "background": "#fcf8f8", "on-primary-fixed": "#002111", "surface-container-low": "#f6f3f2", "tertiary-container": "#803b3d", "surface-container": "#f0edec", "primary": "#004327", "on-surface-variant": "#404942", "on-primary-container": "#8bd2a7", "surface-variant": "#e5e2e1", "on-tertiary": "#ffffff", "surface-bright": "#fcf8f8", "tertiary": "#632528", "tertiary-fixed-dim": "#ffb3b3", "error-container": "#ffdad6", "secondary": "#006d41", "surface-container-highest": "#e5e2e1", "primary-fixed-dim": "#8ed6aa", "on-surface": "#1c1b1b" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xs": "0.25rem", "space-2xl": "3rem", "margin": "1.5rem", "space-xl": "2rem", "space-lg": "1.5rem", "gutter": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "gutter-mobile": "0.75rem", "margin-mobile": "1rem" }, "fontFamily": { "caption": ["Inter"], "body-md-medium": ["Inter"], "body-md": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "timestamp": ["Inter"], "headline-xl": ["Inter"], "label-md": ["Inter"], "headline-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "label-sm": ["Inter"] }, "fontSize": { "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md-medium": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500" }], "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "timestamp": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-sm": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-secondary-fixed selection:text-on-secondary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container active:bg-surface-container-high transition-colors" onclick="window.history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back_ios_new</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate max-w-[200px]">Admin   Users</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container active:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="More options" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container active:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">more_vert</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs shadow-[0_1px_2px_rgba(10,10,10,0.04)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 bg-surface pb-safe"><div class="flex flex-col w-full pb-28">
+<!-- Subtitle & Quick Stats Strip -->
+<div class="px-margin-mobile pt-space-xs pb-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-caption text-caption text-on-surface-variant font-medium">12,480 registered accounts</span>
+</div>
+<span class="font-caption text-caption text-primary font-semibold bg-secondary-fixed/30 px-2 py-0.5 rounded-full">Live Sync</span>
+</div>
+<!-- Segmented View & Action Switch -->
+<div class="px-margin-mobile mb-space-md">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex p-1 bg-surface-container rounded-xl flex-1 max-w-[260px]">
+<button class="flex-1 py-1.5 px-3 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all text-center" id="tab-all-users" type="button">
+          All Users
+        </button>
+<button class="flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant font-label-sm text-label-sm font-medium hover:text-on-surface transition-all text-center" id="tab-admins" type="button">
+          Admins (5)
+        </button>
+</div>
+<button class="h-10 px-3.5 bg-primary-container text-on-primary rounded-xl font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm active:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>Add Admin</span>
+</button>
+</div>
+</div>
+<!-- Search Input Container -->
+<div class="px-margin-mobile mb-space-sm">
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[20px] pointer-events-none">search</span>
+<input class="w-full h-12 pl-11 pr-10 bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md rounded-xl outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search users by name, email, or ID..." type="search"/>
+<button aria-label="Filter options" class="absolute right-1.5 w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Horizontal Filter Chips -->
+<div class="w-full overflow-x-auto no-scrollbar py-space-xs px-margin-mobile mb-space-md">
+<div class="flex items-center gap-2 w-max">
+<button class="h-8 px-3.5 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm" type="button">
+<span>All</span>
+<span class="opacity-80 text-[11px] font-normal">12,480</span>
+</button>
+<button class="h-8 px-3.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span>Active</span>
+<span class="text-secondary font-semibold text-[11px]">12,210</span>
+</button>
+<button class="h-8 px-3.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span>Suspended</span>
+<span class="text-tertiary font-semibold text-[11px]">190</span>
+</button>
+<button class="h-8 px-3.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span>Banned</span>
+<span class="text-error font-semibold text-[11px]">80</span>
+</button>
+<button class="h-8 px-3.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span>Admins</span>
+<span class="text-primary font-semibold text-[11px]">5</span>
+</button>
+</div>
+</div>
+<!-- Dynamic Bulk Actions Notice Strip -->
+<div class="mx-margin-mobile mb-space-sm p-3 bg-surface-container-high rounded-xl flex items-center justify-between shadow-sm animate-fade-in" id="bulk-bar">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-md bg-primary-container text-on-primary flex items-center justify-center text-[12px] font-bold">2</div>
+<span class="font-label-md text-label-md text-on-surface">users selected</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="h-9 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-dim transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">pause_circle</span>
+<span>Suspend</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-error-container text-on-error-container font-label-sm text-label-sm hover:opacity-90 transition-opacity flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Delete</span>
+</button>
+</div>
+</div>
+<!-- Stacked User Cards List -->
+<div class="px-margin-mobile flex flex-col gap-space-sm">
+<!-- Card 1: Ayesha Khan (Selected / Active) -->
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm transition-all relative overflow-hidden">
+<div class="flex items-start gap-3">
+<!-- Custom Checkbox -->
+<label class="flex items-center justify-center w-8 h-8 -ml-1 cursor-pointer">
+<input checked="" class="user-select-box peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 rounded-md bg-surface-container flex items-center justify-center peer-checked:bg-primary-container text-transparent peer-checked:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</label>
+<!-- Avatar Initials with AI Sparkle halo gradient preview -->
+<div class="relative w-11 h-11 rounded-full bg-secondary-fixed/40 text-on-secondary-fixed flex items-center justify-center font-headline-sm text-headline-sm font-semibold shrink-0">
+          AK
+          <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-secondary border-2 border-surface-container-lowest"></span>
+</div>
+<!-- Meta Info -->
+<div class="flex-1 min-w-0 pr-1">
+<div class="flex items-center justify-between gap-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Ayesha Khan</h2>
+<!-- Status Chip -->
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-caption font-label-sm shrink-0">
+              Active
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">ayesha.khan@gmail.com</p>
+<div class="flex items-center gap-2 mt-2 pt-2 border-t border-surface-variant/40">
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-medium">Member</span>
+<span class="font-timestamp text-timestamp text-on-surface-variant">Joined Oct 14, 2024</span>
+<span class="font-timestamp text-timestamp text-secondary font-medium ml-auto">Active 2m ago</span>
+</div>
+</div>
+<!-- Overflow Menu Trigger -->
+<div class="relative">
+<button aria-label="Card actions" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" onclick="toggleMenu('menu-1')" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<!-- Popover Context Menu -->
+<div class="hidden absolute right-0 top-8 z-30 w-44 bg-surface-container-lowest rounded-xl shadow-lg py-1.5 animate-in fade-in zoom-in-95" id="menu-1">
+<button class="w-full px-3.5 py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span>View Profile</span>
+</button>
+<button class="w-full px-3.5 py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+<span>Reset Password</span>
+</button>
+<button class="w-full px-3.5 py-2 text-left font-body-sm text-body-sm text-tertiary hover:bg-surface-container flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">pause_circle</span>
+<span>Suspend</span>
+</button>
+<button class="w-full px-3.5 py-2 text-left font-body-sm text-body-sm text-error hover:bg-surface-container flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">block</span>
+<span>Ban Account</span>
+</button>
+<button class="w-full px-3.5 py-2 text-left font-body-sm text-body-sm text-error hover:bg-error-container flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Hamza Tariq (Selected / Active / Group Admin) -->
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm transition-all relative overflow-hidden">
+<div class="flex items-start gap-3">
+<!-- Custom Checkbox -->
+<label class="flex items-center justify-center w-8 h-8 -ml-1 cursor-pointer">
+<input checked="" class="user-select-box peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 rounded-md bg-surface-container flex items-center justify-center peer-checked:bg-primary-container text-transparent peer-checked:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</label>
+<!-- Avatar Initials -->
+<div class="relative w-11 h-11 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-sm text-headline-sm font-semibold shrink-0">
+          HT
+          <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-secondary border-2 border-surface-container-lowest"></span>
+</div>
+<!-- Meta Info -->
+<div class="flex-1 min-w-0 pr-1">
+<div class="flex items-center justify-between gap-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Hamza Tariq</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-caption font-label-sm shrink-0">
+              Active
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">hamza.tariq@outlook.com</p>
+<div class="flex items-center gap-2 mt-2 pt-2 border-t border-surface-variant/40">
+<span class="px-2 py-0.5 rounded-md bg-secondary-fixed/50 text-on-secondary-fixed font-label-sm text-[11px] font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified_user</span>
+              Group Admin
+            </span>
+<span class="font-timestamp text-timestamp text-on-surface-variant">Joined Oct 12, 2024</span>
+<span class="font-timestamp text-timestamp text-on-surface-variant ml-auto">1h ago</span>
+</div>
+</div>
+<button aria-label="Card actions" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Sara Khan (Suspended) -->
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm transition-all relative overflow-hidden">
+<div class="flex items-start gap-3">
+<!-- Custom Checkbox -->
+<label class="flex items-center justify-center w-8 h-8 -ml-1 cursor-pointer">
+<input class="user-select-box peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 rounded-md bg-surface-container flex items-center justify-center peer-checked:bg-primary-container text-transparent peer-checked:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</label>
+<!-- Avatar Initials -->
+<div class="relative w-11 h-11 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-headline-sm text-headline-sm font-semibold shrink-0">
+          SK
+          <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-tertiary border-2 border-surface-container-lowest"></span>
+</div>
+<!-- Meta Info -->
+<div class="flex-1 min-w-0 pr-1">
+<div class="flex items-center justify-between gap-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Sara Khan</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/60 text-tertiary text-caption font-label-sm shrink-0">
+              Suspended
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">sara.k@gmail.com</p>
+<div class="flex items-center gap-2 mt-2 pt-2 border-t border-surface-variant/40">
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-medium">Member</span>
+<span class="font-timestamp text-timestamp text-on-surface-variant">Joined Sep 28, 2024</span>
+<span class="font-timestamp text-timestamp text-on-surface-variant ml-auto">Yesterday</span>
+</div>
+</div>
+<button aria-label="Card actions" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Zainab Ali (Banned) -->
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm transition-all relative overflow-hidden opacity-90">
+<div class="flex items-start gap-3">
+<!-- Custom Checkbox -->
+<label class="flex items-center justify-center w-8 h-8 -ml-1 cursor-pointer">
+<input class="user-select-box peer sr-only" type="checkbox"/>
+<div class="w-5 h-5 rounded-md bg-surface-container flex items-center justify-center peer-checked:bg-primary-container text-transparent peer-checked:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</label>
+<!-- Avatar Initials -->
+<div class="relative w-11 h-11 rounded-full bg-error-container text-error flex items-center justify-center font-headline-sm text-headline-sm font-semibold shrink-0">
+          ZA
+          <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-error border-2 border-surface-container-lowest"></span>
+</div>
+<!-- Meta Info -->
+<div class="flex-1 min-w-0 pr-1">
+<div class="flex items-center justify-between gap-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Zainab Ali</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-caption font-label-sm shrink-0">
+              Banned
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">zainab.a@yahoo.com</p>
+<div class="flex items-center gap-2 mt-2 pt-2 border-t border-surface-variant/40">
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-medium">Member</span>
+<span class="font-timestamp text-timestamp text-on-surface-variant">Joined Aug 15, 2024</span>
+<span class="font-timestamp text-timestamp text-error font-medium ml-auto flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">lock</span> Restricted
+            </span>
+</div>
+</div>
+<button aria-label="Card actions" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination Bar -->
+<div class="mt-space-lg px-margin-mobile flex items-center justify-between bg-surface-container-low rounded-xl p-3">
+<div class="font-timestamp text-timestamp text-on-surface-variant">
+      Showing <span class="font-medium text-on-surface">1-4</span> of 12,480
+    </div>
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant/50 flex items-center justify-center cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="h-9 px-3 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm flex items-center justify-center shadow-xs">
+        1
+      </div>
+<button class="w-9 h-9 rounded-lg bg-surface-container text-on-surface flex items-center justify-center active:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  function toggleMenu(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('hidden');
+  }
+
+  // Interactivity for checkbox selection count
+  document.querySelectorAll('.user-select-box').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const selected = document.querySelectorAll('.user-select-box:checked').length;
+      const bar = document.getElementById('bulk-bar');
+      if (bar) {
+        if (selected > 0) {
+          bar.classList.remove('hidden');
+          bar.querySelector('span.text-on-surface').innerText = `${selected} users selected`;
+          bar.querySelector('div.bg-primary-container').innerText = selected;
+        } else {
+          bar.classList.add('hidden');
+        }
+      }
+    });
+  });
+
+  // Tab switcher visual toggle
+  const tabAll = document.getElementById('tab-all-users');
+  const tabAdmins = document.getElementById('tab-admins');
+  if (tabAll && tabAdmins) {
+    tabAll.addEventListener('click', () => {
+      tabAll.className = "flex-1 py-1.5 px-3 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all text-center";
+      tabAdmins.className = "flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant font-label-sm text-label-sm font-medium hover:text-on-surface transition-all text-center";
+    });
+    tabAdmins.addEventListener('click', () => {
+      tabAdmins.className = "flex-1 py-1.5 px-3 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all text-center";
+      tabAll.className = "flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant font-label-sm text-label-sm font-medium hover:text-on-surface transition-all text-center";
+    });
+  }
+</script></main></body></html>

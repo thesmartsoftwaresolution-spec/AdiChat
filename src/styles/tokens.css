@@ -1,0 +1,108 @@
+/* Canonical Stitch Design Tokens for AdiChat (Light & Dark themes) */
+:root {
+  --adichat-surface: #fcf8f8;
+  --adichat-surface-bright: #fcf8f8;
+  --adichat-surface-dim: #dcd9d9;
+  --adichat-surface-lowest: #ffffff;
+  --adichat-surface-low: #f6f3f2;
+  --adichat-surface-container: #f0edec;
+  --adichat-surface-high: #ebe7e7;
+  --adichat-surface-highest: #e5e2e1;
+  --adichat-surface-variant: #e5e2e1;
+
+  --adichat-on-surface: #1c1b1b;
+  --adichat-on-surface-variant: #404942;
+  --adichat-outline: #707971;
+  --adichat-outline-variant: #bfc9c0;
+
+  --adichat-primary: #004327;
+  --adichat-on-primary: #ffffff;
+  --adichat-primary-container: #0f5c3a;
+  --adichat-on-primary-container: #8bd2a7;
+  --adichat-primary-fixed: #aaf2c5;
+  --adichat-primary-fixed-dim: #8ed6aa;
+  --adichat-on-primary-fixed: #002111;
+  --adichat-on-primary-fixed-variant: #005231;
+
+  --adichat-secondary: #006d41;
+  --adichat-on-secondary: #ffffff;
+  --adichat-secondary-container: #84f6b3;
+  --adichat-on-secondary-container: #007144;
+  --adichat-secondary-fixed: #87f9b6;
+  --adichat-secondary-fixed-dim: #6adc9c;
+  --adichat-on-secondary-fixed: #002110;
+
+  --adichat-tertiary: #632528;
+  --adichat-on-tertiary: #ffffff;
+  --adichat-tertiary-container: #803b3d;
+  --adichat-on-tertiary-container: #ffaeae;
+  --adichat-tertiary-fixed: #ffdad9;
+  --adichat-tertiary-fixed-dim: #ffb3b3;
+
+  --adichat-error: #ba1a1a;
+  --adichat-on-error: #ffffff;
+  --adichat-error-container: #ffdad6;
+  --adichat-on-error-container: #93000a;
+
+  --adichat-inverse-surface: #313030;
+  --adichat-inverse-on-surface: #f3f0ef;
+  --adichat-inverse-primary: #8ed6aa;
+
+  --adichat-msg-sent: #d8f8e4;
+  --adichat-msg-received: #ffffff;
+  --adichat-online: #1f9d63;
+}
+
+html.dark {
+  --adichat-surface: #101412;
+  --adichat-surface-bright: #161c19;
+  --adichat-surface-dim: #0b0e0c;
+  --adichat-surface-lowest: #161b18;
+  --adichat-surface-low: #1b221e;
+  --adichat-surface-container: #202824;
+  --adichat-surface-high: #27302b;
+  --adichat-surface-highest: #2f3a34;
+  --adichat-surface-variant: #2f3a34;
+
+  --adichat-on-surface: #e8eeea;
+  --adichat-on-surface-variant: #a6b4ab;
+  --adichat-outline: #79877e;
+  --adichat-outline-variant: #39443e;
+
+  --adichat-primary: #77daa4;
+  --adichat-on-primary: #042414;
+  --adichat-primary-container: #145b3b;
+  --adichat-on-primary-container: #c5f7d9;
+  --adichat-primary-fixed: #1d6442;
+  --adichat-primary-fixed-dim: #52b783;
+  --adichat-on-primary-fixed: #e8fff2;
+  --adichat-on-primary-fixed-variant: #9beec0;
+
+  --adichat-secondary: #6adc9c;
+  --adichat-on-secondary: #032212;
+  --adichat-secondary-container: #12492f;
+  --adichat-on-secondary-container: #9bf2c0;
+  --adichat-secondary-fixed: #175c3b;
+  --adichat-secondary-fixed-dim: #46b67b;
+  --adichat-on-secondary-fixed: #d9ffea;
+
+  --adichat-tertiary: #ffb3b3;
+  --adichat-on-tertiary: #420e12;
+  --adichat-tertiary-container: #5c2225;
+  --adichat-on-tertiary-container: #ffdad9;
+  --adichat-tertiary-fixed: #5c2225;
+  --adichat-tertiary-fixed-dim: #e59090;
+
+  --adichat-error: #ffb4ab;
+  --adichat-on-error: #5a0605;
+  --adichat-error-container: #5e1717;
+  --adichat-on-error-container: #ffdad6;
+
+  --adichat-inverse-surface: #e8eeea;
+  --adichat-inverse-on-surface: #141916;
+  --adichat-inverse-primary: #0f5c3a;
+
+  --adichat-msg-sent: #12452d;
+  --adichat-msg-received: #1b221e;
+  --adichat-online: #37c783;
+}

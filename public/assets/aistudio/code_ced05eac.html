@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-tint": "#236b47", "on-primary-fixed": "#002111", "on-secondary-container": "#007144", "on-error": "#ffffff", "inverse-on-surface": "#f3f0ef", "inverse-primary": "#8ed6aa", "tertiary-fixed": "#ffdad9", "surface": "#ffffff", "on-tertiary-fixed-variant": "#743234", "tertiary": "#632528", "surface-container-highest": "#e5e2e1", "primary-fixed": "#aaf2c5", "secondary-fixed": "#87f9b6", "secondary": "#006d41", "on-background": "#1c1b1b", "on-error-container": "#93000a", "primary-fixed-dim": "#8ed6aa", "on-surface": "#1c1b1b", "surface-container-low": "#f6f8f7", "on-surface-variant": "#404942", "secondary-fixed-dim": "#6adc9c", "outline": "#707971", "surface-container-lowest": "#ffffff", "secondary-container": "#84f6b3", "on-primary-fixed-variant": "#005231", "on-secondary": "#ffffff", "surface-container": "#f0edec", "outline-variant": "#bfc9c0", "surface-container-high": "#ebe7e7", "tertiary-fixed-dim": "#ffb3b3", "background": "#ffffff", "on-tertiary-fixed": "#3c070c", "error": "#ba1a1a", "on-tertiary": "#ffffff", "on-secondary-fixed-variant": "#005230", "surface-bright": "#ffffff", "surface-dim": "#dcd9d9", "on-tertiary-container": "#ffaeae", "on-primary": "#ffffff", "primary": "#0f5c3a", "error-container": "#ffdad6", "tertiary-container": "#803b3d", "surface-variant": "#e5e2e1", "on-primary-container": "#8bd2a7", "inverse-surface": "#313030", "primary-container": "#0f5c3a", "on-secondary-fixed": "#002110" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2rem", "space-md": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-2xl": "3rem", "space-sm": "0.5rem", "margin-mobile": "1rem", "margin": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "0.75rem" }, fontFamily: { "headline-xl": ["Inter"], "timestamp": ["Inter"], "label-sm": ["Inter"], "body-md-medium": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], "headline-sm": ["Inter"], "body-md": ["Inter"], "caption": ["Inter"] }, fontSize: { "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "timestamp": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-md-medium": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-sm": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400" }], "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary/10"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-14 px-gutter-mobile flex items-center justify-between"><button aria-label="Go back" class="w-11 h-11 -ml-1 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-low active:bg-surface-container transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate max-w-[200px] text-center">Login</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 pb-safe bg-surface"><div class="flex flex-col w-full px-margin-mobile pb-space-xl">
+<!-- Subtle Security Status Badge (Moments of Delight) -->
+<div class="pt-space-md pb-space-sm flex items-center justify-between">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-caption text-caption text-on-surface-variant font-medium">AdiChat Vault v2.4 Active</span>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-caption text-caption font-semibold">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>E2E Encrypted</span>
+</div>
+</div>
+<!-- Header Block -->
+<div class="pt-space-sm pb-space-lg">
+<div class="w-12 h-12 rounded-xl bg-primary-container/10 flex items-center justify-center text-primary mb-space-sm shadow-sm">
+<span class="material-symbols-outlined text-[26px]">chat_bubble_outline</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Welcome back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Log in to your AdiChat account to continue.</p>
+</div>
+<!-- Interactive Quick-Switch / Active Persona Chip -->
+<div class="mb-space-lg p-3 rounded-xl bg-surface-container-low shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0 w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-primary to-secondary">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface">
+<img class="w-full h-full object-cover" data-alt="Close up warm studio portrait of a friendly tech-savvy creative director in soft natural diffused lighting looking forward, smiling warmly with minimalist pine green elements in the background, ultra high detail modern editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDKoKywARTrPb4TpAVh99QbhFlGCAY6zXdCugsFGlxgDLzOk9AsJnrDtWZjGg5YjAwmBdFCODmWFuKYSI8QLkB_hx3jQxfx5sC3Cq_quqM32w-va5KMzFuh4AOM7QcQGIkSwl-BT-ynVUJRRn-2_QqIgjLDbTSrdhFkwQBzaPdUZRQf1HHj3Kqa2NJy98acXivBLntM9KsY_V7FT-TDfyAZLiBkgOrUpaRWk3ciIwV"/>
+</div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface"></span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-label-md text-label-md text-on-surface truncate">Adeel Raza</p>
+<span class="px-1.5 py-0.5 rounded-full bg-primary text-on-primary font-caption text-[10px] font-semibold tracking-wide">SAVED</span>
+</div>
+<p class="font-timestamp text-timestamp text-on-surface-variant truncate">adeel@example.com</p>
+</div>
+</div>
+<button class="shrink-0 px-2.5 py-1.5 rounded-lg text-primary font-label-sm text-label-sm active:bg-primary/5 transition-colors" id="switch-account-btn" type="button">
+      Switch
+    </button>
+</div>
+<!-- Form Fields -->
+<form class="flex flex-col gap-space-md" id="login-form" onsubmit="event.preventDefault(); triggerLogin();">
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface" for="email-input">Email address</label>
+<div class="relative flex items-center">
+<input autocomplete="email" class="w-full h-12 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/60 focus:bg-surface focus:outline-none transition-all duration-150 shadow-sm" id="email-input" name="email" placeholder="name@example.com" required="" type="email" value="adeel@example.com"/>
+<div class="absolute right-3 text-secondary flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="password-input">Password</label>
+<button class="font-label-sm text-label-sm text-primary font-semibold hover:opacity-85 active:opacity-70 transition-opacity" type="button">
+          Forgot password?
+        </button>
+</div>
+<div class="relative flex items-center">
+<input autocomplete="current-password" class="w-full h-12 pl-4 pr-12 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/60 focus:bg-surface focus:outline-none transition-all duration-150 shadow-sm" id="password-input" name="password" placeholder="••••••••" required="" type="password" value="SuperSecretPassword2024!"/>
+<button aria-label="Toggle password visibility" class="absolute right-1 w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors" id="toggle-pwd-btn" type="button">
+<span class="material-symbols-outlined text-[20px]" id="eye-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Keep Session Pill Toggle -->
+<div class="flex items-center justify-between py-1 mt-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">verified_user</span>
+<span class="font-body-sm text-body-sm text-on-surface">Keep me signed in</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="remember-me" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Primary Login Button -->
+<div class="pt-space-sm flex flex-col gap-3">
+<button class="w-full h-12 px-5 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm active:opacity-90 active:scale-[0.99] transition-all" id="submit-btn" type="submit">
+<span id="btn-text">Log in</span>
+<span class="material-symbols-outlined text-[18px]" id="btn-icon">arrow_forward</span>
+</button>
+<!-- Biometric Fast Login Helper -->
+<button class="w-full h-12 px-4 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 active:bg-surface-container transition-colors shadow-sm" id="biometric-btn" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">fingerprint</span>
+<span>Log in with Passkey / Face ID</span>
+</button>
+</div>
+</form>
+<!-- Real-time Conversational Synthetic Assistant Teaser Card -->
+<div class="mt-space-lg p-3.5 rounded-xl bg-surface-container-low shadow-sm flex items-center gap-3">
+<div class="relative w-9 h-9 rounded-full shrink-0 flex items-center justify-center bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+<span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-secondary ring-2 ring-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[8px] text-on-secondary">auto_awesome</span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-sm text-label-sm text-on-surface truncate">Synth Companion Active</p>
+<p class="font-caption text-caption text-on-surface-variant truncate">Instant summaries & sync ready upon sign in</p>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant/50">chevron_right</span>
+</div>
+<!-- Sign-up Redirect Footer -->
+<div class="pt-space-xl pb-space-md text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+      New here? 
+      <a class="font-label-md text-label-md text-primary font-semibold ml-1 active:underline inline-flex items-center" href="#create-account">
+        Create account
+      </a>
+</p>
+</div>
+</div>
+<script>
+  // Show / Hide Password Micro-interaction
+  const pwdInput = document.getElementById('password-input');
+  const togglePwdBtn = document.getElementById('toggle-pwd-btn');
+  const eyeIcon = document.getElementById('eye-icon');
+
+  if (togglePwdBtn && pwdInput) {
+    togglePwdBtn.addEventListener('click', () => {
+      const isPassword = pwdInput.getAttribute('type') === 'password';
+      pwdInput.setAttribute('type', isPassword ? 'text' : 'password');
+      eyeIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  // Switch account demo interaction
+  const switchBtn = document.getElementById('switch-account-btn');
+  const emailInput = document.getElementById('email-input');
+  if (switchBtn && emailInput) {
+    switchBtn.addEventListener('click', () => {
+      emailInput.value = '';
+      emailInput.focus();
+      pwdInput.value = '';
+    });
+  }
+
+  // Visual feedback on Login submission
+  function triggerLogin() {
+    const btn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnIcon = document.getElementById('btn-icon');
+    
+    if (btn && btnText && btnIcon) {
+      btn.disabled = true;
+      btnText.textContent = 'Authenticating...';
+      btnIcon.textContent = 'hourglass_empty';
+      btnIcon.classList.add('animate-spin');
+
+      setTimeout(() => {
+        btnText.textContent = 'Success!';
+        btnIcon.classList.remove('animate-spin');
+        btnIcon.textContent = 'done';
+        btn.classList.remove('bg-primary');
+        btn.classList.add('bg-secondary');
+      }, 900);
+    }
+  }
+
+  // Passkey prompt micro-delight
+  const bioBtn = document.getElementById('biometric-btn');
+  if (bioBtn) {
+    bioBtn.addEventListener('click', () => {
+      triggerLogin();
+    });
+  }
+</script></main></body></html>

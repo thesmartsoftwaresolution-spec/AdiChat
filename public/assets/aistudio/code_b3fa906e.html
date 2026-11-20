@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#ffffff;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-high":"#ebe7e7","secondary-fixed":"#87f9b6","on-secondary-fixed-variant":"#005230","on-background":"#1c1b1b","on-secondary-container":"#007144","on-surface-variant":"#404942","outline":"#707971","primary-fixed-dim":"#8ed6aa","error-container":"#ffdad6","on-secondary":"#ffffff","surface-dim":"#dcd9d9","outline-variant":"#bfc9c0","surface-container-highest":"#e5e2e1","on-primary-container":"#8bd2a7","primary":"#004327","primary-container":"#0f5c3a","tertiary":"#632528","on-primary":"#ffffff","on-tertiary-fixed-variant":"#743234","on-tertiary-container":"#ffaeae","on-surface":"#1c1b1b","surface-variant":"#e5e2e1","tertiary-fixed-dim":"#ffb3b3","on-tertiary":"#ffffff","background":"#fcf8f8","inverse-primary":"#8ed6aa","secondary-fixed-dim":"#6adc9c","tertiary-fixed":"#ffdad9","surface":"#fcf8f8","on-primary-fixed-variant":"#005231","surface-container":"#f0edec","on-tertiary-fixed":"#3c070c","on-primary-fixed":"#002111","secondary":"#006d41","inverse-surface":"#313030","on-error-container":"#93000a","surface-tint":"#236b47","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-bright":"#fcf8f8","secondary-container":"#84f6b3","surface-container-low":"#f6f3f2","on-secondary-fixed":"#002110","primary-fixed":"#aaf2c5","tertiary-container":"#803b3d","error":"#ba1a1a","inverse-on-surface":"#f3f0ef"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-2xl":"3rem","space-md":"1rem","margin-mobile":"1rem","margin":"1.5rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","gutter":"1rem","space-xl":"2rem","space-sm":"0.5rem","space-xs":"0.25rem"},"fontFamily":{"body-sm":["Inter"],"body-md-medium":["Inter"],"body-lg":["Inter"],"headline-xl":["Inter"],"headline-sm":["Inter"],"label-sm":["Inter"],"timestamp":["Inter"],"caption":["Inter"],"label-md":["Inter"],"headline-lg":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"headline-lg-mobile":["Inter"]},"fontSize":{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"body-md-medium":["15px",{"lineHeight":"22px","letterSpacing":"-0.004em","fontWeight":"500"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-sm":["17px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"600"}],"label-sm":["12px",{"lineHeight":"16px","fontWeight":"500"}],"timestamp":["11px",{"lineHeight":"14px","letterSpacing":"0.01em","fontWeight":"400"}],"caption":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-md":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-md":["15px",{"lineHeight":"22px","letterSpacing":"-0.004em","fontWeight":"400"}],"headline-md":["20px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg-mobile":["22px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}]}}}}</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-container-lowest text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-space-sm flex items-center justify-between gap-space-xs"><div class="flex items-center min-w-0 flex-1"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-low transition-colors shrink-0" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><div class="flex flex-col justify-center min-w-0 pr-space-xs"><h1 class="font-headline-sm text-headline-sm text-on-surface truncate">New Group   Select Members</h1></div></div><div class="flex items-center gap-space-xs shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 bg-surface-container-lowest"><div class="flex flex-col w-full pb-24">
+<!-- Search Bar Container -->
+<div class="px-margin-mobile pt-space-sm pb-space-xs sticky top-0 z-20 bg-surface-container-lowest/95 backdrop-blur-md">
+<div class="relative flex items-center w-full h-12 rounded-xl bg-surface-container-low shadow-sm">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full h-full pl-11 pr-10 bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" id="contact-search" placeholder="Search name or phone number" type="text"/>
+<button aria-label="Clear search" class="absolute right-3 w-6 h-6 flex items-center justify-center rounded-full text-outline hover:text-on-surface opacity-0 transition-opacity" id="clear-search-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</div>
+</div>
+<!-- Selected Members Tray -->
+<div class="flex flex-col px-margin-mobile py-space-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Group Roster</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold" id="selected-counter">4 of 256 selected</span>
+</div>
+<!-- Horizontal Scrollable Avatars/Chips -->
+<div class="flex items-center gap-space-sm overflow-x-auto py-1 scroll-smooth" id="selected-tray">
+<!-- AI Chip: Study Buddy -->
+<div class="flex items-center gap-1.5 h-9 pl-1.5 pr-2.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant shrink-0 shadow-sm transition-all duration-200" id="chip-ai-1">
+<div class="relative w-6 h-6 rounded-full overflow-hidden bg-primary-container p-[1px] flex items-center justify-center shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="Stylized glowing geometric avatar representing conversational synthetic intelligence, soft deep emerald tone minimal graphic vector style portrait on neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG8DQ0pOdGAOfbAowc_CnMfiN5i2vUPOuiBMAMs8EOinGpWLgwo14pI3ESFftoXHDgHsRnnhfBCT9DPnCjZzYT-RxCqtTXwumaQs_toyRt6ZpcUkZ5xxSxODKgjxp0CIguXwhd-pHpxEBxzktWrJJy8D_CnBbWye8NipUtKorX1VzgXfpndRJDnoFxyUFHGqcgSRKowSpgU_qAC0bmI9KhnUVtvPgTCpmmAxDT4Cot"/>
+</div>
+<span class="font-label-sm text-label-sm font-semibold truncate max-w-[90px]">Study Buddy</span>
+<button aria-label="Remove Study Buddy" class="w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors" onclick="removeMember('ai-1')" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- User Chip: Ayesha -->
+<div class="flex items-center gap-1.5 h-9 pl-1.5 pr-2.5 rounded-full bg-surface-container text-on-surface shrink-0 shadow-sm transition-all duration-200" id="chip-user-1">
+<img class="w-6 h-6 rounded-full object-cover shrink-0" data-alt="Portrait photo of a young professional woman with warm ambient lighting, elegant dark green wardrobe, natural friendly smile, high fidelity headshot on minimalist clean studio backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKFgNvKMQ-okOw_Cuab2ZbP5CxhotYCQd-IqLPeRAVYxY3-bgBzQa1Z9Oxd8yobWegzuuo3hrbbHyNdFdn813vLaQkCqutGS1wxaDD5BARz99843iQhovPZ1jdpNZYiuqKpiU6IsLncXpyXhzOleWowFzfAawj7ioYWr8J6JWj0pVhXML6TI5wBQEY4EyQlwlZ-JcVpqmzyjDh874Qxf45UXHU9mLxBwtc_bktqu6d"/>
+<span class="font-label-sm text-label-sm font-semibold truncate max-w-[85px]">Ayesha Khan</span>
+<button aria-label="Remove Ayesha Khan" class="w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors" onclick="removeMember('user-1')" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- User Chip: Hamza -->
+<div class="flex items-center gap-1.5 h-9 pl-1.5 pr-2.5 rounded-full bg-surface-container text-on-surface shrink-0 shadow-sm transition-all duration-200" id="chip-user-3">
+<img class="w-6 h-6 rounded-full object-cover shrink-0" data-alt="Professional modern headshot of a confident young South Asian man with glasses, stylish dark jacket, soft cinematic lighting, neutral studio portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXW2h8HLs4dh2f-YHL2OO44BXxIu3sG6RRp7DlVDbFqI-0iJojcZljQ1eixEKjuN0PIsvHVyWRw9iv0__rc-fDiZrR_L0jssvWQjdpqjnH7JbbVBNu_Tl378xABHwxha60QXRurK7VUgFtcIaa_vnA0qQD6KC9DZCMys1MAyhEyMklmaifJnSzZr_pZYVMPPPf_4uBQGS3IuwaP7LHWKLOkIHQreUOcPK7AKhKDMOE"/>
+<span class="font-label-sm text-label-sm font-semibold truncate max-w-[85px]">Hamza Tariq</span>
+<button aria-label="Remove Hamza Tariq" class="w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors" onclick="removeMember('user-3')" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- User Chip: Sara -->
+<div class="flex items-center gap-1.5 h-9 pl-1.5 pr-2.5 rounded-full bg-surface-container text-on-surface shrink-0 shadow-sm transition-all duration-200" id="chip-user-4">
+<img class="w-6 h-6 rounded-full object-cover shrink-0" data-alt="Candid studio portrait photo of a smiling female engineer, ambient deep pine green background tones, soft ring lighting, high key portraiture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhlVczThgdk6WQAthZTvT_d6reT-XHcwtndGtZcwjCi81Vxe7rGIFtMBMwZAGEndz4pzl3atLkKBdhKBjxtKZn-OFx_XZggTGEifpIGicIilwhF0F2hqnH1Xm4BGMSbn5IBauqr5ONNB-EXz9MR41X8zjxJmYztTyVVzoPXyUnqqUBCBmkT1aH2iBz9IZxLgcDLGC06YbviNURpa1x98lYS3ekzQWjU4EnupHdLGrX"/>
+<span class="font-label-sm text-label-sm font-semibold truncate max-w-[85px]">Sara Ahmed</span>
+<button aria-label="Remove Sara Ahmed" class="w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors" onclick="removeMember('user-4')" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- AI Assistants Section -->
+<div class="px-margin-mobile pt-space-sm pb-space-xs">
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wide">Synthetic Communicators</h2>
+</div>
+<span class="font-caption text-caption text-outline">Smart Co-pilots</span>
+</div>
+<p class="font-caption text-caption text-outline mb-space-sm">Add autonomous conversational intelligence personas to this group</p>
+<!-- AI Cards Stack -->
+<div class="flex flex-col gap-space-xs">
+<!-- AI Item 1: Study Buddy (Selected) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-ai-1" onclick="toggleMember('ai-1')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-12 h-12 shrink-0">
+<!-- 2px gradient halo ring with canvas spacer -->
+<div class="w-full h-full rounded-full p-[2px] bg-gradient-to-tr from-primary to-secondary-fixed">
+<div class="w-full h-full rounded-full p-[2px] bg-surface-container-lowest">
+<img class="w-full h-full rounded-full object-cover" data-alt="Abstract geometric avatar icon with gentle emerald halo nodes for high performance synthetic research assistant, photorealistic high end rendering, studio illumination" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR7tEoxAMLQBWayjafgdndl7diQTONoqzOzWg-yg3Kn3CAVxUYBPRROl32GiHbSykM89raPi0-X2_Vf5pDsqbkMpFXKo3OPFI7dv0Ea0f7WZMchGjD65JaVVFXTxAItK-wEjXvxP4AnmZQEuuixpURGVbsnTzkuDAU018tRci9fPvgjabBffjCzGknGQqn3_LlxcA-YLTXcWPYqYpWPDx_5aL4xsFhYnGxru-S_zvb"/>
+</div>
+</div>
+<div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Study Buddy AI</span>
+<!-- AI Micro Badge -->
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-primary text-on-primary text-[10px] font-semibold leading-tight">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">arrow_back_ios_new</span>
+                AI
+              </span>
+</div>
+<span class="font-caption text-caption text-outline truncate">Research & study assistant</span>
+</div>
+</div>
+<!-- Custom Checkbox -->
+<div class="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-transform" id="check-box-ai-1">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+<!-- AI Item 2: Code Reviewer (Unselected) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-ai-2" onclick="toggleMember('ai-2')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-12 h-12 shrink-0">
+<div class="w-full h-full rounded-full p-[2px] bg-gradient-to-tr from-primary to-secondary-fixed">
+<div class="w-full h-full rounded-full p-[2px] bg-surface-container-lowest">
+<img class="w-full h-full rounded-full object-cover" data-alt="Refined digital node icon with subtle matrix glow representing automated software architecture and debugging assistant, clean editorial 3d render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuaJODXvTdK4JYC6NEAQutZCuWHiGAF8vFpwzJ8Cclq2Tpfa633JX37OxtoENNcih_xVedvsIVPWiE6vhZZAeLvI64AnMlDLLCeFYncKkTsKfBk3ukRR9vp00QxvT1jL-t7HCgXXfCaqbwq3QLjA1QEsPRf8DXFugx6kZhnJl1PeUmFFQQFqafBioa0L9YmqZrpSrJvSdhNn9Y4XN4YY0Kx-3ydt2M3y2HqCTcHms7"/>
+</div>
+</div>
+<div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Code Reviewer AI</span>
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-primary text-on-primary text-[10px] font-semibold leading-tight">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">arrow_back_ios_new</span>
+                AI
+              </span>
+</div>
+<span class="font-caption text-caption text-outline truncate">Code snippets & debugging helper</span>
+</div>
+</div>
+<!-- Custom Checkbox (Unchecked state) -->
+<div class="w-6 h-6 rounded-lg bg-surface-container-high text-transparent flex items-center justify-center shrink-0 transition-transform" id="check-box-ai-2">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Contacts List Alphabetically Categorized -->
+<div class="px-margin-mobile pt-space-md flex flex-col gap-space-md">
+<!-- Section Header -->
+<div class="flex items-center justify-between">
+<h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wide">Contacts</h2>
+<span class="font-caption text-caption text-outline">Sorted alphabetically</span>
+</div>
+<!-- Group A -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-label-sm text-label-sm font-bold">A</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact 1: Ayesha Khan (Selected) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-1" onclick="toggleMember('user-1')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="Portrait photo of a young professional woman with warm ambient lighting, elegant dark green wardrobe, natural friendly smile, high fidelity headshot on minimalist clean studio backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfKl4ydWegotIwQfkJt2JCFEULMJvYqCTkpepNryWZgvRI18h9cszDZv5wtqj58rQRsA_VoV8FUHAjLvgIRcIqVrIhyZvqjGjGSmJqM1m2poQ9mACSriEIL74Ea_Jw49bu2fTORW45BMAlkI8pAm85SjQRUCkGCRV-bg8QQZW3cWojeOYQ2j9rWaX3r8DptKE8QC8o4ofXGPUj-Uz9t03t-5CrFKV9KCwE652mlBzI"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Ayesha Khan</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-primary font-medium">Lead Designer</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">ayesha@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-transform" id="check-box-user-1">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Group B -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-surface-container-high text-on-surface flex items-center justify-center font-label-sm text-label-sm font-bold">B</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact 2: Bilal Sheikh (Unchecked) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-2" onclick="toggleMember('user-2')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="High contrast professional portrait of an architect man wearing a minimal black turtleneck, soft daylight, warm neutral background, clean aesthetic photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDofgThZzsjqQR9BbLudRq0PVGJKu29IQY8ShfPVsxT8k1rszIPNgqQKJ5cEdVk3TIvGROaTgU9Npdc66OiGaXHb9646iy3wdR4VCbXMueKhxsAAsPKNhzVJGiV9rTepRfl1tlKWgPG8k4T6TQJbQloFAIvh5tj1uitNCOa0uIr4zo_h2qUHFP2m3xOxP3AI7R5AZD5DcbkaoCQpym2BkF6XtEFjY_lkp1GwKqnlLOY"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-surface-dim"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Bilal Sheikh</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-on-surface-variant font-medium">Solutions Architect</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">bilal@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-surface-container-high text-transparent flex items-center justify-center shrink-0 transition-transform" id="check-box-user-2">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Group H -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-label-sm text-label-sm font-bold">H</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact 3: Hamza Tariq (Selected) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-3" onclick="toggleMember('user-3')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="Professional modern headshot of a confident young South Asian man with glasses, stylish dark jacket, soft cinematic lighting, neutral studio portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiNK7YEk44orQNdcxNH9IXtclrDIsKl03z8EfrWHuhmW3ydPCPitnAGnSCorfO_NeqfRE1IgSczDVlY7xPWNPAUcHY47aRdqPOrx5pFR6tjb2PClNnbJUhHCJBvfaMA9K8pXgnkpvXiFE03_Ydh6dqMxn3RwWrWmJ8xIAdYCKowckUSYujFpd6sW0kzXmuU78gppbq91lMZbty6nA6vZ5dGm40TvDS6ZP3oT-d14W4"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Hamza Tariq</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-primary font-medium">Mobile Lead</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">hamza@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-transform" id="check-box-user-3">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Group O -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-surface-container-high text-on-surface flex items-center justify-center font-label-sm text-label-sm font-bold">O</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact: Omar Farooq (Unchecked) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-5" onclick="toggleMember('user-5')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="Headshot of a smiling professional software engineer man outdoors against modern architecture, clean natural light, crisp focus and deep natural green tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfaAh2uyRg5sSzN2MgQMfeZF-g6Zd4WacOE5OOk5MvBRiWD8r5ehdXXoM5SHC71sbT74R6nSwJNCQjOlKrJKNgR4oLivq4PjI-7sbR16sdVXK2ypkpr-J2O4N4LOv4jWbMd15y30mPt4eO-KnYphOSpQsLG-PQAbZD7il6zA0nq0WX6cjQisyjyrvpSqFoJHGfatSwm0ojBybtOlhvFC0yyH3FlK9Tyz3E_E-73vdg"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Omar Farooq</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-on-surface-variant font-medium">DevOps Lead</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">omar@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-surface-container-high text-transparent flex items-center justify-center shrink-0 transition-transform" id="check-box-user-5">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Group S -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-label-sm text-label-sm font-bold">S</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact 4: Sara Ahmed (Selected) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-4" onclick="toggleMember('user-4')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="Candid studio portrait photo of a smiling female engineer, ambient deep pine green background tones, soft ring lighting, high key portraiture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB7PcKHknYJyffzol1X2Y2mpEUkTEhQiqzgym_cO8nei633uIaLKaNCdzI1yH3disCtBxUCNLJt0dVAELlfPONrlzdupaGUJYk8BuMxNuyx3YIRDFOe8RSuo2v3suAOuLisD0bSWXgCIbiOyaaMsgri60VXTY6vx6Fcxrc5xqefuv3KTvike56eAWuIk44pBCFezVw6OM7DISd17Q0x-L9LSPbgjcVD3XdmWEd6W6b"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Sara Ahmed</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-primary font-medium">ML Engineer</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">sara@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-transform" id="check-box-user-4">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Group Z -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2 py-0.5">
+<span class="w-6 h-6 rounded-md bg-surface-container-high text-on-surface flex items-center justify-center font-label-sm text-label-sm font-bold">Z</span>
+<div class="h-0.5 flex-1 bg-surface-container-low rounded-full"></div>
+</div>
+<!-- Contact 6: Zainab Fatima (Unchecked) -->
+<div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container active:scale-[0.99] transition-all cursor-pointer shadow-sm select-none" id="item-user-6" onclick="toggleMember('user-6')">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-11 h-11 shrink-0">
+<img class="w-full h-full rounded-full object-cover shadow-sm" data-alt="Elegant professional portrait photo of a corporate woman smiling gently in minimalist office environment with dark green foliage and soft morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnm7BfmR46R4TutH5WFUcs8oFNf3oId8wgiCd20A9j5-tQ-A-oK_TlPKX6hOczXh7rwhVDJQ32iFiLpWZ6CBc0zUyLqdi4EWtds7KlEHJAPdKWavmh5W_fuWbVr16G7y0hTf3zDGGifs6g-LS5xGCWEJGPqhp1JPrhxJd26xLu9SZi4FgZmGdbJJy-RWM6-3aK4zvWnrN9VJQxYuYwR_Jj9gnuvyYEYrusvLF08GQQ"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-surface-container-lowest p-[2px]">
+<div class="w-full h-full rounded-full bg-secondary"></div>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Zainab Fatima</span>
+<div class="flex items-center gap-1.5 truncate">
+<span class="font-caption text-caption text-on-surface-variant font-medium">Product Manager</span>
+<span class="text-outline text-[8px]">•</span>
+<span class="font-caption text-caption text-outline truncate">zainab@example.com</span>
+</div>
+</div>
+</div>
+<div class="w-6 h-6 rounded-lg bg-surface-container-high text-transparent flex items-center justify-center shrink-0 transition-transform" id="check-box-user-6">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Bar with Action pill and Next button -->
+<div class="fixed bottom-0 left-0 right-0 z-40 p-margin-mobile bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/90 to-transparent pb-safe pointer-events-none">
+<div class="w-full max-w-md mx-auto flex items-center justify-between gap-space-sm pointer-events-auto">
+<!-- Selection Indicator Pill -->
+<div class="flex items-center gap-2 px-3.5 h-12 rounded-xl bg-surface-container shadow-md text-on-surface">
+<span class="material-symbols-outlined text-primary text-[20px]">group_add</span>
+<span class="font-label-md text-label-md text-on-surface whitespace-nowrap" id="floating-count-label">4 members</span>
+</div>
+<!-- Forward / Next Primary Action Button -->
+<button class="flex-1 flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-primary hover:bg-primary-container active:scale-[0.98] text-on-primary font-label-md text-label-md shadow-lg shadow-primary/20 transition-all" id="next-submit-btn" onclick="handleNextProceed()" type="button">
+<span>Next Step</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  const memberDirectory = {
+    'ai-1': { name: 'Study Buddy', isAi: true, selected: true },
+    'ai-2': { name: 'Code Reviewer', isAi: true, selected: false },
+    'user-1': { name: 'Ayesha Khan', isAi: false, selected: true },
+    'user-2': { name: 'Bilal Sheikh', isAi: false, selected: false },
+    'user-3': { name: 'Hamza Tariq', isAi: false, selected: true },
+    'user-4': { name: 'Sara Ahmed', isAi: false, selected: true },
+    'user-5': { name: 'Omar Farooq', isAi: false, selected: false },
+    'user-6': { name: 'Zainab Fatima', isAi: false, selected: false }
+  };
+
+  function updateUIState() {
+    let count = 0;
+    Object.keys(memberDirectory).forEach(id => {
+      const isSelected = memberDirectory[id].selected;
+      if (isSelected) count++;
+
+      const checkEl = document.getElementById(`check-box-${id}`);
+      if (checkEl) {
+        if (isSelected) {
+          checkEl.classList.remove('bg-surface-container-high', 'text-transparent');
+          checkEl.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        } else {
+          checkEl.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          checkEl.classList.add('bg-surface-container-high', 'text-transparent');
+        }
+      }
+
+      const chipEl = document.getElementById(`chip-${id}`);
+      if (chipEl) {
+        if (isSelected) {
+          chipEl.classList.remove('hidden');
+        } else {
+          chipEl.classList.add('hidden');
+        }
+      }
+    });
+
+    const counterTop = document.getElementById('selected-counter');
+    const counterPill = document.getElementById('floating-count-label');
+    const nextBtn = document.getElementById('next-submit-btn');
+
+    if (counterTop) counterTop.innerText = `${count} of 256 selected`;
+    if (counterPill) counterPill.innerText = `${count} selected`;
+
+    if (count === 0) {
+      nextBtn.classList.add('opacity-50', 'pointer-events-none');
+    } else {
+      nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+    }
+  }
+
+  function toggleMember(id) {
+    if (!memberDirectory[id]) return;
+    memberDirectory[id].selected = !memberDirectory[id].selected;
+    updateUIState();
+  }
+
+  function removeMember(id) {
+    if (!memberDirectory[id]) return;
+    memberDirectory[id].selected = false;
+    updateUIState();
+  }
+
+  function handleNextProceed() {
+    const selectedList = Object.keys(memberDirectory)
+      .filter(k => memberDirectory[k].selected)
+      .map(k => memberDirectory[k].name);
+    
+    // Smooth interaction feedback
+    const btn = document.getElementById('next-submit-btn');
+    btn.classList.add('scale-95');
+    setTimeout(() => {
+      btn.classList.remove('scale-95');
+    }, 150);
+  }
+
+  // Real-time search filter with subtle empty highlight
+  const searchInput = document.getElementById('contact-search');
+  const clearBtn = document.getElementById('clear-search-btn');
+
+  if (searchInput && clearBtn) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      clearBtn.style.opacity = q.length > 0 ? '1' : '0';
+
+      Object.keys(memberDirectory).forEach(id => {
+        const itemEl = document.getElementById(`item-${id}`);
+        if (itemEl) {
+          const name = memberDirectory[id].name.toLowerCase();
+          if (name.includes(q) || q === '') {
+            itemEl.style.display = 'flex';
+          } else {
+            itemEl.style.display = 'none';
+          }
+        }
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearBtn.style.opacity = '0';
+      searchInput.focus();
+      Object.keys(memberDirectory).forEach(id => {
+        const itemEl = document.getElementById(`item-${id}`);
+        if (itemEl) itemEl.style.display = 'flex';
+      });
+    });
+  }
+
+  // Run initial state update
+  updateUIState();
+</script></main></body></html>

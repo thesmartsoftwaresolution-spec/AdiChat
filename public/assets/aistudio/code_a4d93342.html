@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#ffffff;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#707971", "on-surface-variant": "#404942", "surface-variant": "#e5e2e1", "on-secondary-fixed-variant": "#005230", "on-background": "#1c1b1b", "on-primary-fixed": "#002111", "surface-container": "#f0edec", "primary-fixed-dim": "#8ed6aa", "on-primary-fixed-variant": "#005231", "inverse-primary": "#8ed6aa", "on-error-container": "#93000a", "tertiary-container": "#803b3d", "on-primary": "#ffffff", "on-secondary": "#ffffff", "outline-variant": "#bfc9c0", "inverse-surface": "#313030", "surface-container-highest": "#e5e2e1", "surface": "#fcf8f8", "surface-container-high": "#ebe7e7", "tertiary-fixed-dim": "#ffb3b3", "surface-dim": "#dcd9d9", "error": "#ba1a1a", "surface-bright": "#fcf8f8", "primary-container": "#0f5c3a", "surface-container-lowest": "#ffffff", "secondary-fixed": "#87f9b6", "surface-tint": "#236b47", "error-container": "#ffdad6", "tertiary-fixed": "#ffdad9", "primary": "#004327", "on-tertiary-fixed-variant": "#743234", "background": "#fcf8f8", "on-primary-container": "#8bd2a7", "on-tertiary": "#ffffff", "on-error": "#ffffff", "on-secondary-fixed": "#002110", "on-secondary-container": "#007144", "inverse-on-surface": "#f3f0ef", "on-tertiary-container": "#ffaeae", "on-tertiary-fixed": "#3c070c", "tertiary": "#632528", "secondary-fixed-dim": "#6adc9c", "primary-fixed": "#aaf2c5", "surface-container-low": "#f6f3f2", "on-surface": "#1c1b1b", "secondary-container": "#84f6b3", "secondary": "#006d41" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2rem", "margin": "1.5rem", "space-md": "1rem", "space-2xl": "3rem", "gutter": "1rem", "margin-mobile": "1rem", "space-sm": "0.5rem", "gutter-mobile": "0.75rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, "fontFamily": { "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-xl": ["Inter"], "headline-lg": ["Inter"], "caption": ["Inter"], "timestamp": ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md-medium": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"], "body-sm": ["Inter"] }, "fontSize": { "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "headline-sm": ["17px", {"lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600"}], "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}], "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600"}], "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}], "timestamp": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}], "body-md": ["15px", {"lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "headline-lg-mobile": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600"}], "body-md-medium": ["15px", {"lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500"}], "headline-md": ["20px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-container-lowest text-on-surface font-body-md antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(10,10,10,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0 flex-1"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface hover:bg-surface-container-low transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface truncate pr-space-xs">Admin   Developer Profile</h1></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="More options" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">more_vert</span></button><div class="relative flex items-center justify-center ml-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-secondary rounded-full ring-2 ring-surface-container-lowest"></span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full pb-safe">
+<!-- Toast Notification -->
+<div class="mx-margin-mobile mt-space-sm mb-space-xs transition-all duration-300 transform translate-y-0 opacity-100" id="toast-banner">
+<div class="flex items-center justify-between gap-space-sm bg-primary-fixed text-on-primary-fixed px-space-md py-space-sm rounded-xl shadow-sm">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-sm text-body-sm font-body-md-medium truncate">Developer profile updated successfully</span>
+</div>
+<button aria-label="Dismiss banner" class="w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-secondary-fixed/50 transition-colors" onclick="dismissToast()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Visibility Toggle Master Card -->
+<section class="px-margin-mobile py-space-xs">
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-sm flex items-start justify-between gap-space-md">
+<div class="flex flex-col gap-1 min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Show Developer Page</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-caption">Public</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant leading-relaxed">
+          When enabled, “About the developer” appears in Settings &amp; Landing page.
+        </p>
+</div>
+<button aria-checked="true" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-primary transition-colors duration-200 ease-in-out focus:outline-none" id="toggle-developer-page" onclick="toggleSwitch(this)" role="switch" type="button">
+<span class="sr-only">Toggle developer page visibility</span>
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface-container-lowest shadow-md ring-0 transition duration-200 ease-in-out translate-x-5 mt-0.5 ml-0.5" id="toggle-handle"></span>
+</button>
+</div>
+</section>
+<!-- Segmented Control / Tabs -->
+<nav aria-label="Profile views" class="px-margin-mobile pt-space-sm pb-space-xs">
+<div class="flex p-1 bg-surface-container-high rounded-xl">
+<button class="flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all bg-primary-container text-on-primary shadow-sm" id="tab-edit" onclick="switchTab('edit')" type="button">
+        Edit Form
+      </button>
+<button class="flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all text-on-surface-variant hover:text-on-surface" id="tab-preview" onclick="switchTab('preview')" type="button">
+        Live Preview
+      </button>
+</div>
+</nav>
+<!-- Main Edit Form Tab Content -->
+<div class="flex flex-col px-margin-mobile pt-space-xs pb-space-2xl gap-space-lg" id="view-edit">
+<!-- Photo Section -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-space-md">
+<!-- Avatar Wrapper -->
+<div class="relative shrink-0">
+<div class="w-[100px] h-[100px] rounded-full bg-primary-container flex items-center justify-center text-on-primary font-headline-xl text-headline-xl tracking-tight shadow-md select-none">
+            AB
+          </div>
+<span class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-secondary ring-2 ring-surface-container-lowest flex items-center justify-center" title="Ready to publish">
+<span class="material-symbols-outlined text-on-secondary text-[12px]">verified</span>
+</span>
+</div>
+<!-- Photo Actions -->
+<div class="flex flex-col gap-space-xs flex-1 min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface">Developer Photo</span>
+<p class="font-caption text-caption text-on-surface-variant">Recommended 400×400px (JPG, WebP, PNG)</p>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="h-9 px-space-sm bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-sm rounded-lg flex items-center gap-1 transition-colors" onclick="triggerUpload()" type="button">
+<span class="material-symbols-outlined text-[16px]">upload</span>
+<span>Upload Photo</span>
+</button>
+<button class="h-9 px-space-sm bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-sm rounded-lg flex items-center gap-1 transition-colors" onclick="removePhoto()" type="button">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">delete_outline</span>
+<span>Remove</span>
+</button>
+</div>
+</div>
+</div>
+<p class="font-caption text-caption text-on-surface-variant bg-surface-container p-space-xs rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-secondary shrink-0">info</span>
+<span>Shows initials “AB” placeholder until a photo file is uploaded.</span>
+</p>
+</div>
+<!-- Core Bio Fields -->
+<div class="flex flex-col gap-space-md">
+<!-- Full Name -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface" for="input-name">Full Name</label>
+<div class="relative">
+<input class="w-full h-12 px-space-md bg-surface-container-low text-on-surface font-body-md text-body-md rounded-xl outline-none focus:bg-surface-container-lowest transition-colors placeholder:text-outline" id="input-name" placeholder="e.g. Adeel Bhatti" type="text" value="Adeel Bhatti"/>
+</div>
+</div>
+<!-- Professional Subtitle -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface" for="input-subtitle">Subtitle &amp; Primary Role</label>
+<div class="relative">
+<input class="w-full h-12 px-space-md bg-surface-container-low text-on-surface font-body-md text-body-md rounded-xl outline-none focus:bg-surface-container-lowest transition-colors placeholder:text-outline" id="input-subtitle" placeholder="e.g. Developer &amp; Founder" type="text" value="Developer &amp; Founder of AdiChat"/>
+</div>
+</div>
+<!-- Short Bio -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="input-bio">Short Bio</label>
+<span class="font-timestamp text-timestamp text-on-surface-variant font-label-sm" id="bio-counter">168 / 300</span>
+</div>
+<textarea class="w-full p-space-md bg-surface-container-low text-on-surface font-body-md text-body-md rounded-xl outline-none focus:bg-surface-container-lowest transition-colors resize-none leading-relaxed" id="input-bio" maxlength="300" oninput="updateCount('input-bio', 'bio-counter', 300)" rows="3">Passionate software engineer and AI systems architect building next-generation private real-time communication platforms that blend human collaboration with custom synthetic AI agents.</textarea>
+</div>
+<!-- Why I Built AdiChat -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="input-why">Why I built AdiChat</label>
+<span class="font-timestamp text-timestamp text-on-surface-variant font-label-sm" id="why-counter">192 / 400</span>
+</div>
+<textarea class="w-full p-space-md bg-surface-container-low text-on-surface font-body-md text-body-md rounded-xl outline-none focus:bg-surface-container-lowest transition-colors resize-none leading-relaxed" id="input-why" maxlength="400" oninput="updateCount('input-why', 'why-counter', 400)" rows="4">AdiChat was born from a simple belief: AI shouldn't just live in isolated chat windows, but naturally assist conversations inside friendly peer groups and daily chats with end-to-end privacy.</textarea>
+</div>
+</div>
+<!-- Direct Touchpoints / Links Section -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex flex-col gap-0.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Direct Touchpoints</h2>
+<p class="font-caption text-caption text-on-surface-variant">Only filled channels will be visible on the public intro view.</p>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Email Link -->
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md rounded-xl h-12">
+<div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">alternate_email</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant shrink-0 w-16">Email</span>
+<input class="flex-1 bg-transparent text-on-surface font-body-md text-body-md outline-none truncate" placeholder="you@domain.com" type="email" value="adeel@adichat.internal"/>
+</div>
+<!-- WhatsApp Link -->
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md rounded-xl h-12">
+<div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant shrink-0 w-16">WhatsApp</span>
+<input class="flex-1 bg-transparent text-on-surface font-body-md text-body-md outline-none truncate" placeholder="+1 555 0192" type="tel" value="+92 300 1234567"/>
+</div>
+<!-- GitHub Link -->
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md rounded-xl h-12">
+<div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">code</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant shrink-0 w-16">GitHub</span>
+<input class="flex-1 bg-transparent text-on-surface font-body-md text-body-md outline-none truncate" placeholder="github.com/username" type="text" value="github.com/adeelbhatti"/>
+</div>
+<!-- LinkedIn Link -->
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md rounded-xl h-12">
+<div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant shrink-0 w-16">LinkedIn</span>
+<input class="flex-1 bg-transparent text-on-surface font-body-md text-body-md outline-none truncate" placeholder="linkedin.com/in/username" type="text" value="linkedin.com/in/adeelbhatti"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Hidden Preview View (Switched dynamically) -->
+<div class="hidden flex-col px-margin-mobile pt-space-xs pb-space-2xl gap-space-md" id="view-preview">
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-sm flex flex-col items-center text-center gap-space-md">
+<!-- Avatar with AI halo gradient motif -->
+<div class="relative p-1 rounded-full bg-gradient-to-tr from-primary to-secondary">
+<div class="w-24 h-24 rounded-full bg-surface-container-lowest p-0.5">
+<div class="w-full h-full rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-lg text-headline-lg font-bold">
+            AB
+          </div>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Adeel Bhatti</h2>
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="font-label-md text-label-md text-secondary font-medium">Developer &amp; Founder of AdiChat</p>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl text-left flex flex-col gap-space-xs shadow-sm w-full">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">About</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+          Passionate software engineer and AI systems architect building next-generation private real-time communication platforms that blend human collaboration with custom synthetic AI agents.
+        </p>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl text-left flex flex-col gap-space-xs shadow-sm w-full">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Why AdiChat</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+          AdiChat was born from a simple belief: AI shouldn't just live in isolated chat windows, but naturally assist conversations inside friendly peer groups and daily chats with end-to-end privacy.
+        </p>
+</div>
+<!-- Touchpoint badges -->
+<div class="grid grid-cols-2 gap-space-xs w-full pt-space-xs">
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">alternate_email</span>
+<span class="font-caption text-caption truncate font-medium">adeel@adichat.internal</span>
+</div>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">chat</span>
+<span class="font-caption text-caption truncate font-medium">+92 300 1234567</span>
+</div>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">code</span>
+<span class="font-caption text-caption truncate font-medium">github.com/adeelbhatti</span>
+</div>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">share</span>
+<span class="font-caption text-caption truncate font-medium">linkedin.com/in/adeelbhatti</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Actions Bar -->
+<div class="sticky bottom-0 left-0 right-0 p-space-md bg-surface/90 backdrop-blur-xl shadow-lg mt-auto z-40">
+<div class="flex items-center gap-space-sm max-w-lg mx-auto">
+<button class="flex-1 h-12 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center" onclick="handleCancel()" type="button">
+        Cancel
+      </button>
+<button class="flex-[2] h-12 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-colors shadow-md flex items-center justify-center gap-space-xs" onclick="handleSave()" type="button">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+<span>Save Changes</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  function updateCount(inputId, counterId, max) {
+    const input = document.getElementById(inputId);
+    const counter = document.getElementById(counterId);
+    if (input && counter) {
+      counter.textContent = `${input.value.length} / ${max}`;
+    }
+  }
+
+  function dismissToast() {
+    const toast = document.getElementById('toast-banner');
+    if (toast) {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-8px)';
+      setTimeout(() => toast.remove(), 250);
+    }
+  }
+
+  function toggleSwitch(btn) {
+    const isChecked = btn.getAttribute('aria-checked') === 'true';
+    const newState = !isChecked;
+    btn.setAttribute('aria-checked', String(newState));
+    const handle = document.getElementById('toggle-handle');
+    if (newState) {
+      btn.classList.remove('bg-surface-container-highest');
+      btn.classList.add('bg-primary');
+      handle.classList.remove('translate-x-0');
+      handle.classList.add('translate-x-5');
+    } else {
+      btn.classList.remove('bg-primary');
+      btn.classList.add('bg-surface-container-highest');
+      handle.classList.remove('translate-x-5');
+      handle.classList.add('translate-x-0');
+    }
+  }
+
+  function switchTab(target) {
+    const editTab = document.getElementById('tab-edit');
+    const previewTab = document.getElementById('tab-preview');
+    const editView = document.getElementById('view-edit');
+    const previewView = document.getElementById('view-preview');
+
+    if (target === 'edit') {
+      editTab.className = 'flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all bg-primary-container text-on-primary shadow-sm';
+      previewTab.className = 'flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all text-on-surface-variant hover:text-on-surface';
+      editView.classList.remove('hidden');
+      previewView.classList.add('hidden');
+    } else {
+      previewTab.className = 'flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all bg-primary-container text-on-primary shadow-sm';
+      editTab.className = 'flex-1 py-2 px-space-md rounded-lg font-label-md text-label-md text-center transition-all text-on-surface-variant hover:text-on-surface';
+      previewView.classList.remove('hidden');
+      editView.classList.add('hidden');
+    }
+  }
+
+  function triggerUpload() {
+    alert("Photo picker initialized. Recommended format: Square aspect ratio.");
+  }
+
+  function removePhoto() {
+    alert("Profile photo reset to default initials AB.");
+  }
+
+  function handleCancel() {
+    if (confirm("Discard all unsaved edits?")) {
+      window.history.back();
+    }
+  }
+
+  function handleSave() {
+    const toast = document.getElementById('toast-banner');
+    if (!toast) {
+      const newToast = document.createElement('div');
+      newToast.id = 'toast-banner';
+      newToast.className = 'mx-margin-mobile mt-space-sm mb-space-xs transition-all duration-300';
+      newToast.innerHTML = `
+        <div class="flex items-center justify-between gap-space-sm bg-primary-fixed text-on-primary-fixed px-space-md py-space-sm rounded-xl shadow-sm">
+          <div class="flex items-center gap-space-xs min-w-0">
+            <span class="material-symbols-outlined text-[18px] text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            <span class="font-body-sm text-body-sm font-body-md-medium truncate">Developer profile saved and published!</span>
+          </div>
+          <button type="button" onclick="dismissToast()" class="w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-secondary-fixed/50 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      `;
+      document.querySelector('main > div').prepend(newToast);
+    }
+  }
+</script></main></body></html>

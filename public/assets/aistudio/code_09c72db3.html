@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; min-height: 100%; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; display: inline-block; vertical-align: middle; line-height: 1; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'background': '#fcf8f8', 'on-error': '#ffffff', 'error': '#ba1a1a', 'surface-dim': '#dcd9d9', 'on-tertiary-container': '#ffaeae', 'error-container': '#ffdad6', 'on-secondary-container': '#007144', 'secondary': '#006d41', 'outline': '#707971', 'surface-container': '#f0edec', 'surface-tint': '#236b47', 'on-error-container': '#93000a', 'surface-bright': '#fcf8f8', 'surface': '#fcf8f8', 'surface-container-highest': '#e5e2e1', 'outline-variant': '#bfc9c0', 'on-primary-fixed-variant': '#005231', 'primary-fixed-dim': '#8ed6aa', 'on-secondary': '#ffffff', 'inverse-on-surface': '#f3f0ef', 'surface-variant': '#e5e2e1', 'on-secondary-fixed-variant': '#005230', 'on-secondary-fixed': '#002110', 'on-surface': '#1c1b1b', 'on-primary-fixed': '#002111', 'on-primary': '#ffffff', 'on-tertiary-fixed': '#3c070c', 'tertiary': '#632528', 'surface-container-high': '#ebe7e7', 'tertiary-fixed-dim': '#ffb3b3', 'secondary-fixed': '#87f9b6', 'secondary-container': '#84f6b3', 'secondary-fixed-dim': '#6adc9c', 'inverse-primary': '#8ed6aa', 'on-background': '#1c1b1b', 'surface-container-lowest': '#ffffff', 'primary-fixed': '#aaf2c5', 'on-tertiary-fixed-variant': '#743234', 'on-tertiary': '#ffffff', 'primary-container': '#0f5c3a', 'surface-container-low': '#f6f3f2', 'tertiary-fixed': '#ffdad9', 'tertiary-container': '#803b3d', 'inverse-surface': '#313030', 'primary': '#004327', 'on-primary-container': '#8bd2a7', 'on-surface-variant': '#404942' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin-mobile': '1rem', 'gutter-mobile': '0.75rem', 'space-2xl': '3rem', 'space-xl': '2rem', 'margin': '1.5rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'space-lg': '1.5rem', 'gutter': '1rem', 'space-md': '1rem' }, fontFamily: { 'headline-lg-mobile': ['Inter'], 'headline-md': ['Inter'], 'body-md-medium': ['Inter'], 'headline-lg': ['Inter'], 'body-lg': ['Inter'], 'caption': ['Inter'], 'headline-xl': ['Inter'], 'body-md': ['Inter'], 'body-sm': ['Inter'], 'label-md': ['Inter'], 'timestamp': ['Inter'], 'label-sm': ['Inter'], 'headline-sm': ['Inter'] }, fontSize: { 'headline-lg-mobile': ['22px', { lineHeight: '28px', letterSpacing: '-0.015em', fontWeight: '600' }], 'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.01em', fontWeight: '600' }], 'body-md-medium': ['15px', { lineHeight: '22px', letterSpacing: '-0.004em', fontWeight: '500' }], 'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'caption': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'headline-xl': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '600' }], 'body-md': ['15px', { lineHeight: '22px', letterSpacing: '-0.004em', fontWeight: '400' }], 'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'label-md': ['14px', { lineHeight: '20px', fontWeight: '600' }], 'timestamp': ['11px', { lineHeight: '14px', letterSpacing: '0.01em', fontWeight: '400' }], 'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }], 'headline-sm': ['17px', { lineHeight: '22px', letterSpacing: '-0.005em', fontWeight: '600' }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-full"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><h1 class="font-headline-md text-headline-md text-on-surface">Settings</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[22px]">search</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface"><div class="flex flex-col w-full pb-10">
+<!-- Interactive Feedback Snackbars / Toast Overlay Placeholder -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-[-8px]" id="toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm rounded-full shadow-lg flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span>
+<span id="toast-message">Settings updated</span>
+</div>
+</div>
+<div class="px-margin-mobile flex flex-col gap-space-md">
+<!-- Profile Card (Level 2 Elevation with Soft Ambient Shadow) -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-[0_2px_8px_rgba(10,10,10,0.04),0_1px_2px_rgba(10,10,10,0.02)] active:scale-[0.99] transition-transform cursor-pointer relative overflow-hidden">
+<div class="flex items-center gap-space-md">
+<!-- Avatar with Emerald Halo Accent -->
+<div class="relative shrink-0">
+<div class="w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-sm text-headline-sm shadow-sm">
+            AB
+          </div>
+<!-- Online Indicator -->
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-secondary shadow-[0_0_0_2px_#ffffff]"></div>
+</div>
+<!-- User Metadata -->
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-space-xs mb-0.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Adeel Bhatti</h2>
+<span class="bg-primary-container/10 text-primary font-label-sm text-[11px] px-2 py-0.5 rounded-full tracking-wide shrink-0">
+              Super Admin
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">adeel@adichat.internal</p>
+<p class="font-timestamp text-timestamp text-secondary mt-0.5 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            Syncing via Quantum Cloud
+          </p>
+</div>
+<!-- Navigation Glyph -->
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 1: Account -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Account</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Email Address</span>
+<span class="font-caption text-caption text-on-surface-variant truncate">adeel@adichat.internal</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Change Password</span>
+<span class="font-caption text-caption text-on-surface-variant">Last updated 42 days ago</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Security Verification</span>
+<span class="font-caption text-caption text-secondary font-medium">Hardware 2FA Active</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Privacy -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Privacy &amp; Presence</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Last Seen &amp; Online</span>
+<span class="font-caption text-caption text-on-surface-variant">Everyone</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<!-- Read Receipts Switch Toggle (Active #0F5C3A) -->
+<div class="flex items-center justify-between px-space-md py-3.5">
+<div class="flex items-center gap-space-md min-w-0 pr-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">done_all</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Read Receipts</span>
+<span class="font-caption text-caption text-on-surface-variant">Recipients can see when you read their text</span>
+</div>
+</div>
+<button aria-checked="true" class="toggle-switch shrink-0 w-11 h-6 rounded-full bg-primary-container p-0.5 transition-colors focus:outline-none flex items-center" role="switch" type="button">
+<span class="w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-150 ease-out"></span>
+</button>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Disappearing Messages</span>
+<span class="font-caption text-caption text-on-surface-variant">Default timer: Off</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 3: Notifications -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Notifications &amp; Badges</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-3.5">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</div>
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Message Notifications</span>
+</div>
+<button aria-checked="true" class="toggle-switch shrink-0 w-11 h-6 rounded-full bg-primary-container p-0.5 transition-colors focus:outline-none flex items-center" role="switch" type="button">
+<span class="w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-150 ease-out"></span>
+</button>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+</div>
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Group Alerts</span>
+</div>
+<button aria-checked="true" class="toggle-switch shrink-0 w-11 h-6 rounded-full bg-primary-container p-0.5 transition-colors focus:outline-none flex items-center" role="switch" type="button">
+<span class="w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-150 ease-out"></span>
+</button>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<!-- AI Assistant Replies Toggle with Micro AI Sparkle Icon -->
+<div class="flex items-center justify-between px-space-md py-3.5">
+<div class="flex items-center gap-space-md min-w-0 pr-space-xs">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed/30 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">AI Assistant Replies</span>
+<span class="bg-primary text-on-primary text-[10px] font-semibold px-1.5 py-0.2 rounded-full inline-flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]">arrow_back_ios_new</span> AI
+                </span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant">Immediate ping on synthetic agent completion</span>
+</div>
+</div>
+<button aria-checked="true" class="toggle-switch shrink-0 w-11 h-6 rounded-full bg-primary-container p-0.5 transition-colors focus:outline-none flex items-center" role="switch" type="button">
+<span class="w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-150 ease-out"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Section 4: Appearance & Theme -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Appearance &amp; Canvas</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] p-space-md flex flex-col gap-space-md">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">palette</span>
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Theme Mode</span>
+</div>
+<span class="font-caption text-caption text-primary font-medium">Light Preserved</span>
+</div>
+<!-- Theme Segmented Radio Control -->
+<div class="grid grid-cols-3 gap-space-xs p-1 bg-surface-container-low rounded-xl">
+<!-- Light (Checked) -->
+<button class="theme-choice-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg bg-surface-container-lowest shadow-sm transition-all text-primary font-label-md text-label-md">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[18px]">light_mode</span>
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+</div>
+<span class="text-caption font-caption">Light</span>
+</button>
+<!-- Dark -->
+<button class="theme-choice-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+</div>
+<span class="text-caption font-caption">Dark</span>
+</button>
+<!-- System -->
+<button class="theme-choice-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[18px]">settings_brightness</span>
+</div>
+<span class="text-caption font-caption">System</span>
+</button>
+</div>
+</div>
+<div class="h-[1px] bg-surface-container-low"></div>
+<!-- Chat Wallpaper Preview -->
+<div class="flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer rounded-lg p-1">
+<div class="flex items-center gap-space-md min-w-0">
+<!-- Miniature Wallpaper Visual Tile -->
+<div class="w-12 h-14 rounded-lg bg-primary-fixed/20 relative overflow-hidden flex flex-col justify-end p-1 shadow-inner shrink-0">
+<div class="w-full h-3 rounded-full bg-primary/20 mb-1"></div>
+<div class="w-2/3 h-3 rounded-full bg-secondary/30 ml-auto"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Chat Wallpaper</span>
+<span class="font-caption text-caption text-on-surface-variant">Default Emerald Pine Minimalist</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 5: Storage and Data -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Storage and Data</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">data_usage</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Network Usage</span>
+<span class="font-caption text-caption text-on-surface-variant">1.4 GB sent • 4.8 GB received</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">wifi</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Auto-Download Media</span>
+<span class="font-caption text-caption text-on-surface-variant">Photos &amp; Docs on Wi-Fi only</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 6: Highlighted Special Cards (Developer Story & Admin Panel) -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">AdiChat Core Ecosystem</span>
+<!-- Developer Intro Card (Screen 26 Link) -->
+<div class="w-full bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest to-secondary-container/20 rounded-xl p-space-md shadow-[0_2px_8px_rgba(10,10,10,0.04)] cursor-pointer active:scale-[0.99] transition-all" id="btn-developer-intro">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative shrink-0">
+<div class="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[22px]">code_blocks</span>
+</div>
+<div class="absolute -top-1 -right-1 bg-secondary-container text-on-secondary-container w-4 h-4 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px]">star</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">About the Developer</span>
+<span class="bg-primary/10 text-primary text-[11px] font-semibold px-2 py-0.5 rounded-full">Dev Special</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Adeel Bhatti • Learn about AdiChat &amp; developer story</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px] shrink-0">arrow_forward</span>
+</div>
+</div>
+<!-- Admin Panel Row (Screen 27 Link) -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-[0_2px_8px_rgba(10,10,10,0.04)] cursor-pointer active:scale-[0.99] transition-all mt-1" id="btn-admin-dashboard">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-11 h-11 rounded-full bg-surface-container-high text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">admin_panel_settings</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Admin Panel</span>
+<span class="bg-secondary-fixed/50 text-secondary text-[11px] font-semibold px-2 py-0.5 rounded-full">(Admin Only)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Access system metrics, user moderation &amp; controls</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[22px] shrink-0">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 7: Help & Feedback -->
+<div class="flex flex-col gap-space-xs">
+<span class="px-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Assistance</span>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">help_center</span>
+</div>
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Frequently Asked Questions</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+<div class="h-[1px] bg-surface-container-low mx-space-md"></div>
+<div class="flex items-center justify-between px-space-md py-3.5 active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-low text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Contact Support</span>
+<span class="font-caption text-caption text-on-surface-variant">Average response time ~ 2 min</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Section 8: Destructive Action (Log Out Button) -->
+<div class="mt-space-xs">
+<button class="w-full h-12 bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(10,10,10,0.04)] flex items-center justify-center gap-space-xs text-[#DC2626] font-label-md text-label-md active:bg-error-container/20 transition-all cursor-pointer" id="btn-logout-trigger">
+<span class="material-symbols-outlined text-[22px]">logout</span>
+<span>Log Out</span>
+</button>
+<div class="text-center mt-space-sm">
+<p class="font-timestamp text-timestamp text-on-surface-variant/60">AdiChat Mobile Client • v4.12.0 (Build 9042)</p>
+</div>
+</div>
+</div>
+<!-- Logout Confirmation Dialog Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center px-margin-mobile bg-on-surface/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200" id="logout-modal">
+<div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl p-space-lg shadow-[0_8px_24px_rgba(15,92,58,0.15),0_2px_6px_rgba(10,10,10,0.06)] transform scale-95 transition-transform duration-200" id="logout-dialog-box">
+<div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center mb-space-md mx-auto">
+<span class="material-symbols-outlined text-[26px]">logout</span>
+</div>
+<div class="text-center mb-space-lg">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Sign Out of AdiChat?</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          You will need your security credentials and 2FA key to log back in to your active sessions.
+        </p>
+</div>
+<div class="flex flex-col gap-space-xs">
+<button class="w-full h-12 bg-[#DC2626] text-on-error rounded-xl font-label-md text-label-md shadow-sm active:scale-[0.98] transition-transform" id="btn-confirm-logout">
+          Log Out
+        </button>
+<button class="w-full h-12 bg-surface-container-low text-on-surface rounded-xl font-label-md text-label-md active:bg-surface-container transition-colors" id="btn-cancel-logout">
+          Cancel
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initAdiChatSettings() {
+    // 1. Ensure Bottom Nav Settings Tab reflects active status #0F5C3A
+    const navSettingsLink = document.querySelector('nav a[data-path="settings"]');
+    if (navSettingsLink) {
+      navSettingsLink.classList.remove('text-on-surface-variant');
+      navSettingsLink.classList.add('text-primary');
+      const label = navSettingsLink.querySelector('span:last-child');
+      if (label) {
+        label.classList.remove('font-label-sm');
+        label.classList.add('font-label-md');
+      }
+      const icon = navSettingsLink.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400";
+      }
+    }
+
+    // 2. Toast feedback helper
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    let toastTimeout;
+    function showToast(msg) {
+      if (!toast || !toastMessage) return;
+      toastMessage.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-[-8px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-8px]');
+      }, 2200);
+    }
+
+    // 3. Interactive Toggle Switches
+    const toggles = document.querySelectorAll('.toggle-switch');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isChecked = this.getAttribute('aria-checked') === 'true';
+        const thumb = this.querySelector('span');
+        
+        if (isChecked) {
+          this.setAttribute('aria-checked', 'false');
+          this.classList.remove('bg-primary-container');
+          this.classList.add('bg-outline-variant');
+          thumb.classList.remove('translate-x-5');
+          thumb.classList.add('translate-x-0.5');
+          showToast('Setting disabled');
+        } else {
+          this.setAttribute('aria-checked', 'true');
+          this.classList.remove('bg-outline-variant');
+          this.classList.add('bg-primary-container');
+          thumb.classList.remove('translate-x-0.5');
+          thumb.classList.add('translate-x-5');
+          showToast('Setting enabled');
+        }
+      });
+    });
+
+    // 4. Theme Chooser Buttons
+    const themeButtons = document.querySelectorAll('.theme-choice-btn');
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        themeButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm', 'font-label-md');
+          b.classList.add('text-on-surface-variant');
+          const check = b.querySelector('.material-symbols-outlined:last-child');
+          if (check && check.textContent.trim() === 'check_circle') {
+            check.remove();
+          }
+        });
+        this.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm', 'font-label-md');
+        this.classList.remove('text-on-surface-variant');
+        const iconContainer = this.querySelector('.flex.items-center');
+        if (iconContainer && !iconContainer.querySelector('.text-primary')) {
+          const checkIcon = document.createElement('span');
+          checkIcon.className = 'material-symbols-outlined text-[16px] text-primary';
+          checkIcon.textContent = 'check_circle';
+          iconContainer.appendChild(checkIcon);
+        }
+        const labelText = this.querySelector('span.text-caption').textContent;
+        showToast('Theme switched to ' + labelText);
+      });
+    });
+
+    // 5. Special screen trigger interactions (Screen 26 & 27)
+    const btnDev = document.getElementById('btn-developer-intro');
+    if (btnDev) {
+      btnDev.addEventListener('click', () => {
+        showToast('Opening Adeel Bhatti Developer Story (Screen 26)...');
+      });
+    }
+
+    const btnAdmin = document.getElementById('btn-admin-dashboard');
+    if (btnAdmin) {
+      btnAdmin.addEventListener('click', () => {
+        showToast('Opening Admin Dashboard & Metrics (Screen 27)...');
+      });
+    }
+
+    // 6. Destructive Log Out Dialog Modal
+    const logoutTrigger = document.getElementById('btn-logout-trigger');
+    const logoutModal = document.getElementById('logout-modal');
+    const logoutBox = document.getElementById('logout-dialog-box');
+    const btnCancelLogout = document.getElementById('btn-cancel-logout');
+    const btnConfirmLogout = document.getElementById('btn-confirm-logout');
+
+    function openLogoutModal() {
+      if (!logoutModal || !logoutBox) return;
+      logoutModal.classList.remove('opacity-0', 'pointer-events-none');
+      logoutModal.classList.add('opacity-100');
+      logoutBox.classList.remove('scale-95');
+      logoutBox.classList.add('scale-100');
+    }
+
+    function closeLogoutModal() {
+      if (!logoutModal || !logoutBox) return;
+      logoutModal.classList.remove('opacity-100');
+      logoutModal.classList.add('opacity-0', 'pointer-events-none');
+      logoutBox.classList.remove('scale-100');
+      logoutBox.classList.add('scale-95');
+    }
+
+    if (logoutTrigger) logoutTrigger.addEventListener('click', openLogoutModal);
+    if (btnCancelLogout) btnCancelLogout.addEventListener('click', closeLogoutModal);
+    if (btnConfirmLogout) {
+      btnConfirmLogout.addEventListener('click', () => {
+        closeLogoutModal();
+        showToast('Logging out from AdiChat...');
+      });
+    }
+    if (logoutModal) {
+      logoutModal.addEventListener('click', (e) => {
+        if (e.target === logoutModal) closeLogoutModal();
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-label-md"><div class="flex items-center justify-around h-16 px-gutter-mobile"><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="chats" href="#"><span class="material-symbols-outlined text-[24px]">chat_bubble</span><span class="font-label-sm text-label-sm mt-0.5">Chats</span></a><a class="flex flex-col items-center justify-center w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="assistants" href="#"><span class="material-symbols-outlined text-[24px]">auto_awesome</span><span class="font-label-sm text-label-sm mt-0.5">Assistants</span></a><a aria-current="page" class="flex flex-col items-center justify-center w-16 h-12 transition-colors text-primary font-label-md" data-path="settings" href="#"><span class="material-symbols-outlined text-[24px]">settings</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></nav></body></html>

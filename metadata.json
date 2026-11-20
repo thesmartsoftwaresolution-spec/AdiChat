@@ -1,0 +1,6 @@
+{
+  "name": "AdiChat",
+  "description": "Real-time messaging and personal AI assistants platform with direct chats, groups, voice notes, shared media, and admin console.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#ffffff;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#707971", "on-surface-variant": "#404942", "surface-variant": "#e5e2e1", "on-secondary-fixed-variant": "#005230", "on-background": "#1c1b1b", "on-primary-fixed": "#002111", "surface-container": "#f0edec", "primary-fixed-dim": "#8ed6aa", "on-primary-fixed-variant": "#005231", "inverse-primary": "#8ed6aa", "on-error-container": "#93000a", "tertiary-container": "#803b3d", "on-primary": "#ffffff", "on-secondary": "#ffffff", "outline-variant": "#bfc9c0", "inverse-surface": "#313030", "surface-container-highest": "#e5e2e1", "surface": "#fcf8f8", "surface-container-high": "#ebe7e7", "tertiary-fixed-dim": "#ffb3b3", "surface-dim": "#dcd9d9", "error": "#ba1a1a", "surface-bright": "#fcf8f8", "primary-container": "#0f5c3a", "surface-container-lowest": "#ffffff", "secondary-fixed": "#87f9b6", "surface-tint": "#236b47", "error-container": "#ffdad6", "tertiary-fixed": "#ffdad9", "primary": "#004327", "on-tertiary-fixed-variant": "#743234", "background": "#fcf8f8", "on-primary-container": "#8bd2a7", "on-tertiary": "#ffffff", "on-error": "#ffffff", "on-secondary-fixed": "#002110", "on-secondary-container": "#007144", "inverse-on-surface": "#f3f0ef", "on-tertiary-container": "#ffaeae", "on-tertiary-fixed": "#3c070c", "tertiary": "#632528", "secondary-fixed-dim": "#6adc9c", "primary-fixed": "#aaf2c5", "surface-container-low": "#f6f3f2", "on-surface": "#1c1b1b", "secondary-container": "#84f6b3", "secondary": "#006d41" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2rem", "margin": "1.5rem", "space-md": "1rem", "space-2xl": "3rem", "gutter": "1rem", "margin-mobile": "1rem", "space-sm": "0.5rem", "gutter-mobile": "0.75rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, "fontFamily": { "label-sm": ["Inter"], "headline-sm": ["Inter"], "headline-xl": ["Inter"], "headline-lg": ["Inter"], "caption": ["Inter"], "timestamp": ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md-medium": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"], "body-sm": ["Inter"] }, "fontSize": { "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "headline-sm": ["17px", {"lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600"}], "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}], "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600"}], "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}], "timestamp": ["11px", {"lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400"}], "body-md": ["15px", {"lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "headline-lg-mobile": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600"}], "body-md-medium": ["15px", {"lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500"}], "headline-md": ["20px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-container-lowest text-on-surface font-body-md antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(10,10,10,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0 flex-1"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface hover:bg-surface-container-low transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface truncate pr-space-xs">Admin   Ai Assistants</h1></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="More options" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">more_vert</span></button><div class="relative flex items-center justify-center ml-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-secondary rounded-full ring-2 ring-surface-container-lowest"></span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface-container-lowest min-h-screen"><div class="flex flex-col w-full pb-safe">
+<!-- Top Stat Micro-Bento Banner -->
+<section class="px-margin-mobile pt-space-sm pb-space-xs">
+<div class="grid grid-cols-3 gap-gutter-mobile">
+<div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col justify-between shadow-sm">
+<span class="font-caption text-caption text-on-surface-variant">Total Fleet</span>
+<div class="flex items-baseline gap-space-xs mt-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">318</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">smart_toy</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col justify-between shadow-sm">
+<span class="font-caption text-caption text-on-surface-variant">Operational</span>
+<div class="flex items-baseline gap-space-xs mt-space-xs">
+<span class="font-headline-sm text-headline-sm text-secondary">294</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col justify-between shadow-sm">
+<span class="font-caption text-caption text-on-surface-variant">Restricted</span>
+<div class="flex items-baseline gap-space-xs mt-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">24</span>
+<span class="material-symbols-outlined text-[14px] text-outline">pause_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Search & Quick Filters -->
+<section class="px-margin-mobile py-space-sm flex flex-col gap-space-sm">
+<div class="relative w-full h-12 flex items-center">
+<div class="absolute left-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full h-full pl-11 pr-4 bg-surface-container-low rounded-xl text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant outline-none focus:bg-surface-container-lowest transition-all shadow-sm" placeholder="Search assistants by name, creator, or model..." type="search"/>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto py-0.5 no-scrollbar" role="tablist">
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1.5 active:scale-95 transition-all" data-filter="all" type="button">
+<span>All</span>
+<span class="bg-on-primary/20 px-1.5 py-0.5 rounded-full text-[10px] leading-tight">318</span>
+</button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 active:scale-95 transition-all" data-filter="active" type="button">
+<span>Active</span>
+<span class="bg-surface-container text-secondary font-semibold px-1.5 py-0.5 rounded-full text-[10px] leading-tight">294</span>
+</button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 active:scale-95 transition-all" data-filter="disabled" type="button">
+<span>Disabled</span>
+<span class="bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded-full text-[10px] leading-tight">24</span>
+</button>
+</div>
+</section>
+<!-- Usage Limits Configuration Card (Top Collapsible/Feature) -->
+<section class="px-margin-mobile py-space-xs">
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Global Usage Limits</h2>
+<p class="font-caption text-caption text-on-surface-variant">Enforced system-wide across all chat rooms</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">tune</span>
+</div>
+<div class="grid grid-cols-1 gap-space-sm pt-space-sm mt-space-xs">
+<!-- Stepper 1 -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<div class="min-w-0 pr-space-xs">
+<label class="font-body-md-medium text-body-md-medium text-on-surface block truncate" for="limit-assistants">Max Assistants per User</label>
+<span class="font-caption text-caption text-on-surface-variant block">Account creation ceiling</span>
+</div>
+<div class="flex items-center bg-surface-container-low rounded-lg p-0.5 shadow-inner">
+<button aria-label="Decrease max assistants" class="w-8 h-8 flex items-center justify-center rounded text-on-surface active:bg-surface-container-high transition-colors" onclick="adjustStepper('limit-assistants', -1)" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<input class="w-10 text-center font-headline-sm text-headline-sm text-on-surface bg-transparent outline-none p-0 select-none" id="limit-assistants" max="50" min="1" readonly="" type="number" value="5"/>
+<button aria-label="Increase max assistants" class="w-8 h-8 flex items-center justify-center rounded text-on-surface active:bg-surface-container-high transition-colors" onclick="adjustStepper('limit-assistants', 1)" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+<!-- Stepper 2 -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<div class="min-w-0 pr-space-xs">
+<label class="font-body-md-medium text-body-md-medium text-on-surface block truncate" for="limit-daily-msgs">Max Daily AI Messages</label>
+<span class="font-caption text-caption text-on-surface-variant block">Rolling 24-hour quota cap</span>
+</div>
+<div class="flex items-center bg-surface-container-low rounded-lg p-0.5 shadow-inner">
+<button aria-label="Decrease daily AI messages" class="w-8 h-8 flex items-center justify-center rounded text-on-surface active:bg-surface-container-high transition-colors" onclick="adjustStepper('limit-daily-msgs', -10)" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<input class="w-12 text-center font-headline-sm text-headline-sm text-on-surface bg-transparent outline-none p-0 select-none" id="limit-daily-msgs" max="1000" min="10" readonly="" step="10" type="number" value="100"/>
+<button aria-label="Increase daily AI messages" class="w-8 h-8 flex items-center justify-center rounded text-on-surface active:bg-surface-container-high transition-colors" onclick="adjustStepper('limit-daily-msgs', 10)" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-space-md pt-space-xs">
+<span class="font-caption text-caption text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">sync</span>
+          Live cluster sync enabled
+        </span>
+<button class="h-10 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform" id="save-limits-btn" onclick="triggerSaveAnimation()" type="button">
+<span class="material-symbols-outlined text-[16px]">save</span>
+<span>Save Limits</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Live Directory Header -->
+<section class="px-margin-mobile pt-space-md pb-space-xs flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Registered Personas</h3>
+<span class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-2 py-0.5 rounded-full">4 shown</span>
+</div>
+<button class="text-secondary font-label-sm text-label-sm flex items-center gap-0.5 hover:underline" type="button">
+<span>Sort: Traffic</span>
+<span class="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
+</button>
+</section>
+<!-- Assistants List (Stacked Cards) -->
+<section class="px-margin-mobile py-space-xs flex flex-col gap-space-sm">
+<!-- Assistant Card 1 -->
+<article class="bg-surface-container-low rounded-xl p-space-md shadow-sm transition-all flex flex-col gap-space-sm" data-status="active">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<!-- AI Avatar with Gradient Halo -->
+<div class="relative shrink-0 w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-[#0F5C3A] to-[#34B27B] flex items-center justify-center">
+<div class="w-full h-full rounded-full bg-surface-container-lowest overflow-hidden flex items-center justify-center p-[2px]">
+<img class="w-full h-full rounded-full object-cover" data-alt="Photorealistic vibrant academic portrait of an owl robot assistant with glowing emerald sensors and sleek porcelain panels, studio light, clean minimal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0joBb1p3-T2I0LFqotcfP6DCQjNLHrH6dtlduhvpHGvgm0iWSOuHWvEhToJuPKLSXc9Ykf3k8mZXCUyoGSbqM7Na-Fq6MR0IsCLu1B4Yz889pDGNdYz2GfQxDUlJjHWwiK9EWhzeVWXbl_QtNTWxAIg5g8NAqqr8cZtg8ClsvYnczBO3aOpz3l2hy-0i0RfdOrn2lcCceHnZwViqWp9JOkr0GYZWh-2p-LWLGSWqY"/>
+</div>
+<!-- AI Micro Badge -->
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[9px] font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5 shadow-sm">
+<span class="material-symbols-outlined text-[9px]">auto_awesome</span>
+              AI
+            </span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Study Buddy AI</h4>
+<span class="w-2 h-2 rounded-full bg-secondary shrink-0" title="Operational"></span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant truncate">
+              Created by Ayesha Khan • <span class="font-timestamp text-timestamp">Oct 12, 2024</span>
+</p>
+</div>
+</div>
+<!-- Status Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-1">
+<input checked="" class="sr-only peer" onchange="toggleCardStatus(this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Badges / Metrics Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-full font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-secondary">memory</span>
+            Claude 3.5 Sonnet
+          </span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]">chat_bubble_outline</span>
+<span class="font-medium text-on-surface">142k</span> messages
+        </div>
+</div>
+<!-- Card Action Row -->
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-space-xs">
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">block</span>
+<span>Disable</span>
+</button>
+</div>
+<button aria-label="Delete assistant" class="w-9 h-9 flex items-center justify-center rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Assistant Card 2 -->
+<article class="bg-surface-container-low rounded-xl p-space-md shadow-sm transition-all flex flex-col gap-space-sm" data-status="active">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<!-- AI Avatar with Gradient Halo -->
+<div class="relative shrink-0 w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-[#0F5C3A] to-[#34B27B] flex items-center justify-center">
+<div class="w-full h-full rounded-full bg-surface-container-lowest overflow-hidden flex items-center justify-center p-[2px]">
+<img class="w-full h-full rounded-full object-cover" data-alt="Intricate geometric emerald synth humanoid face for an ultra-fast programming code companion, minimalist soft mint ambiance, 3d rendered hyper-detailed avatar icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdLM-fl5zXidkdXnurjbioP2NKlKN7wYilCNpSeNicxwPIWKRi9oBP_q3Je0I9FX446kPld8DcQYcrEMxuEUzoM6IhCkBH4lYMU-iYR9YUyAwaQFAlRmOZ_NeSBP9dBR6xTS-EM3vlOyMF3BOZ16L1uIKgwDlDxyr95RwKhjoNM4jHAZdJGImAfETjtB28RQkSPd5Rl9WvU29Zckb-KG2yd9TqkEYm9HXScywQx2YY"/>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[9px] font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5 shadow-sm">
+<span class="material-symbols-outlined text-[9px]">auto_awesome</span>
+              AI
+            </span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Code Reviewer AI</h4>
+<span class="w-2 h-2 rounded-full bg-secondary shrink-0" title="Operational"></span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant truncate">
+              Created by Hamza Tariq • <span class="font-timestamp text-timestamp">Oct 15, 2024</span>
+</p>
+</div>
+</div>
+<!-- Status Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-1">
+<input checked="" class="sr-only peer" onchange="toggleCardStatus(this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Badges / Metrics Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-full font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-secondary">terminal</span>
+            GPT-4o Embedded
+          </span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]">chat_bubble_outline</span>
+<span class="font-medium text-on-surface">84k</span> messages
+        </div>
+</div>
+<!-- Card Action Row -->
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-space-xs">
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">block</span>
+<span>Disable</span>
+</button>
+</div>
+<button aria-label="Delete assistant" class="w-9 h-9 flex items-center justify-center rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Assistant Card 3 (Disabled State) -->
+<article class="bg-surface-container-low/70 rounded-xl p-space-md shadow-sm transition-all flex flex-col gap-space-sm opacity-90" data-status="disabled">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<!-- AI Avatar with Muted Ring -->
+<div class="relative shrink-0 w-12 h-12 rounded-full p-[2px] bg-outline-variant flex items-center justify-center">
+<div class="w-full h-full rounded-full bg-surface-container-lowest overflow-hidden flex items-center justify-center p-[2px]">
+<img class="w-full h-full rounded-full object-cover grayscale-[40%]" data-alt="Artistic digital painting of an elegant vintage feather quill and scroll morphed into a botanical green android persona, soft warm literary atmosphere, muted emerald highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG8jWRB40jQlaT-g8_3QjQva_78pPDVNmdEYKYjpLwvEZKFqGUVFuWx8SfjwVzY5rVLoqF0pRj9BJ91TRBCQj1pCxiZk86JrMxrWE66HJnw5aVNuu14yL8E76li4DCoxjQbsgMYToYDyen9Fa7WyaC0VtT9Dsyxtj8wyM-2eRc7mClVE_CEBYm4X_1rQuc3SGMaSDiZNgVw_m0ZWY6t4sW55rwS9AqDjS-dPjQLgsO"/>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-outline text-surface-container-lowest text-[9px] font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5 shadow-sm">
+<span class="material-symbols-outlined text-[9px]">auto_awesome</span>
+              AI
+            </span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Urdu Shayar AI</h4>
+<span class="w-2 h-2 rounded-full bg-outline shrink-0" title="Disabled"></span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant truncate">
+              Created by Sara Khan • <span class="font-timestamp text-timestamp">Nov 02, 2024</span>
+</p>
+</div>
+</div>
+<!-- Status Toggle Switch (OFF) -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-1">
+<input class="sr-only peer" onchange="toggleCardStatus(this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Badges / Metrics Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-full font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-outline">translate</span>
+            Llama 3.1 70B
+          </span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]">chat_bubble_outline</span>
+<span class="font-medium text-on-surface">18k</span> messages
+        </div>
+</div>
+<!-- Card Action Row -->
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-space-xs">
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed-dim font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Enable</span>
+</button>
+</div>
+<button aria-label="Delete assistant" class="w-9 h-9 flex items-center justify-center rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</article>
+<!-- Assistant Card 4 -->
+<article class="bg-surface-container-low rounded-xl p-space-md shadow-sm transition-all flex flex-col gap-space-sm" data-status="active">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<!-- AI Avatar with Gradient Halo -->
+<div class="relative shrink-0 w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-[#0F5C3A] to-[#34B27B] flex items-center justify-center">
+<div class="w-full h-full rounded-full bg-surface-container-lowest overflow-hidden flex items-center justify-center p-[2px]">
+<img class="w-full h-full rounded-full object-cover" data-alt="Clean hyper-modern metallic running android athlete portrait with dark pine green accent visor lines and pure white carbon fiber chassis, bright ambient studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU0DHuCJpWml2TsGZ5Ra32RrnfNspFt1xo0g2UHdfX8XapwHrANCp-EzWSvY3kbWZAdMkcXioPxUAEW1ZbzmyV0jiuOjRiCEqxj8l_No6EeVnV_ian-VPvXyT4RiK-S06CDYhRcL5ND-EEeYyYV56T0JA0e80q0azREpH1yg97ys33JUDBLiDB_7pDcRjDfDLv70DZFVxk9pViBCzsZ-a_0DaqmSoqBZGWfMwnvDGE"/>
+</div>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[9px] font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5 shadow-sm">
+<span class="material-symbols-outlined text-[9px]">auto_awesome</span>
+              AI
+            </span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Fitness Coach</h4>
+<span class="w-2 h-2 rounded-full bg-secondary shrink-0" title="Operational"></span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant truncate">
+              Created by Bilal Ahmed • <span class="font-timestamp text-timestamp">Nov 04, 2024</span>
+</p>
+</div>
+</div>
+<!-- Status Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-1">
+<input checked="" class="sr-only peer" onchange="toggleCardStatus(this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Badges / Metrics Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-full font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-secondary">fitness_center</span>
+            Mistral Large
+          </span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]">chat_bubble_outline</span>
+<span class="font-medium text-on-surface">29k</span> messages
+        </div>
+</div>
+<!-- Card Action Row -->
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-space-xs">
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">block</span>
+<span>Disable</span>
+</button>
+</div>
+<button aria-label="Delete assistant" class="w-9 h-9 flex items-center justify-center rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Sticky-styled Minimal Pagination Footbar -->
+<section class="px-margin-mobile py-space-md mb-space-lg">
+<div class="flex items-center justify-between bg-surface-container-low rounded-xl px-space-md py-space-sm shadow-sm">
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">1–4 <span class="font-normal text-on-surface-variant">of 318</span></span>
+<span class="font-caption text-caption text-on-surface-variant">Page 1 of 80</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button aria-label="Previous page" class="w-10 h-10 rounded-lg bg-surface-container-highest text-outline opacity-40 cursor-not-allowed flex items-center justify-center transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button aria-label="Next page" class="w-10 h-10 rounded-lg bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary active:scale-95 flex items-center justify-center transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<script>
+  function adjustStepper(inputId, delta) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    let val = parseInt(input.value, 10) || 0;
+    const min = parseInt(input.min, 10);
+    const max = parseInt(input.max, 10);
+    val += delta;
+    if (!isNaN(min) && val < min) val = min;
+    if (!isNaN(max) && val > max) val = max;
+    input.value = val;
+  }
+
+  function triggerSaveAnimation() {
+    const btn = document.getElementById('save-limits-btn');
+    if (!btn) return;
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span><span>Saving...</span>';
+    btn.classList.add('bg-secondary');
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span><span>Saved!</span>';
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('bg-secondary');
+      }, 1500);
+    }, 600);
+  }
+
+  function toggleCardStatus(checkbox) {
+    const card = checkbox.closest('article');
+    if (!card) return;
+    if (checkbox.checked) {
+      card.classList.remove('opacity-90');
+      card.dataset.status = 'active';
+    } else {
+      card.classList.add('opacity-90');
+      card.dataset.status = 'disabled';
+    }
+  }
+
+  // Filter interaction
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-pill').forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        b.classList.add('bg-surface-container-low', 'text-on-surface');
+      });
+      btn.classList.remove('bg-surface-container-low', 'text-on-surface');
+      btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+      
+      const filter = btn.dataset.filter;
+      const cards = document.querySelectorAll('article[data-status]');
+      cards.forEach(card => {
+        if (filter === 'all' || card.dataset.status === filter) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+</script></main></body></html>

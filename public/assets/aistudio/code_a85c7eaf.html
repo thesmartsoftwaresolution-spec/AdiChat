@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf8f8;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "error": "#ba1a1a", "on-secondary-container": "#007144", "on-primary-container": "#8bd2a7", "on-primary-fixed-variant": "#005231", "error-container": "#ffdad6", "on-surface": "#1c1b1b", "tertiary-container": "#803b3d", "inverse-surface": "#313030", "on-primary": "#ffffff", "on-surface-variant": "#404942", "primary-fixed": "#aaf2c5", "on-error-container": "#93000a", "surface-container-low": "#f6f3f2", "primary-container": "#0f5c3a", "on-secondary-fixed-variant": "#005230", "secondary": "#006d41", "surface-container-highest": "#e5e2e1", "surface-tint": "#236b47", "surface": "#fcf8f8", "tertiary": "#632528", "outline-variant": "#bfc9c0", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb3b3", "on-tertiary-fixed": "#3c070c", "on-secondary": "#ffffff", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "tertiary-fixed": "#ffdad9", "secondary-container": "#84f6b3", "surface-bright": "#fcf8f8", "primary-fixed-dim": "#8ed6aa", "secondary-fixed": "#87f9b6", "surface-container": "#f0edec", "on-tertiary-fixed-variant": "#743234", "on-primary-fixed": "#002111", "surface-container-high": "#ebe7e7", "inverse-primary": "#8ed6aa", "on-background": "#1c1b1b", "surface-variant": "#e5e2e1", "outline": "#707971", "primary": "#004327", "secondary-fixed-dim": "#6adc9c", "background": "#fcf8f8", "on-tertiary-container": "#ffaeae", "inverse-on-surface": "#f3f0ef", "surface-dim": "#dcd9d9", "on-secondary-fixed": "#002110" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-2xl": "3rem", "margin": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-xl": "2rem", "margin-mobile": "1rem", "gutter": "1rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter-mobile": "0.75rem" }, fontFamily: { "body-lg": ["Inter"], "headline-lg": ["Inter"], "label-md": ["Inter"], "timestamp": ["Inter"], "label-sm": ["Inter"], "body-sm": ["Inter"], "caption": ["Inter"], "body-md-medium": ["Inter"], "headline-lg-mobile": ["Inter"], "headline-xl": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, fontSize: { "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "timestamp": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "body-md-medium": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500" }], "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-secondary-container selection:text-on-secondary-container"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-xs min-w-0 flex-1"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container active:scale-95 transition-all shrink-0" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><div class="flex items-center gap-space-sm min-w-0 flex-1"><div class="relative shrink-0"><div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-headline-sm text-headline-sm ring-2 ring-primary/20"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface"></span></div><div class="flex flex-col min-w-0 truncate"><h1 class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">Contact Info</h1><div class="flex items-center gap-1.5 truncate"><span class="font-caption text-caption text-secondary font-medium truncate">Online</span></div></div></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Audio Call" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">call</span></button><button aria-label="Video Call" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">videocam</span></button><button aria-label="Profile details" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></button></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 bg-surface"><div class="flex flex-col w-full pb-safe">
+<!-- Sub-Header / Local Context Bar -->
+<div class="flex items-center justify-between px-margin-mobile py-space-sm bg-surface">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">User Directory</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button aria-label="Share contact profile" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="More contact options" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Profile Hero Section -->
+<section class="flex flex-col items-center px-margin-mobile pt-space-xs pb-space-lg text-center">
+<!-- Circular Avatar with Online Pip -->
+<div class="relative mb-space-md">
+<div class="w-28 h-28 rounded-full bg-surface-container-high overflow-hidden shadow-sm flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Editorial close-up portrait of Ayesha Khan, a confident South Asian female product designer in her early 30s with gentle natural lighting, subtle modern emerald ambient backlight, neutral minimalist studio backdrop, wearing a dark forest green tailored collar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWtY6s9qwQB3Q2LrByZvFW8PCGOUArHYOksWuxjdhoYiU2oJTbXv-Ji7hDoqOs-m3xwU06-c1UG7uoGY8kGAqUx7GGi42cx1o8UH7dWIX6fSFHgz6Ua54bFEU_pMG_aw3R1u43JqRUx-pg2Zm-pS9LUuHgTJrzTogCyXfyCJSf9yNDio4TkW4TjwAqWxlteXapVQbNe0xIzQTIyyzfXMx-pZWaJHWdt9CHAdfv38DW"/>
+</div>
+<!-- Online presence indicator badge with crisp canvas boundary -->
+<span class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-surface flex items-center justify-center">
+<span class="w-3.5 h-3.5 rounded-full bg-secondary"></span>
+</span>
+</div>
+<!-- Name & Verified Handle -->
+<div class="flex items-center justify-center gap-1.5 mb-0.5">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Ayesha Khan</h2>
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm flex items-center gap-1">
+      ayesha@example.com
+    </p>
+<!-- Bio / Status Pill -->
+<div class="max-w-xs bg-surface-container-low rounded-xl px-space-md py-space-xs mb-space-lg shadow-sm">
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+        Senior Product Designer • Exploring multi-agent AI interfaces 🚀
+      </p>
+</div>
+<!-- Primary Quick Actions Row -->
+<div class="grid grid-cols-3 gap-space-sm w-full max-w-sm">
+<!-- Message (Filled Primary) -->
+<button class="h-12 bg-primary-container text-on-primary rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span class="font-label-md text-label-md">Message</span>
+</button>
+<!-- Audio (Tonal Low Elevation) -->
+<button class="h-12 bg-surface-container text-on-surface rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-high active:scale-98 transition-all">
+<span class="material-symbols-outlined text-[20px] text-secondary">call</span>
+<span class="font-label-md text-label-md">Audio</span>
+</button>
+<!-- Video (Tonal Low Elevation) -->
+<button class="h-12 bg-surface-container text-on-surface rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-high active:scale-98 transition-all">
+<span class="material-symbols-outlined text-[20px] text-secondary">videocam</span>
+<span class="font-label-md text-label-md">Video</span>
+</button>
+</div>
+</section>
+<!-- Shared Media, Links & Docs Section -->
+<section class="flex flex-col py-space-md bg-surface-container-low mb-space-sm">
+<div class="flex items-center justify-between px-margin-mobile mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">perm_media</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Shared Media</h3>
+</div>
+<button class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-0.5">
+<span>See all (48)</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<!-- Horizontal Thumbnail Stream -->
+<div class="flex gap-space-sm overflow-x-auto px-margin-mobile py-1 no-scrollbar">
+<!-- Thumbnail 1: Design System Wireframe -->
+<div class="w-24 h-24 rounded-lg bg-surface-container-highest flex-shrink-0 overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Clean minimalist digital design wireframe showing high-contrast UX flow diagrams with forest green accents on a subtle grid canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMiiRBIPyxcrdT28DgBivOCIDGNoFuf_77sbZRMg8j_YLt08yfHIQNRCbPKQ5bwbJQcct7i3kmFVwnH2GNtu4G3M0aUIUsO3hw-8FsPvW_xjw8aNbSAG7VUEH5SQhTqLmnFPjIv9xS2fDwCUUzh8yh8ZUVhqm9brQ3cH1h9OToNoq7uJVsgEGwxUG552t1olzjXUevD6VhBVpzhI5b3wQBEwlGVcJDq1_IU6I4GBF8"/>
+<div class="absolute bottom-1 right-1 bg-inverse-surface/75 text-inverse-on-surface px-1.5 py-0.5 rounded font-timestamp text-timestamp">
+          PNG
+        </div>
+</div>
+<!-- Thumbnail 2: Multi-Agent Architecture Graphic -->
+<div class="w-24 h-24 rounded-lg bg-surface-container-highest flex-shrink-0 overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Technical architectural diagram illustrating multi-agent AI pipeline flow with clean vector nodes and pine green highlights on an off-white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzZd5uT9SW7GTIf9cY0OxhY-K6RIf9P5s_B5u-mgXxWPc_Rt72pXWpbIjDRSQQDcRaa9io7H5thOXhp--GyGeAWJ_SaQKSl71H5__AJjHFlPMB0ME5JLrB_N4rhxbkE50jUZdiLEeDA5gvewNgS9kMmPI655N60MXLMmFpV4uMtsCAp9Pjq84RzcK9DaQwdNlHnsUNzzsVAspCLMewaJjhgCbS1x4WF6do5dmq-dwr"/>
+</div>
+<!-- Thumbnail 3: Workshop Photo -->
+<div class="w-24 h-24 rounded-lg bg-surface-container-highest flex-shrink-0 overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Overhead flatlay photograph of designer sketchbook, iPad pro with stylus sketching mobile user interfaces, and an espresso mug in an airy bright morning studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcP_e5oL3QUte7IgJqFGuojzC9NT4XZba_KJTVp25lKnspOvPWMgAm_t9JUhPC8ROGQd-Tf-HgJlGeCnIC0yULvy51BoHoBhZGs042IVQzOk_ptjhmyseDh2W1l0hYsepQaGI1ehCGpxvNwcPc_-oRnI7D8FFvjMY3fi0yRIAO8wwyf7mUzUK_k2V9gHFJ2Vcp7HWYRbwZIIC3-2Wc6ppW46QuG5oUdSYa0M32Wva5"/>
+</div>
+<!-- Thumbnail 4: PDF Document Card -->
+<div class="w-24 h-24 rounded-lg bg-surface-container flex-shrink-0 p-space-xs flex flex-col justify-between shadow-sm">
+<div class="w-7 h-7 rounded bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</div>
+<div class="min-w-0">
+<p class="font-caption text-caption text-on-surface font-medium truncate">Spec_v3.2.pdf</p>
+<span class="font-timestamp text-timestamp text-on-surface-variant">2.4 MB</span>
+</div>
+</div>
+<!-- Thumbnail 5: Design Moodboard Photo -->
+<div class="w-24 h-24 rounded-lg bg-surface-container-highest flex-shrink-0 overflow-hidden relative shadow-sm">
+<img class="w-full h-full object-cover" data-alt="High-resolution tactile photo of natural organic botanical textures and deep emerald monstera leaves matching a clean digital brand system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkWo539nhA59yhJFKuyHCtL9w2LJZpGmJOoKzXhePpyOktKCsdv13Lg4bieaBaonA3i0MgCkieNZXvtaizBCk7s4PxqsHFMd9_W7WqM2QLnM7yR7OE8QbiQKWZkm8tx4UaPwgDXUFGX7GMUCZrtxq4K-PLSUSCTpD-o40CMtTv0HAeljGb7el5FsPD73X_m2fWTCPDUkR4NtR0AMZX6gmcGMH5Hw2hfj-P_FjE2BdJ"/>
+</div>
+<!-- Thumbnail 6: Link Preview Card -->
+<div class="w-24 h-24 rounded-lg bg-secondary-container/30 flex-shrink-0 p-space-xs flex flex-col justify-between shadow-sm">
+<div class="w-7 h-7 rounded-full bg-secondary text-on-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">link</span>
+</div>
+<div class="min-w-0">
+<p class="font-caption text-caption text-on-surface font-medium truncate">figma.com/@adi</p>
+<span class="font-timestamp text-timestamp text-secondary">External link</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Settings & Preferences List -->
+<section class="px-margin-mobile py-space-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider px-space-xs mb-1">
+      Settings & Security
+    </span>
+<!-- Card 1: Mute Notifications (Toggle) -->
+<div class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">notifications_off</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Mute notifications</span>
+<span class="font-caption text-caption text-on-surface-variant">Alerts and tone sounds</span>
+</div>
+</div>
+<!-- Accessible Custom Switch -->
+<button aria-checked="false" class="w-11 h-6 bg-surface-container-highest rounded-full p-0.5 transition-colors duration-200 flex items-center cursor-pointer focus:outline-none" id="toggle-mute" onclick="const cur = this.getAttribute('aria-checked') === 'true'; this.setAttribute('aria-checked', !cur); document.getElementById('switch-knob').classList.toggle('translate-x-5'); this.classList.toggle('bg-primary-container'); this.classList.toggle('bg-surface-container-highest');" role="switch">
+<span class="w-5 h-5 bg-surface-container-lowest rounded-full shadow-sm transition-transform duration-200 transform translate-x-0" id="switch-knob"></span>
+</button>
+</div>
+<!-- Card 2: Custom Notifications -->
+<button class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-center justify-between shadow-sm hover:bg-surface-container transition-colors text-left">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Custom notifications</span>
+<span class="font-caption text-caption text-on-surface-variant">Default ringtone, vibration pulse</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</button>
+<!-- Card 3: Media Visibility -->
+<button class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-center justify-between shadow-sm hover:bg-surface-container transition-colors text-left">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Media visibility</span>
+<span class="font-caption text-caption text-on-surface-variant">Show in device camera roll</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="font-label-sm text-label-sm">Default (On)</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</button>
+<!-- Card 4: Encryption Status -->
+<div class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-start gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Encryption</span>
+<span class="font-timestamp text-timestamp px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold">Active</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant mt-0.5">
+          End-to-end encrypted with Curve25519. Messages and calls are secured between your devices.
+        </p>
+</div>
+</div>
+</section>
+<!-- Groups in Common Section -->
+<section class="px-margin-mobile py-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-xs mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+        Groups in Common
+      </span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">2 shared</span>
+</div>
+<!-- Group 1 -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-center justify-between shadow-sm hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">code</span>
+</div>
+<div class="flex flex-col min-w-0 truncate">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">Frontend Engineering Guild</span>
+<span class="font-caption text-caption text-on-surface-variant">12 members • Ayesha is Admin</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] shrink-0 ml-2">chevron_right</span>
+</div>
+<!-- Group 2 -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex items-center justify-between shadow-sm hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-11 h-11 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">psychology</span>
+</div>
+<div class="flex flex-col min-w-0 truncate">
+<span class="font-body-md-medium text-body-md-medium text-on-surface truncate">AI Research Group</span>
+<span class="font-caption text-caption text-on-surface-variant">8 members • Active 14m ago</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] shrink-0 ml-2">chevron_right</span>
+</div>
+</section>
+<!-- Danger Actions Section -->
+<section class="px-margin-mobile pt-space-sm pb-space-lg flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider px-space-xs mb-1">
+      Privacy & Safety
+    </span>
+<!-- Block Contact -->
+<button class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-center gap-space-sm shadow-sm hover:bg-error-container/40 active:scale-98 transition-all text-left">
+<div class="w-10 h-10 rounded-full bg-error-container/60 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-error">Block Ayesha Khan</span>
+<span class="font-caption text-caption text-on-surface-variant">Cannot call or send messages</span>
+</div>
+</button>
+<!-- Report Contact -->
+<button class="bg-surface-container-low rounded-xl px-space-md py-space-sm flex items-center gap-space-sm shadow-sm hover:bg-error-container/40 active:scale-98 transition-all text-left">
+<div class="w-10 h-10 rounded-full bg-error-container/60 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">flag</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md-medium text-body-md-medium text-error">Report contact</span>
+<span class="font-caption text-caption text-on-surface-variant">Flag spam or inappropriate behavior</span>
+</div>
+</button>
+</section>
+</div></main></body></html>

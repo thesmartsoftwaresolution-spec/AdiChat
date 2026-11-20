@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-tint": "#236b47", "on-primary-fixed": "#002111", "on-secondary-container": "#007144", "on-error": "#ffffff", "inverse-on-surface": "#f3f0ef", "inverse-primary": "#8ed6aa", "tertiary-fixed": "#ffdad9", "surface": "#ffffff", "on-tertiary-fixed-variant": "#743234", "tertiary": "#632528", "surface-container-highest": "#e5e2e1", "primary-fixed": "#aaf2c5", "secondary-fixed": "#87f9b6", "secondary": "#006d41", "on-background": "#1c1b1b", "on-error-container": "#93000a", "primary-fixed-dim": "#8ed6aa", "on-surface": "#1c1b1b", "surface-container-low": "#f6f8f7", "on-surface-variant": "#404942", "secondary-fixed-dim": "#6adc9c", "outline": "#707971", "surface-container-lowest": "#ffffff", "secondary-container": "#84f6b3", "on-primary-fixed-variant": "#005231", "on-secondary": "#ffffff", "surface-container": "#f0edec", "outline-variant": "#bfc9c0", "surface-container-high": "#ebe7e7", "tertiary-fixed-dim": "#ffb3b3", "background": "#ffffff", "on-tertiary-fixed": "#3c070c", "error": "#ba1a1a", "on-tertiary": "#ffffff", "on-secondary-fixed-variant": "#005230", "surface-bright": "#ffffff", "surface-dim": "#dcd9d9", "on-tertiary-container": "#ffaeae", "on-primary": "#ffffff", "primary": "#0f5c3a", "error-container": "#ffdad6", "tertiary-container": "#803b3d", "surface-variant": "#e5e2e1", "on-primary-container": "#8bd2a7", "inverse-surface": "#313030", "primary-container": "#0f5c3a", "on-secondary-fixed": "#002110" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2rem", "space-md": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-2xl": "3rem", "space-sm": "0.5rem", "margin-mobile": "1rem", "margin": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "0.75rem" }, fontFamily: { "headline-xl": ["Inter"], "timestamp": ["Inter"], "label-sm": ["Inter"], "body-md-medium": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "body-sm": ["Inter"], "label-md": ["Inter"], "headline-sm": ["Inter"], "body-md": ["Inter"], "caption": ["Inter"] }, fontSize: { "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "timestamp": ["11px", { "lineHeight": "14px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "body-md-medium": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg-mobile": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-sm": ["17px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.004em", "fontWeight": "400" }], "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }] } } } }</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary/10"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-14 px-gutter-mobile flex items-center justify-between"><button aria-label="Go back" class="w-11 h-11 -ml-1 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-low active:bg-surface-container transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate max-w-[200px] text-center">Reset Password</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 pb-safe bg-surface"><div class="flex flex-col w-full px-margin-mobile pb-space-2xl">
+<!-- Interactive Form Flow Container -->
+<div class="flex flex-col w-full" id="reset-form-container">
+<!-- Header Icon -->
+<div class="flex items-center justify-center pt-space-md pb-space-sm">
+<div class="w-16 h-16 rounded-full bg-secondary-container/30 flex items-center justify-center relative">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[26px] text-primary" style="font-variation-settings: 'wght' 500;">lock_reset</span>
+</div>
+<span class="material-symbols-outlined absolute -top-1 -right-1 text-primary text-[18px]">auto_awesome</span>
+</div>
+</div>
+<!-- Title & Subtitle -->
+<div class="text-center px-space-xs mt-space-xs mb-space-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Reset password</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-xs">Set a strong new password for your AdiChat account.</p>
+</div>
+<!-- Form Fields Section -->
+<div class="flex flex-col space-y-space-md w-full">
+<!-- New Password -->
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold pl-1" for="new-password">New password</label>
+<div class="relative flex items-center w-full">
+<input autocomplete="new-password" class="w-full h-12 bg-surface-container-low text-on-surface rounded-xl px-4 pr-12 font-body-md text-body-md outline-none focus:bg-surface transition-all placeholder:text-outline" id="new-password" placeholder="••••••••" type="password" value="AdiChat2024!"/>
+<button aria-label="Toggle password visibility" class="absolute right-0 w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" id="toggle-pass-1" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Confirm New Password -->
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold pl-1" for="confirm-password">Confirm new password</label>
+<div class="relative flex items-center w-full">
+<input autocomplete="new-password" class="w-full h-12 bg-surface-container-low text-on-surface rounded-xl px-4 pr-12 font-body-md text-body-md outline-none focus:bg-surface transition-all placeholder:text-outline" id="confirm-password" placeholder="••••••••" type="password" value="AdiChat2024!"/>
+<button aria-label="Toggle password visibility" class="absolute right-0 w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" id="toggle-pass-2" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Password Strength & Checklist Panel -->
+<div class="bg-surface-container-low rounded-xl p-space-md mt-space-md mb-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Security strength</span>
+<div class="flex items-center space-x-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Strong</span>
+</div>
+</div>
+<!-- Micro Progress Meter -->
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden mb-space-sm">
+<div class="h-full bg-primary rounded-full w-full transition-all duration-300"></div>
+</div>
+<!-- Requirements Checklist -->
+<div class="flex flex-col space-y-space-sm pt-space-xs">
+<div class="flex items-center space-x-2">
+<div class="w-4 h-4 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[12px] font-bold">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">At least 8 characters</span>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-4 h-4 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[12px] font-bold">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">At least one uppercase letter</span>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-4 h-4 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-[12px] font-bold">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">At least one number or special character</span>
+</div>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full h-12 bg-primary text-on-primary font-label-md text-label-md rounded-xl shadow-md hover:bg-surface-tint active:scale-[0.99] transition-all flex items-center justify-center space-x-2" id="btn-update-password" type="button">
+<span>Update password</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Delighter Success Confirmation Card -->
+<div class="mt-space-lg w-full bg-surface-container-low rounded-xl p-space-md shadow-sm transition-all duration-300" id="success-card">
+<div class="flex items-start space-x-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-on-secondary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-1.5">
+<h3 class="font-label-md text-label-md text-on-surface">Password updated successfully!</h3>
+<span class="material-symbols-outlined text-primary text-[14px]">arrow_back_ios_new</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+          You can now log in with your new credentials across all your synced devices.
+        </p>
+<!-- Secondary Action inside Card -->
+<div class="mt-space-md">
+<button class="h-10 px-space-md bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:bg-surface-tint active:scale-[0.98] transition-all flex items-center justify-center space-x-1.5 shadow-sm" id="btn-login-now" type="button">
+<span>Log in now</span>
+<span class="material-symbols-outlined text-[16px]">login</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Brand Signature / Security Note -->
+<div class="flex items-center justify-center space-x-1.5 mt-space-lg text-on-surface-variant opacity-75">
+<span class="material-symbols-outlined text-[16px]">format_image_left</span>
+<span class="font-caption text-caption">End-to-end encrypted account protection</span>
+</div>
+</div>
+<script>
+  (function() {
+    // Password visibility toggles
+    const setupToggle = (btnId, inputId) => {
+      const btn = document.getElementById(btnId);
+      const input = document.getElementById(inputId);
+      if (!btn || !input) return;
+      
+      btn.addEventListener('click', () => {
+        const isPassword = input.getAttribute('type') === 'password';
+        input.setAttribute('type', isPassword ? 'text' : 'password');
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.textContent = isPassword ? 'visibility_off' : 'visibility';
+        }
+      });
+    };
+
+    setupToggle('toggle-pass-1', 'new-password');
+    setupToggle('toggle-pass-2', 'confirm-password');
+
+    // Update password button interactive feedback
+    const btnUpdate = document.getElementById('btn-update-password');
+    const successCard = document.getElementById('success-card');
+    
+    if (btnUpdate && successCard) {
+      btnUpdate.addEventListener('click', () => {
+        btnUpdate.classList.add('opacity-75', 'pointer-events-none');
+        btnUpdate.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>Updating...</span>';
+        
+        setTimeout(() => {
+          btnUpdate.classList.remove('opacity-75', 'pointer-events-none');
+          btnUpdate.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span><span>Updated</span>';
+          successCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          successCard.classList.add('ring-2', 'ring-secondary-container');
+          setTimeout(() => {
+            successCard.classList.remove('ring-2', 'ring-secondary-container');
+          }, 1500);
+        }, 600);
+      });
+    }
+
+    const btnLogin = document.getElementById('btn-login-now');
+    if (btnLogin) {
+      btnLogin.addEventListener('click', () => {
+        btnLogin.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Redirecting...</span>';
+      });
+    }
+  })();
+</script></main></body></html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; min-height: 100%; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; display: inline-block; vertical-align: middle; line-height: 1; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'background': '#fcf8f8', 'on-error': '#ffffff', 'error': '#ba1a1a', 'surface-dim': '#dcd9d9', 'on-tertiary-container': '#ffaeae', 'error-container': '#ffdad6', 'on-secondary-container': '#007144', 'secondary': '#006d41', 'outline': '#707971', 'surface-container': '#f0edec', 'surface-tint': '#236b47', 'on-error-container': '#93000a', 'surface-bright': '#fcf8f8', 'surface': '#fcf8f8', 'surface-container-highest': '#e5e2e1', 'outline-variant': '#bfc9c0', 'on-primary-fixed-variant': '#005231', 'primary-fixed-dim': '#8ed6aa', 'on-secondary': '#ffffff', 'inverse-on-surface': '#f3f0ef', 'surface-variant': '#e5e2e1', 'on-secondary-fixed-variant': '#005230', 'on-secondary-fixed': '#002110', 'on-surface': '#1c1b1b', 'on-primary-fixed': '#002111', 'on-primary': '#ffffff', 'on-tertiary-fixed': '#3c070c', 'tertiary': '#632528', 'surface-container-high': '#ebe7e7', 'tertiary-fixed-dim': '#ffb3b3', 'secondary-fixed': '#87f9b6', 'secondary-container': '#84f6b3', 'secondary-fixed-dim': '#6adc9c', 'inverse-primary': '#8ed6aa', 'on-background': '#1c1b1b', 'surface-container-lowest': '#ffffff', 'primary-fixed': '#aaf2c5', 'on-tertiary-fixed-variant': '#743234', 'on-tertiary': '#ffffff', 'primary-container': '#0f5c3a', 'surface-container-low': '#f6f3f2', 'tertiary-fixed': '#ffdad9', 'tertiary-container': '#803b3d', 'inverse-surface': '#313030', 'primary': '#004327', 'on-primary-container': '#8bd2a7', 'on-surface-variant': '#404942' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'margin-mobile': '1rem', 'gutter-mobile': '0.75rem', 'space-2xl': '3rem', 'space-xl': '2rem', 'margin': '1.5rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'space-lg': '1.5rem', 'gutter': '1rem', 'space-md': '1rem' }, fontFamily: { 'headline-lg-mobile': ['Inter'], 'headline-md': ['Inter'], 'body-md-medium': ['Inter'], 'headline-lg': ['Inter'], 'body-lg': ['Inter'], 'caption': ['Inter'], 'headline-xl': ['Inter'], 'body-md': ['Inter'], 'body-sm': ['Inter'], 'label-md': ['Inter'], 'timestamp': ['Inter'], 'label-sm': ['Inter'], 'headline-sm': ['Inter'] }, fontSize: { 'headline-lg-mobile': ['22px', { lineHeight: '28px', letterSpacing: '-0.015em', fontWeight: '600' }], 'headline-md': ['20px', { lineHeight: '26px', letterSpacing: '-0.01em', fontWeight: '600' }], 'body-md-medium': ['15px', { lineHeight: '22px', letterSpacing: '-0.004em', fontWeight: '500' }], 'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'caption': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'headline-xl': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '600' }], 'body-md': ['15px', { lineHeight: '22px', letterSpacing: '-0.004em', fontWeight: '400' }], 'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'label-md': ['14px', { lineHeight: '20px', fontWeight: '600' }], 'timestamp': ['11px', { lineHeight: '14px', letterSpacing: '0.01em', fontWeight: '400' }], 'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }], 'headline-sm': ['17px', { lineHeight: '22px', letterSpacing: '-0.005em', fontWeight: '600' }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-full"><main class="flex-1 flex flex-col relative w-full bg-surface"><div class="flex flex-col w-full relative select-none pb-safe">
+<!-- Top Floating Header Bar -->
+<header class="sticky top-0 z-30 px-margin-mobile pt-space-sm pb-space-sm bg-surface-bright/90 backdrop-blur-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<button aria-label="Close viewer" class="w-11 h-11 flex items-center justify-center rounded-xl bg-surface-container active:bg-surface-container-highest transition-colors text-on-surface" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="relative w-9 h-9 shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="Close up warm studio portrait photo of Ayesha Khan, a software engineer with natural lighting, soft smile, dark studio background with subtle emerald rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHts9Pe_52xTA2_mKYndTuSWXwj200GTDYn7_AWFyQi6EG7PmLffsV4yed1-DmQtRryGtgLNp4ECWNqXX0t3TZOLzVjEShtKgyJ9cSWWugH9bl0cFMp9mb0-Z8cKYQ8xOEnFMIY6wP6Oq3-TTfGXFqsg5m-sIVI3wMSVYj9yG6tWVOqrreaYJ2gv0HLeVbM1vZiJUXEftXtnArk4F5WrhKDs9bGGVSW24dnCuIrscS"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-bright"></span>
+</div>
+<div class="min-w-0">
+<h2 class="font-label-md text-label-md text-on-surface truncate">Ayesha Khan</h2>
+<p class="font-timestamp text-timestamp text-outline truncate">Today at 10:41 AM</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button aria-label="Download media" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface active:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+<button aria-label="Share media" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface active:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="More options" class="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface active:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Format Switcher Segmented Pills -->
+<div class="px-margin-mobile pt-space-sm pb-space-xs z-20">
+<div class="flex items-center p-1 rounded-xl bg-surface-container gap-1" id="media-mode-bar">
+<button class="flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all bg-surface text-primary shadow-sm flex items-center justify-center gap-1.5" id="btn-image" onclick="switchMediaTab('image')" type="button">
+<span class="material-symbols-outlined text-[16px]">image</span>
+<span>Image</span>
+</button>
+<button class="flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all text-on-surface-variant active:bg-surface/50 flex items-center justify-center gap-1.5" id="btn-pdf" onclick="switchMediaTab('pdf')" type="button">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>Doc / PDF</span>
+</button>
+<button class="flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all text-on-surface-variant active:bg-surface/50 flex items-center justify-center gap-1.5" id="btn-audio" onclick="switchMediaTab('audio')" type="button">
+<span class="material-symbols-outlined text-[16px]">graphic_eq</span>
+<span>Voice Note</span>
+</button>
+</div>
+</div>
+<!-- Primary Canvas Stage Area -->
+<div class="relative px-margin-mobile pt-space-xs pb-space-sm flex flex-col items-center justify-center">
+<!-- View 1: Main High-Resolution Image Preview -->
+<div class="w-full flex flex-col items-center transition-opacity duration-200" id="view-image">
+<div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-md bg-surface-container-low flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="High precision modern technical system architecture diagram and UI schema design layout, crisp green and monochrome vector lines on white canvas, showing Curve25519 payload flow and protocol sequences" id="main-preview-img" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLOBTP8Gh80aW7HNmMVQZYLVjn65UHFFUt_hGz5FpgI4Hvc1414C0tG168ur65loSfrPkYrQK3cajhz8zjEHThBgyiek_99mFAa7AJ4Cm4bB_VuS8AxbB7I6WN4jGNMrdE2sQo-u8sxtyhKA8LYMeQvCYT-bP-u30mzjv0tS13usORTr9oR__gT-y43N6okPPwiWQ77qh3yuKy0Kr2e_hD8hZ_9XzXS8Li7q2I2_iV"/>
+<!-- Zoom Level Indicator Pill -->
+<div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-inverse-surface/80 text-inverse-on-surface font-timestamp text-timestamp backdrop-blur-sm flex items-center gap-1 pointer-events-none">
+<span class="material-symbols-outlined text-[13px]">zoom_in</span>
+<span>100%</span>
+</div>
+<!-- Left / Right Subtle Swipe Cues -->
+<button aria-label="Previous item" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-bright/70 text-on-surface backdrop-blur-sm shadow flex items-center justify-center active:scale-95 transition-transform" onclick="cycleThumb(-1)" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button aria-label="Next item" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-bright/70 text-on-surface backdrop-blur-sm shadow flex items-center justify-center active:scale-95 transition-transform" onclick="cycleThumb(1)" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<!-- Image Caption Block -->
+<div class="w-full mt-space-sm px-1 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">chat_bubble</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+          Curve25519 payload specs and auth sequence diagram for guild review.
+        </p>
+</div>
+</div>
+<!-- View 2: Document / PDF State (Hidden initially) -->
+<div class="w-full hidden flex-col items-center transition-opacity duration-200" id="view-pdf">
+<div class="w-full aspect-[4/5] rounded-xl bg-surface-container-low p-space-md shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold">PDF</span>
+<span class="font-timestamp text-timestamp text-outline">24 Pages</span>
+</div>
+<span class="font-caption text-caption text-outline">Verified Safe</span>
+</div>
+<!-- Document Preview Canvas Card Graphic -->
+<div class="flex flex-col items-center justify-center text-center px-4 py-8 rounded-lg bg-surface-container">
+<div class="w-16 h-16 rounded-2xl bg-tertiary-container/20 text-tertiary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[36px]">menu_book</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">CS402_lecture.pdf</h3>
+<p class="font-caption text-caption text-outline mt-1">Cryptography &amp; Session Keystream Generation</p>
+<span class="mt-2 font-timestamp text-timestamp text-on-surface-variant font-medium">2.4 MB • Updated Today</span>
+</div>
+<!-- Document Actions -->
+<div class="flex items-center gap-space-sm">
+<button class="flex-1 h-12 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 active:bg-primary-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+<span>Open Document</span>
+</button>
+<button aria-label="Download Document" class="w-12 h-12 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center active:bg-surface-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+</div>
+</div>
+<div class="w-full mt-space-sm px-1 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">description</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+          Attached reference lecture slides with elliptic curve proofs for guild members.
+        </p>
+</div>
+</div>
+<!-- View 3: Voice Note / Audio Player State (Hidden initially) -->
+<div class="w-full hidden flex-col items-center transition-opacity duration-200" id="view-audio">
+<div class="w-full aspect-[4/5] rounded-xl bg-surface-container-low p-space-md shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">mic</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Voice Memo</span>
+</div>
+<span class="font-timestamp text-timestamp text-secondary font-medium">High Bitrate 128kbps</span>
+</div>
+<!-- Waveform Center Display -->
+<div class="flex flex-col items-center gap-4 my-auto w-full px-2">
+<!-- Audio Waveform Visualization -->
+<div class="w-full h-20 flex items-center justify-between gap-1 px-2 bg-surface-container rounded-xl">
+<div class="h-4 w-1 rounded-full bg-secondary"></div>
+<div class="h-8 w-1 rounded-full bg-secondary"></div>
+<div class="h-12 w-1 rounded-full bg-secondary"></div>
+<div class="h-6 w-1 rounded-full bg-secondary"></div>
+<div class="h-14 w-1 rounded-full bg-secondary"></div>
+<div class="h-10 w-1 rounded-full bg-secondary"></div>
+<div class="h-16 w-1 rounded-full bg-secondary"></div>
+<div class="h-9 w-1 rounded-full bg-secondary"></div>
+<div class="h-14 w-1 rounded-full bg-secondary"></div>
+<div class="h-7 w-1 rounded-full bg-secondary"></div>
+<div class="h-12 w-1 rounded-full bg-secondary"></div>
+<!-- Unplayed portion -->
+<div class="h-6 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-14 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-8 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-11 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-5 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-10 w-1 rounded-full bg-outline-variant"></div>
+<div class="h-6 w-1 rounded-full bg-outline-variant"></div>
+</div>
+<div class="w-full flex items-center justify-between font-timestamp text-timestamp text-outline px-1">
+<span id="audio-time">00:48</span>
+<span>01:24</span>
+</div>
+</div>
+<!-- Playback Controls -->
+<div class="flex items-center justify-center gap-4">
+<button aria-label="Rewind 10 seconds" class="w-10 h-10 rounded-full text-on-surface flex items-center justify-center active:bg-surface-container" type="button">
+<span class="material-symbols-outlined text-[22px]">replay_10</span>
+</button>
+<button aria-label="Play or pause audio" class="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg active:scale-95 transition-transform" id="play-btn" onclick="togglePlayState()" type="button">
+<span class="material-symbols-outlined text-[28px]" id="play-icon" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button aria-label="Forward 10 seconds" class="w-10 h-10 rounded-full text-on-surface flex items-center justify-center active:bg-surface-container" type="button">
+<span class="material-symbols-outlined text-[22px]">forward_10</span>
+</button>
+</div>
+</div>
+<div class="w-full mt-space-sm px-1 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">graphic_eq</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+          "Ayesha explains the nonce verification logic in 90 seconds."
+        </p>
+</div>
+</div>
+</div>
+<!-- Bottom Drawer & Thumbnail Strip -->
+<footer class="mt-auto px-margin-mobile pb-space-md pt-space-xs flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Shared in this thread</span>
+<span class="font-timestamp text-timestamp text-outline">5 items</span>
+</div>
+<!-- 5 Thumbnail items strip with dark green active border -->
+<div class="grid grid-cols-5 gap-2 w-full">
+<!-- Item 1 (Active) -->
+<button class="thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-2 ring-primary ring-offset-2 ring-offset-surface transition-all" onclick="selectThumb(0)" type="button">
+<img class="w-full h-full object-cover" data-alt="Technical system architectural diagram showing Curve25519 payload flow, thumbnail view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlrnt_1uTD4GxsOp8NWjiEqEzzvFfFQCQLQuiW9sxvbEkHp2INX8p7Es1ueq4ieVTCs7-ccivC546mg58T6ZWRTJwMQZMPEMQnjf1TsjFXg79ZZYyct4kZ3YOiedwcwRdlwI6ikWG1G_1rDcp7gKgnsKweWSTQqcT-6qDy37QUzc3Zl4VnEt82qwzH85dVZnN4-RtCXJgmrM1cMzI-mMWkAXK8DxzoWSC24HNZl_vI"/>
+<span class="absolute inset-0 bg-primary/10"></span>
+</button>
+<!-- Item 2 -->
+<button class="thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-outline-variant transition-all bg-surface-container" onclick="selectThumb(1)" type="button">
+<img class="w-full h-full object-cover" data-alt="Minimal UI design system mockup screen on mobile device frame in clean light green tones, thumbnail preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPanHT9s9syv8jBh3QPXG8861tULybLB1B3fxzHbA16IDj-HHZd9e2ubXkgEbRb_NYQD8IH-XBEK2z9M6tYz_T_gfTFYxcoTfiMRc5uBh7dNWlOYr96Uz6kUyvs0P62UDsVZGo0uJDNzu_gGtMZGvdTmiKKVyq9_ozfujOM_ytBIwIEQkdc2tbyI5dJMaslAV6qNHoT4qW1UoPyXjI2o_-KyohN8xSnRGtN4NKSaK9"/>
+</button>
+<!-- Item 3 -->
+<button class="thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-outline-variant transition-all bg-surface-container" onclick="selectThumb(2)" type="button">
+<img class="w-full h-full object-cover" data-alt="Data sequence flowchart chart with nodes and cryptographic hashes, technical sketch on whiteboard, thumbnail preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDcCaK1MtHuQceCcE7PBEJC55DfJYsNJ9CS5GRig15SfMjdtVUANnEtmD-QXFg1Nldve8TCYER1YSlyc-fbklDiNNL2VcjA-eAm2Qswi03LJ3QQWfhJu5iGiuGo8lWVbI56s63lRCrFGv_aXooKJ4m98fBIcmgGjiVomUTMmUxmMWlyL_aYg1bU-sYCmAkNUaGMtWnuVsr2qPTohSNklIGRw_uCup6x-PkZeZ3E8dT"/>
+</button>
+<!-- Item 4 (PDF) -->
+<button class="thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-outline-variant transition-all bg-surface-container-highest flex flex-col items-center justify-center p-1 text-on-surface-variant" onclick="selectThumb(3)" type="button">
+<span class="material-symbols-outlined text-[20px] text-tertiary">picture_as_pdf</span>
+<span class="font-timestamp text-[9px] uppercase font-bold text-outline">PDF</span>
+</button>
+<!-- Item 5 (Audio) -->
+<button class="thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-outline-variant transition-all bg-surface-container-highest flex flex-col items-center justify-center p-1 text-on-surface-variant" onclick="selectThumb(4)" type="button">
+<span class="material-symbols-outlined text-[20px] text-secondary">mic</span>
+<span class="font-timestamp text-[9px] text-outline">1:24</span>
+</button>
+</div>
+</footer>
+</div>
+<script>
+  let isPlaying = false;
+  let currentThumbIndex = 0;
+
+  function switchMediaTab(type) {
+    const viewImage = document.getElementById('view-image');
+    const viewPdf = document.getElementById('view-pdf');
+    const viewAudio = document.getElementById('view-audio');
+
+    const btnImage = document.getElementById('btn-image');
+    const btnPdf = document.getElementById('btn-pdf');
+    const btnAudio = document.getElementById('btn-audio');
+
+    // Reset views
+    viewImage.classList.add('hidden');
+    viewPdf.classList.add('hidden');
+    viewAudio.classList.add('hidden');
+
+    // Reset button styling
+    [btnImage, btnPdf, btnAudio].forEach(btn => {
+      btn.className = 'flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all text-on-surface-variant active:bg-surface/50 flex items-center justify-center gap-1.5';
+    });
+
+    if (type === 'image') {
+      viewImage.classList.remove('hidden');
+      btnImage.className = 'flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all bg-surface text-primary shadow-sm flex items-center justify-center gap-1.5';
+    } else if (type === 'pdf') {
+      viewPdf.classList.remove('hidden');
+      btnPdf.className = 'flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all bg-surface text-primary shadow-sm flex items-center justify-center gap-1.5';
+    } else if (type === 'audio') {
+      viewAudio.classList.remove('hidden');
+      btnAudio.className = 'flex-1 py-1.5 px-2 rounded-lg font-label-sm text-label-sm text-center transition-all bg-surface text-primary shadow-sm flex items-center justify-center gap-1.5';
+    }
+  }
+
+  function togglePlayState() {
+    isPlaying = !isPlaying;
+    const playIcon = document.getElementById('play-icon');
+    const timer = document.getElementById('audio-time');
+    if (isPlaying) {
+      playIcon.innerText = 'pause';
+      timer.innerText = '00:52';
+    } else {
+      playIcon.innerText = 'play_arrow';
+    }
+  }
+
+  function selectThumb(index) {
+    currentThumbIndex = index;
+    const thumbs = document.querySelectorAll('.thumb-btn');
+    thumbs.forEach((t, i) => {
+      if (i === index) {
+        t.className = 'thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-2 ring-primary ring-offset-2 ring-offset-surface transition-all';
+      } else {
+        t.className = 'thumb-btn group relative aspect-square rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-outline-variant transition-all bg-surface-container';
+      }
+    });
+
+    if (index === 3) {
+      switchMediaTab('pdf');
+    } else if (index === 4) {
+      switchMediaTab('audio');
+    } else {
+      switchMediaTab('image');
+    }
+  }
+
+  function cycleThumb(direction) {
+    const total = 5;
+    currentThumbIndex = (currentThumbIndex + direction + total) % total;
+    selectThumb(currentThumbIndex);
+  }
+</script></main></body></html>
