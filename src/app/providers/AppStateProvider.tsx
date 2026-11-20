@@ -177,22 +177,22 @@ interface AppStateContextValue {
     selections: Array<{ assistantId: string; responseMode: AssistantResponseMode; enabled: boolean }>
   ) => Promise<boolean>;
   // Admin Operations
-  adminUpdateUserStatus: (userId: string, status: UserStatus, reason?: string) => void;
-  adminBulkUpdateUserStatus: (userIds: string[], status: UserStatus, reason?: string) => void;
+  adminUpdateUserStatus: (userId: string, status: UserStatus, reason?: string) => Promise<boolean>;
+  adminBulkUpdateUserStatus: (userIds: string[], status: UserStatus, reason?: string) => Promise<number>;
   adminDeleteUser: (userId: string) => { ok: boolean; error?: string };
-  adminSetUserRole: (userId: string, role: AppRole) => { ok: boolean; error?: string };
+  adminSetUserRole: (userId: string, role: AppRole) => Promise<{ ok: boolean; error?: string }>;
   adminDeleteGroup: (groupId: string) => void;
-  adminToggleAssistant: (assistantId: string, isEnabled: boolean) => void;
+  adminToggleAssistant: (assistantId: string, isEnabled: boolean) => Promise<boolean>;
   adminDeleteAssistant: (assistantId: string) => void;
   adminResolveReport: (
     reportId: string,
     status: ReportStatus,
     note: string,
     action?: 'none' | 'warn' | 'suspend' | 'ban' | 'delete_message'
-  ) => void;
-  adminUpdateDeveloperProfile: (updates: Partial<DeveloperProfile>) => void;
-  adminUpdateAppSetting: (key: string, value: unknown) => void;
-  adminPublishAnnouncement: (input: { title: string; body: string; show_as_banner: boolean }) => void;
+  ) => Promise<{ ok: boolean; error?: string }>;
+  adminUpdateDeveloperProfile: (updates: Partial<DeveloperProfile>) => Promise<boolean>;
+  adminUpdateAppSetting: (key: string, value: unknown) => Promise<boolean>;
+  adminPublishAnnouncement: (input: { title: string; body: string; show_as_banner: boolean }) => Promise<boolean>;
   resetDemoWorkspace: () => void;
 }
 
@@ -2090,46 +2090,97 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const adminUpdateUserStatus = useCallback(
-    (userId: string, status: UserStatus, reason?: string) => {
-      if (!isAdmin) return;
+    async (userId: string, status: UserStatus, reason = 'Admin console action'): Promise<boolean> => {
+      if (!isAdmin) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const { error } = await sb.rpc('admin_update_user_status', {
+          target_user_id: userId,
+          next_status: status,
+          reason,
+        });
+        if (error) {
+          pushToast(error.message.includes('Super Admin') ? error.message : 'User status could not be updated.', 'error');
+          return false;
+        }
+        const [profileResult, logsResult] = await Promise.all([
+          sb.from('profiles').select('id,status,updated_at').eq('id', userId).maybeSingle(),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          profiles: profileResult.data
+            ? prev.profiles.map((profile) => profile.id === userId
+                ? { ...profile, status: profileResult.data.status, updated_at: profileResult.data.updated_at }
+                : profile)
+            : prev.profiles,
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`User status updated to ${status}`, 'success');
+        return true;
+      }
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
-        profiles: prev.profiles.map((p) =>
-          p.id === userId ? { ...p, status, updated_at: nowIso } : p
+        profiles: prev.profiles.map((profile) =>
+          profile.id === userId ? { ...profile, status, updated_at: nowIso } : profile
         ),
         auditLogs: appendAuditLog(prev, 'admin_update_user_status', 'user', userId, {
           next_status: status,
-          reason: reason || 'Admin console action',
+          reason,
         }),
       }));
       pushToast(`User status updated to ${status}`, 'success');
+      return true;
     },
     [isAdmin, appendAuditLog, pushToast]
   );
 
   const adminBulkUpdateUserStatus = useCallback(
-    (userIds: string[], status: UserStatus, reason?: string) => {
-      if (!isAdmin || userIds.length === 0) return;
-      const superAdminIds = new Set(
-        state.userRoles.filter((r) => r.role === 'super_admin').map((r) => r.user_id)
-      );
+    async (userIds: string[], status: UserStatus, reason = 'Bulk moderation action'): Promise<number> => {
+      if (!isAdmin || userIds.length === 0) return 0;
+      const superAdminIds = new Set(state.userRoles.filter((role) => role.role === 'super_admin').map((role) => role.user_id));
       const eligible = userIds.filter((id) => !superAdminIds.has(id));
-      if (eligible.length === 0) return;
+      if (!eligible.length) {
+        pushToast('No eligible accounts were selected.', 'warning');
+        return 0;
+      }
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return 0;
+        const results = await Promise.all(eligible.map((userId) =>
+          sb.rpc('admin_update_user_status', { target_user_id: userId, next_status: status, reason })
+        ));
+        const successIds = eligible.filter((_, index) => !results[index].error);
+        const [profilesResult, logsResult] = await Promise.all([
+          successIds.length
+            ? sb.from('profiles').select('id,status,updated_at').in('id', successIds)
+            : Promise.resolve({ data: [], error: null }),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          profiles: prev.profiles.map((profile) => {
+            const updated = (profilesResult.data || []).find((row) => row.id === profile.id);
+            return updated ? { ...profile, status: updated.status, updated_at: updated.updated_at } : profile;
+          }),
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`Updated ${successIds.length} of ${eligible.length} selected account(s).`, successIds.length ? 'success' : 'error');
+        return successIds.length;
+      }
       const idSet = new Set(eligible);
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
-        profiles: prev.profiles.map((p) =>
-          idSet.has(p.id) ? { ...p, status, updated_at: nowIso } : p
-        ),
+        profiles: prev.profiles.map((profile) => idSet.has(profile.id) ? { ...profile, status, updated_at: nowIso } : profile),
         auditLogs: appendAuditLog(prev, 'admin_bulk_user_status', 'user_batch', eligible.join(','), {
-          count: eligible.length,
-          next_status: status,
-          reason: reason || 'Bulk moderation action',
+          count: eligible.length, next_status: status, reason,
         }),
       }));
       pushToast(`Updated ${eligible.length} user(s) to ${status}`, 'success');
+      return eligible.length;
     },
     [isAdmin, state.userRoles, appendAuditLog, pushToast]
   );
@@ -2137,42 +2188,58 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const adminDeleteUser = useCallback(
     (userId: string) => {
       if (!isAdmin) return { ok: false, error: 'Admin access required.' };
-      const isTargetSuper = state.userRoles.some(
-        (r) => r.user_id === userId && r.role === 'super_admin'
-      );
-      if (isTargetSuper) {
-        return { ok: false, error: 'Super Admin account cannot be deleted.' };
+      const isTargetSuper = state.userRoles.some((role) => role.user_id === userId && role.role === 'super_admin');
+      if (isTargetSuper) return { ok: false, error: 'Super Admin account cannot be deleted.' };
+      if (!IS_DEMO_MODE) {
+        const error = 'Permanent user deletion is disabled in production to protect account history. Use suspend or ban instead.';
+        pushToast(error, 'warning');
+        return { ok: false, error };
       }
       setState((prev) => ({
         ...prev,
-        profiles: prev.profiles.filter((p) => p.id !== userId),
-        userRoles: prev.userRoles.filter((r) => r.user_id !== userId),
-        conversationMembers: prev.conversationMembers.filter((m) => m.user_id !== userId),
+        profiles: prev.profiles.filter((profile) => profile.id !== userId),
+        userRoles: prev.userRoles.filter((role) => role.user_id !== userId),
+        conversationMembers: prev.conversationMembers.filter((member) => member.user_id !== userId),
         auditLogs: appendAuditLog(prev, 'admin_delete_user', 'user', userId, {}),
       }));
-      pushToast('User account removed', 'info');
+      pushToast('User account removed from demo workspace', 'info');
       return { ok: true };
     },
     [isAdmin, state.userRoles, appendAuditLog, pushToast]
   );
 
   const adminSetUserRole = useCallback(
-    (userId: string, role: AppRole) => {
-      if (!isSuperAdminUser) {
-        return { ok: false, error: 'Only a Super Admin can grant or revoke application roles.' };
+    async (userId: string, role: AppRole): Promise<{ ok: boolean; error?: string }> => {
+      if (!isSuperAdminUser) return { ok: false, error: 'Only a Super Admin can grant or revoke application roles.' };
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Role service is unavailable.' };
+        const { error } = await sb.rpc('admin_set_user_role', {
+          target_user_id: userId,
+          next_role: role,
+        });
+        if (error) {
+          pushToast(error.message, 'error');
+          return { ok: false, error: error.message };
+        }
+        const [rolesResult, logsResult] = await Promise.all([
+          sb.from('user_roles').select('*'),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          userRoles: (rolesResult.data || prev.userRoles) as AdiChatStoreState['userRoles'],
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`Role updated to ${role}`, 'success');
+        return { ok: true };
       }
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
         userRoles: [
-          ...prev.userRoles.filter((r) => r.user_id !== userId),
-          {
-            id: `role_${userId}_${Date.now()}`,
-            user_id: userId,
-            role,
-            granted_by: prev.currentUserId,
-            created_at: nowIso,
-          },
+          ...prev.userRoles.filter((item) => !(item.user_id === userId && ['admin','super_admin'].includes(item.role))),
+          { id: `role_${userId}_${Date.now()}`, user_id: userId, role, granted_by: prev.currentUserId, created_at: nowIso },
         ],
         auditLogs: appendAuditLog(prev, 'admin_set_user_role', 'user', userId, { role }),
       }));
@@ -2185,32 +2252,58 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const adminDeleteGroup = useCallback(
     (groupId: string) => {
       if (!isAdmin) return;
+      if (!IS_DEMO_MODE) {
+        pushToast('Permanent group deletion is disabled in production to preserve messages and audit history.', 'warning');
+        return;
+      }
       setState((prev) => ({
         ...prev,
-        conversations: prev.conversations.filter((c) => c.id !== groupId),
-        groups: prev.groups.filter((g) => g.conversation_id !== groupId),
-        conversationMembers: prev.conversationMembers.filter((m) => m.conversation_id !== groupId),
-        groupAssistants: prev.groupAssistants.filter((ga) => ga.group_conversation_id !== groupId),
+        conversations: prev.conversations.filter((conversation) => conversation.id !== groupId),
+        groups: prev.groups.filter((group) => group.conversation_id !== groupId),
+        conversationMembers: prev.conversationMembers.filter((member) => member.conversation_id !== groupId),
+        groupAssistants: prev.groupAssistants.filter((assistant) => assistant.group_conversation_id !== groupId),
         auditLogs: appendAuditLog(prev, 'admin_delete_group', 'group', groupId, {}),
       }));
-      pushToast('Group removed by moderator', 'info');
+      pushToast('Group removed from demo workspace', 'info');
     },
     [isAdmin, appendAuditLog, pushToast]
   );
 
   const adminToggleAssistant = useCallback(
-    (assistantId: string, isEnabled: boolean) => {
-      if (!isAdmin) return;
+    async (assistantId: string, isEnabled: boolean): Promise<boolean> => {
+      if (!isAdmin) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const { error } = await sb.rpc('admin_toggle_assistant', {
+          p_assistant_id: assistantId,
+          p_is_enabled: isEnabled,
+        });
+        if (error) {
+          pushToast('Assistant status could not be changed.', 'error');
+          return false;
+        }
+        const [assistantResult, logsResult] = await Promise.all([
+          sb.from('ai_assistants').select('*').eq('id', assistantId).maybeSingle(),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          assistants: assistantResult.data
+            ? prev.assistants.map((assistant) => assistant.id === assistantId ? assistantResult.data as AIAssistant : assistant)
+            : prev.assistants,
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`Assistant ${isEnabled ? 'enabled' : 'disabled'}`, 'success');
+        return true;
+      }
       setState((prev) => ({
         ...prev,
-        assistants: prev.assistants.map((a) =>
-          a.id === assistantId ? { ...a, is_enabled: isEnabled } : a
-        ),
-        auditLogs: appendAuditLog(prev, 'admin_toggle_assistant', 'ai_assistant', assistantId, {
-          is_enabled: isEnabled,
-        }),
+        assistants: prev.assistants.map((assistant) => assistant.id === assistantId ? { ...assistant, is_enabled: isEnabled } : assistant),
+        auditLogs: appendAuditLog(prev, 'admin_toggle_assistant', 'ai_assistant', assistantId, { is_enabled: isEnabled }),
       }));
       pushToast(`Assistant ${isEnabled ? 'enabled' : 'disabled'}`, 'info');
+      return true;
     },
     [isAdmin, appendAuditLog, pushToast]
   );
@@ -2218,112 +2311,209 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const adminDeleteAssistant = useCallback(
     (assistantId: string) => {
       if (!isAdmin) return;
+      if (!IS_DEMO_MODE) {
+        pushToast('Permanent assistant deletion is disabled in production. Disable the assistant instead.', 'warning');
+        return;
+      }
       setState((prev) => ({
         ...prev,
-        assistants: prev.assistants.filter((a) => a.id !== assistantId),
-        groupAssistants: prev.groupAssistants.filter((ga) => ga.assistant_id !== assistantId),
+        assistants: prev.assistants.filter((assistant) => assistant.id !== assistantId),
+        groupAssistants: prev.groupAssistants.filter((assistant) => assistant.assistant_id !== assistantId),
         auditLogs: appendAuditLog(prev, 'admin_delete_assistant', 'ai_assistant', assistantId, {}),
       }));
-      pushToast('Assistant removed by admin', 'info');
+      pushToast('Assistant removed from demo workspace', 'info');
     },
     [isAdmin, appendAuditLog, pushToast]
   );
 
   const adminResolveReport = useCallback(
-    (
+    async (
       reportId: string,
       status: ReportStatus,
       note: string,
       action: 'none' | 'warn' | 'suspend' | 'ban' | 'delete_message' = 'none'
-    ) => {
-      if (!isAdmin) return;
+    ): Promise<{ ok: boolean; error?: string }> => {
+      if (!isAdmin) return { ok: false, error: 'Admin access required.' };
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Moderation service is unavailable.' };
+        const { error } = await sb.rpc('admin_resolve_report_with_action', {
+          p_report_id: reportId,
+          p_next_status: status,
+          p_note: note,
+          p_action: action,
+        });
+        if (error) {
+          pushToast(error.message, 'error');
+          return { ok: false, error: error.message };
+        }
+        const [reportsResult, profilesResult, messagesResult, logsResult] = await Promise.all([
+          sb.from('reports').select('*').eq('id', reportId).maybeSingle(),
+          sb.from('profiles').select('id,status,updated_at'),
+          sb.from('messages').select('id,deleted_at').in('id', state.reports.find((report) => report.id === reportId)?.target_message_id ? [state.reports.find((report) => report.id === reportId)!.target_message_id!] : []),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        const targetReport = state.reports.find((report) => report.id === reportId);
+        setState((prev) => ({
+          ...prev,
+          reports: reportsResult.data
+            ? prev.reports.map((report) => report.id === reportId ? reportsResult.data as ModerationReport : report)
+            : prev.reports,
+          profiles: (action === 'suspend' || action === 'ban') && targetReport?.target_user_id && profilesResult.data
+            ? prev.profiles.map((profile) => {
+                const updated = profilesResult.data.find((row) => row.id === targetReport.target_user_id);
+                return updated ? { ...profile, status: updated.status, updated_at: updated.updated_at } : profile;
+              })
+            : prev.profiles,
+          messages: action === 'delete_message' && targetReport?.target_message_id && messagesResult.data
+            ? prev.messages.map((message) => {
+                const updated = messagesResult.data.find((row) => row.id === targetReport.target_message_id);
+                return updated ? { ...message, deleted_at: updated.deleted_at } : message;
+              })
+            : prev.messages,
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`Report marked ${status}`, 'success');
+        return { ok: true };
+      }
+
       const nowIso = new Date().toISOString();
       setState((prev) => {
-        const rep = prev.reports.find((r) => r.id === reportId);
+        const report = prev.reports.find((item) => item.id === reportId);
         let nextProfiles = prev.profiles;
         let nextMessages = prev.messages;
-
-        if (rep?.target_user_id && (action === 'suspend' || action === 'ban')) {
+        if (report?.target_user_id && (action === 'suspend' || action === 'ban')) {
           const nextStatus: UserStatus = action === 'ban' ? 'banned' : 'suspended';
-          nextProfiles = prev.profiles.map((p) =>
-            p.id === rep.target_user_id ? { ...p, status: nextStatus, updated_at: nowIso } : p
-          );
+          nextProfiles = prev.profiles.map((profile) => profile.id === report.target_user_id ? { ...profile, status: nextStatus, updated_at: nowIso } : profile);
         }
-        if (rep?.target_message_id && action === 'delete_message') {
-          nextMessages = prev.messages.map((m) =>
-            m.id === rep.target_message_id ? { ...m, deleted_at: nowIso } : m
-          );
+        if (report?.target_message_id && action === 'delete_message') {
+          nextMessages = prev.messages.map((message) => message.id === report.target_message_id ? { ...message, deleted_at: nowIso } : message);
         }
-
         return {
           ...prev,
           profiles: nextProfiles,
           messages: nextMessages,
-          reports: prev.reports.map((r) =>
-            r.id === reportId
-              ? {
-                  ...r,
-                  status,
-                  assigned_to: prev.currentUserId,
-                  resolution_note: note,
-                  resolved_at: nowIso,
-                  updated_at: nowIso,
-                }
-              : r
-          ),
-          auditLogs: appendAuditLog(prev, 'admin_resolve_report', 'report', reportId, {
-            status,
-            enforcement_action: action,
-            resolution_note: note,
-          }),
+          reports: prev.reports.map((item) => item.id === reportId ? {
+            ...item, status, assigned_to: prev.currentUserId, resolution_note: note, resolved_at: nowIso, updated_at: nowIso,
+          } : item),
+          auditLogs: appendAuditLog(prev, 'admin_resolve_report', 'report', reportId, { status, enforcement_action: action, resolution_note: note }),
         };
       });
       pushToast(`Report marked ${status}`, 'success');
+      return { ok: true };
     },
-    [isAdmin, appendAuditLog, pushToast]
+    [isAdmin, state.reports, appendAuditLog, pushToast]
   );
 
   const adminUpdateDeveloperProfile = useCallback(
-    (updates: Partial<DeveloperProfile>) => {
-      if (!isAdmin) return;
+    async (updates: Partial<DeveloperProfile>): Promise<boolean> => {
+      if (!isAdmin) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const safeUpdates: Record<string, unknown> = { ...updates };
+        if (typeof safeUpdates.photo_path === 'string' && safeUpdates.photo_path.startsWith('data:')) {
+          delete safeUpdates.photo_path;
+          pushToast('Developer photo upload is not available yet; other profile fields will still be saved.', 'warning');
+        }
+        if (!Object.keys(safeUpdates).length) return false;
+        const { data, error } = await sb.rpc('admin_update_developer_profile', { p_updates: safeUpdates });
+        if (error || !data) {
+          pushToast('Developer profile could not be saved.', 'error');
+          return false;
+        }
+        const { data: refreshed } = await sb.from('developer_profile').select('*').eq('id', 1).maybeSingle();
+        setState((prev) => ({
+          ...prev,
+          developerProfile: (refreshed || data) as DeveloperProfile,
+        }));
+        pushToast('Developer profile saved', 'success');
+        return true;
+      }
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
-        developerProfile: {
-          ...prev.developerProfile,
-          ...updates,
-          updated_by: prev.currentUserId,
-          updated_at: nowIso,
-        },
-        auditLogs: appendAuditLog(prev, 'admin_update_developer_profile', 'developer_profile', '1', {
-          fields: Object.keys(updates),
-        }),
+        developerProfile: { ...prev.developerProfile, ...updates, updated_by: prev.currentUserId, updated_at: nowIso },
+        auditLogs: appendAuditLog(prev, 'admin_update_developer_profile', 'developer_profile', '1', { fields: Object.keys(updates) }),
       }));
       pushToast('Developer profile published', 'success');
+      return true;
+    },
+    [isAdmin, pushToast, appendAuditLog]
+  );
+
+  const adminUpdateAppSetting = useCallback(
+    async (key: string, value: unknown): Promise<boolean> => {
+      if (!isAdmin) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const { error } = await sb.rpc('admin_update_app_settings', {
+          setting_key: key,
+          setting_value: value,
+        });
+        if (error) {
+          pushToast(error.message, 'error');
+          return false;
+        }
+        const [settingResult, logsResult] = await Promise.all([
+          sb.from('app_settings').select('*').eq('key', key).maybeSingle(),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          appSettings: settingResult.data
+            ? [settingResult.data as AppSetting, ...prev.appSettings.filter((item) => item.key !== key)]
+            : prev.appSettings,
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast(`Saved ${key}`, 'success');
+        return true;
+      }
+      const nowIso = new Date().toISOString();
+      setState((prev) => ({
+        ...prev,
+        appSettings: prev.appSettings.map((setting) =>
+          setting.key === key ? { ...setting, value, updated_by: prev.currentUserId, updated_at: nowIso } : setting
+        ),
+        auditLogs: appendAuditLog(prev, 'admin_update_app_setting', 'app_settings', key, { value }),
+      }));
+      return true;
     },
     [isAdmin, appendAuditLog, pushToast]
   );
 
-  const adminUpdateAppSetting = useCallback(
-    (key: string, value: unknown) => {
-      if (!isAdmin) return;
-      const nowIso = new Date().toISOString();
-      setState((prev) => ({
-        ...prev,
-        appSettings: prev.appSettings.map((s) =>
-          s.key === key ? { ...s, value, updated_by: prev.currentUserId, updated_at: nowIso } : s
-        ),
-        auditLogs: appendAuditLog(prev, 'admin_update_app_setting', 'app_settings', key, { value }),
-      }));
-    },
-    [isAdmin, appendAuditLog]
-  );
-
   const adminPublishAnnouncement = useCallback(
-    (input: { title: string; body: string; show_as_banner: boolean }) => {
-      if (!isAdmin || !state.currentUserId) return;
+    async (input: { title: string; body: string; show_as_banner: boolean }): Promise<boolean> => {
+      if (!isAdmin || !state.currentUserId) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return false;
+        const { data: announcementId, error } = await sb.rpc('admin_publish_announcement', {
+          p_title: input.title,
+          p_body: input.body,
+          p_show_as_banner: input.show_as_banner,
+        });
+        if (error || typeof announcementId !== 'string') {
+          pushToast(error?.message || 'Announcement could not be published.', 'error');
+          return false;
+        }
+        const [announcementResult, logsResult] = await Promise.all([
+          sb.from('announcements').select('*').eq('id', announcementId).maybeSingle(),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        ]);
+        setState((prev) => ({
+          ...prev,
+          announcements: announcementResult.data
+            ? [announcementResult.data as Announcement, ...prev.announcements.filter((item) => item.id !== announcementId)]
+            : prev.announcements,
+          auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
+        }));
+        pushToast('Announcement published', 'success');
+        return true;
+      }
       const nowIso = new Date().toISOString();
-      const ann: Announcement = {
+      const announcement: Announcement = {
         id: `ann_${Date.now().toString(36)}`,
         title: input.title.trim(),
         body: input.body.trim(),
@@ -2336,12 +2526,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
       setState((prev) => ({
         ...prev,
-        announcements: [ann, ...prev.announcements],
-        auditLogs: appendAuditLog(prev, 'publish_announcement', 'announcement', ann.id, {
-          title: ann.title,
-        }),
+        announcements: [announcement, ...prev.announcements],
+        auditLogs: appendAuditLog(prev, 'publish_announcement', 'announcement', announcement.id, { title: announcement.title }),
       }));
       pushToast('Announcement published', 'success');
+      return true;
     },
     [isAdmin, state.currentUserId, appendAuditLog, pushToast]
   );
