@@ -1253,3 +1253,7 @@ grant execute on function public.set_message_read(uuid, uuid) to authenticated;
 grant execute on function public.admin_update_user_status(uuid, public.user_status, text) to authenticated;
 grant execute on function public.admin_resolve_report(uuid, public.report_status, text) to authenticated;
 grant execute on function public.admin_update_app_settings(text, jsonb) to authenticated;
+grant execute on function public.get_or_create_assistant_conversation(uuid) to authenticated;
+grant execute on function public.create_assistant_user_message(uuid, uuid, text) to authenticated;
+grant execute on function public.can_request_assistant_reply() to authenticated;
+grant execute on function public.record_assistant_response(uuid, uuid, text, text, integer, integer, integer, text, boolean) to authenticated;
