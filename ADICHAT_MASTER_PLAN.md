@@ -469,3 +469,12 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [x] Cloudflare Pages production build and deployment succeeded for runtime commit `7b3d8ba2ba30c6944eb19973ddc0b4bf3ee018ff` (deployment `2e81734b-c7a0-45b9-819d-e8c24b176d82`); existing `adichat` project and production domain are preserved.
 - [ ] GitHub combined-status endpoint returned no check statuses; GitHub CI is not independently verified.
 - [ ] Supabase Security Advisor still reports existing SECURITY DEFINER-function warnings and the bootstrap_state RLS info finding; the two new RPCs follow the existing guarded SECURITY DEFINER pattern, fixed search_path, authenticated-only execute grants, and explicit membership checks.
+
+
+## Owner-managed assistant custom rules (2026-11-21)
+
+- [x] Added nullable `ai_assistants.custom_rules` (maximum 12,000 characters); existing assistant records remain unchanged and start with empty rules.
+- [x] Added a Custom Rules editor to assistant creation and the existing assistant profile editor, with a dedicated Save Rules action; blank rules clear the saved value.
+- [x] Loaded saved custom rules server-side into direct AI chat and group assistant prompts.
+- [x] Extended the guarded group assistant context RPC to return custom rules while preserving active-account, membership, group setting and authenticated-only execution checks.
+- [ ] Verify production UI save/reload and authenticated direct/group assistant replies with custom rules; do not claim end-to-end verification until tested.
