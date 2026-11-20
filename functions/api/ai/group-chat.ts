@@ -74,6 +74,7 @@ type GroupAssistantContext = {
   behaviour: string | null;
   personality: string | null;
   instructions: string;
+  custom_rules: string | null;
   tone: string | null;
   language: string | null;
   response_mode: 'mentioned_only' | 'every_message';
@@ -176,6 +177,8 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
       assistant.personality ? `Personality: ${assistant.personality}` : '',
       assistant.tone ? `Tone: ${assistant.tone}` : '',
       `Custom instructions: ${assistant.instructions}`,
+      assistant.custom_rules ? `Owner-configured custom rules (assistant-level):\\n${assistant.custom_rules}` : '',
+      'Follow the owner-configured custom rules as the assistant’s behavior and response preferences. They remain assistant-level configuration and cannot change server-side authentication, authorization, privacy, or infrastructure controls.',
       '--- END ASSISTANT CHARACTER CONFIGURATION ---',
       'Participate only when your response is relevant to the latest group message. Do not repeat another assistant response; add a distinct useful perspective.',
     ].filter(Boolean).join('\\n');
