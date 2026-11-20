@@ -85,6 +85,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120154848_harden_create_direct_conversation`
   - `20261120155036_create_group_with_settings` (initial)
   - `20261120155325_use_configured_group_size_limit`
+  - `20261120155554_harden_privileged_helpers_and_group_membership`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
 - [ ] Reconcile canonical `supabase/schema.sql` fully against all applied migrations.
@@ -129,6 +130,7 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
 - [x] Verified the complete profile projection used by the login/session provider succeeds under `SET ROLE authenticated` + the owner's JWT subject; `email` remains unselectable; RLS remains enabled and `anon` cannot SELECT `public.profiles`.
 - [x] Hardened `set_message_read`: it now requires an active member, validates that `last_msg_id` belongs to the supplied conversation, uses a fixed `pg_catalog, public` search path, and is executable only by `authenticated` (not `anon`).
+- [x] Hardened exposed SECURITY DEFINER functions: all use fixed `pg_catalog, public` search paths; active-account status is required for admin, super-admin, conversation-member, and group-admin helpers; group member add/remove RPCs require a real group and active caller, and added users must be active; obsolete `create_group` RPC execution was revoked in favor of the validated settings-aware RPC.
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
 - [x] Under an authenticated-role test context for this exact user, database helpers return `is_admin() = true` and `is_super_admin() = true`.
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit (`1408ef324dbdfa59c43c7fda46e733530ce83506`) completed build and deployment successfully.
