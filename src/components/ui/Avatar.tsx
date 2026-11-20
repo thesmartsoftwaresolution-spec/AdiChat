@@ -77,9 +77,11 @@ export const AIBadge: React.FC<{ compact?: boolean }> = ({ compact = false }) =>
 export const AssistantAvatar: React.FC<{
   name: string;
   iconName?: string;
+  src?: string | null;
   size?: 'sm' | 'md' | 'lg';
   showBadge?: boolean;
-}> = ({ name, iconName = 'auto_awesome', size = 'md', showBadge = true }) => {
+}> = ({ name, iconName = 'auto_awesome', src, size = 'md', showBadge = true }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const outer = size === 'sm' ? 'w-9 h-9' : size === 'lg' ? 'w-16 h-16' : 'w-12 h-12';
   const iconSize = size === 'sm' ? 'text-[18px]' : size === 'lg' ? 'text-[28px]' : 'text-[22px]';
 
@@ -91,7 +93,11 @@ export const AssistantAvatar: React.FC<{
       >
         <div className="w-full h-full rounded-full bg-surface p-[2px]">
           <div className="w-full h-full rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
-            <span className={`material-symbols-outlined ${iconSize}`}>{iconName}</span>
+            {src && !imgFailed ? (
+              <img src={src} alt={name} className="w-full h-full rounded-full object-cover" onError={() => setImgFailed(true)} />
+            ) : (
+              <span className={`material-symbols-outlined ${iconSize}`}>{iconName}</span>
+            )}
           </div>
         </div>
       </div>

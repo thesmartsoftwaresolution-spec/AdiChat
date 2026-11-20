@@ -145,8 +145,12 @@ export interface AIAssistant {
   name: string;
   handle: string;
   avatar_path: string | null;
+  avatar_url?: string | null;
   icon_name?: string;
   description: string | null;
+  role?: string | null;
+  scenario?: string | null;
+  behaviour?: string | null;
   personality: string | null;
   instructions: string;
   tone: string | null;
