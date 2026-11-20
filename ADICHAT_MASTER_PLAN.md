@@ -3,8 +3,8 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
-**Last verified main commit before this plan update:** `a9d66b29efb6304fc7ca81d8aaf5fa603c683890`  
-**Last verified Cloudflare deployment:** `7bdaa122-d3ac-4c0e-a87c-68050aee89d8` — build/deploy success; production alias unchanged.  
+**Last verified main commit before this plan update:** `c1d2abf3c87b5808496a012241703204fb1e383b`  
+**Last verified Cloudflare deployment:** `8f340ace-6747-4372-b398-d0042023fa6f` — build/deploy success for commit `c1d2abf3c87b5808496a012241703204fb1e383b`; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
 **Production URL:** https://adichat.pages.dev  
@@ -397,8 +397,36 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [ ] Consider document history/context: follow-up questions after the upload currently include the latest message and its current file content only; prior uploaded file contents are not automatically re-extracted for later turns.
 
 ### Latest continuation anchor
-- Latest verified code commit before this plan update: `68bbcaf16ef1f1a5d7b2aabef802a3d796d39325`.
-- GitHub CI: passed (TypeScript, 3 unit tests, Vite production build).
-- Cloudflare Pages deployment: passed; existing production domain `https://adichat.pages.dev` unchanged.
+- Latest verified code commit before this plan update: `c1d2abf3c87b5808496a012241703204fb1e383b`.
+- GitHub CI: passed for `c1d2abf3c87b5808496a012241703204fb1e383b` (TypeScript, 3 unit tests, Vite production build).
+- Cloudflare Pages deployment `8f340ace-6747-4372-b398-d0042023fa6f`: build/deploy passed; existing production domain `https://adichat.pages.dev` unchanged.
 - Live Supabase: assistant persona columns and both additive migrations are applied.
 - Next work: continue with remaining responsive/icon audit, then authenticated end-to-end testing and PDF/DOCX support assessment. Keep working directly on `main`; do not ask the owner to perform technical steps.
+
+
+## Latest verified maintenance update — 2026-11-20
+
+### Owner-approved scope completed in code and deployed
+- [x] Added an explicit Supabase auth-hydration readiness state. Protected user/admin routes wait for session restoration and profile hydration before redirect decisions; prevents the initial React render from treating a still-restoring session as signed out.
+- [x] Supabase client retains the existing secure persistSession, autoRefreshToken, and URL callback settings. No localStorage-based custom credential/session storage was added.
+- [x] AI chat header simplified to assistant identity and a single profile/settings action. Removed model/Thinking status clutter.
+- [x] Removed all in-chat and footer Thinking Mode toggles/status. The assistant's High Thinking default remains configurable only from its Edit Assistant settings; the chat uses that saved preference.
+- [x] Added natural conversational style guidance to the server-side persona prompt while preserving the assistant's configured Role, Scenario, Behaviour, Tone, Language and Custom Instructions. Safety boundaries and hidden-reasoning protection remain in place.
+- [x] Improved Workers AI error diagnostics: logs now include a stable request ID, model ID, error name and bounded diagnostic message; client response includes the request ID without exposing internal provider details.
+- [x] Confirmed the existing Cloudflare-hosted model @cf/openai/gpt-oss-20b can answer a direct Workers AI API smoke request. No model migration or provider change was necessary.
+- [x] GitHub Actions run 44793771866 passed: dependency install, TypeScript check, unit tests and production Vite build.
+- [x] Existing Cloudflare Pages project adichat successfully deployed commit c1d2abf3c87b5808496a012241703204fb1e383b as deployment 8f340ace-6747-4372-b398-d0042023fa6f. Existing production domain and bindings remain unchanged.
+- [x] Changed files: src/app/providers/AppStateProvider.tsx, src/App.tsx, src/pages/assistants/AIChatPage.tsx, functions/api/ai/chat.ts.
+
+### Verification still required
+- [ ] Physical browser session test: sign in, refresh repeatedly, confirm the same authenticated account remains active. CI verifies type/build, not real browser storage/session behavior.
+- [ ] Authenticated end-to-end AI chat request through the deployed Pages Function. Direct model inference is verified, but no user JWT or password was requested, so the full authenticated application route was not exercised.
+- [ ] Inspect new request-ID diagnostics if the owner still encounters a model error; the ID can be used to correlate Cloudflare runtime logs.
+- [ ] Live visual check of the simplified chat header/footer on mobile and desktop; this session did not have an authenticated browser session.
+- [ ] Do not mark all five user issues as physically device-tested until the above manual browser checks are completed.
+
+### Latest continuation anchor
+- Main commit: c1d2abf3c87b5808496a012241703204fb1e383b.
+- Cloudflare deployment: 8f340ace-6747-4372-b398-d0042023fa6f — build/deploy success.
+- GitHub CI run: 44793771866 — success.
+- No Supabase migration or production database mutation was required for this scope.
