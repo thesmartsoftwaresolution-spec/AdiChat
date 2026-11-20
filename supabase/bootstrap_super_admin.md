@@ -1,15 +1,16 @@
 # Super Admin One-Time Bootstrap Procedure (Adeel Bhatti)
 
-1. **Create & Verify Standard Account**
-   - Adeel Bhatti registers via the public `/sign-up` flow and verifies email confirmation in Supabase Auth.
-   - Do NOT rely on display name alone. Record the exact `auth.users.id` UUID and verified email from Supabase Auth Dashboard.
+1. **Verify the Existing Account Before Bootstrap**
+   - Intended account: Adeel Bhatti (`thesmartsoftwaresolution@gmail.com`). Existing Auth user must have `email_confirmed_at IS NOT NULL` before proceeding.
+   - Confirm the exact `auth.users.id` UUID and email directly from Supabase Auth; do not rely on display name alone.
+   - Never set `email_confirmed_at` manually or bypass the email verification flow.
 
 2. **Execute One-Time Operator SQL (Supabase SQL Editor / Trusted Server Migration)**
    ```sql
    DO $$
    DECLARE
      target_uid uuid := 'REPLACE_WITH_CONFIRMED_ADEEL_UUID';
-     target_email text := 'adeel@adichat.internal';
+     target_email text := 'thesmartsoftwaresolution@gmail.com';
      already_consumed boolean;
    BEGIN
      SELECT consumed INTO already_consumed FROM public.bootstrap_state WHERE id = 1;
