@@ -1134,6 +1134,9 @@ DECLARE
   system_message_id uuid;
   clean_name text := trim(coalesce(p_group_name, ''));
   clean_description text := nullif(trim(coalesce(p_group_description, '')), '');
+  configured_group_limit integer;
+  effective_group_limit integer;
+  requested_member_count integer;
 BEGIN
   IF caller_id IS NULL OR NOT public.is_active_account() THEN
     RAISE EXCEPTION 'Authentication required and account must be active.';
@@ -1147,16 +1150,341 @@ BEGIN
     RAISE EXCEPTION 'Group description is too long.';
   END IF;
 
-  IF cardinality(coalesce(p_member_ids, '{}'::uuid[])) > 100
-     OR cardinality(coalesce(p_assistant_ids, '{}'::uuid[])) > 10 THEN
-    RAISE EXCEPTION 'Group member or assistant limit exceeded.';
+  SELECT CASE
+    WHEN (s.value #>> '{}') ~ '^[0-9]+
+
+REVOKE EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) TO authenticated;
+
+-- Assistant conversation and authenticated AI persistence RPCs
+create or replace function public.get_or_create_assistant_conversation(p_assistant_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  caller_id uuid := auth.uid();
+  assistant_row public.ai_assistants%rowtype;
+  conv_id uuid;
+begin
+  if caller_id is null or not public.is_active_account() then
+    raise exception 'Authentication required and account must be active.';
+  end if;
+  select * into assistant_row from public.ai_assistants
+  where id = p_assistant_id and is_enabled = true;
+  if not found or (assistant_row.owner_user_id <> caller_id and not public.is_admin()) then
+    raise exception 'Assistant not found or access denied.';
+  end if;
+  insert into public.conversations (type, title, created_by, assistant_id)
+  values ('assistant', assistant_row.name, caller_id, assistant_row.id)
+  on conflict (created_by, assistant_id)
+    where type = 'assistant' and assistant_id is not null do nothing;
+  select id into conv_id from public.conversations
+  where type = 'assistant' and created_by = caller_id and assistant_id = assistant_row.id;
+  insert into public.conversation_members (conversation_id, user_id, member_role)
+  values (conv_id, caller_id, 'member')
+  on conflict (conversation_id, user_id) do nothing;
+  return conv_id;
+end;
+$;
+
+create or replace function public.create_assistant_user_message(
+  p_conversation_id uuid, p_assistant_id uuid, p_body text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  caller_id uuid := auth.uid();
+  message_id uuid;
+begin
+  if caller_id is null or not public.is_active_account() then
+    raise exception 'Authentication required and account must be active.';
+  end if;
+  if length(trim(coalesce(p_body, ''))) = 0 or length(p_body) > 4000 then
+    raise exception 'Prompt must contain 1 to 4000 characters.';
+  end if;
+  if not exists (
+    select 1 from public.conversations c
+    join public.ai_assistants a on a.id = c.assistant_id
+    join public.conversation_members cm on cm.conversation_id = c.id and cm.user_id = caller_id
+    where c.id = p_conversation_id and c.type = 'assistant'
+      and c.assistant_id = p_assistant_id and a.is_enabled = true
+      and (a.owner_user_id = caller_id or public.is_admin())
+  ) then raise exception 'Assistant conversation access denied.'; end if;
+  insert into public.messages (conversation_id, sender_user_id, message_type, body, delivery_status)
+  values (p_conversation_id, caller_id, 'text', trim(p_body), 'sent')
+  returning id into message_id;
+  update public.conversations set last_message_id = message_id, last_message_at = now(), updated_at = now()
+  where id = p_conversation_id;
+  return message_id;
+end;
+$;
+
+create or replace function public.can_request_assistant_reply()
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $
+declare caller_id uuid := auth.uid();
+begin
+  if caller_id is null or not public.is_active_account() then return false; end if;
+  return (select count(*) < 50 from public.assistant_usage
+    where user_id = caller_id and created_at >= now() - interval '24 hours'
+      and request_status = 'success');
+end;
+$;
+
+create or replace function public.record_assistant_response(
+  p_conversation_id uuid, p_assistant_id uuid, p_body text, p_model_id text,
+  p_latency_ms integer, p_input_units integer, p_output_units integer,
+  p_request_id text, p_thinking_mode boolean
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  caller_id uuid := auth.uid();
+  message_id uuid;
+begin
+  if caller_id is null or not public.is_active_account() then
+    raise exception 'Authentication required and account must be active.';
+  end if;
+  if length(trim(coalesce(p_body, ''))) = 0 or length(p_body) > 20000 then
+    raise exception 'Assistant response is empty or too large.';
+  end if;
+  if not exists (
+    select 1 from public.conversations c
+    join public.ai_assistants a on a.id = c.assistant_id
+    join public.conversation_members cm on cm.conversation_id = c.id and cm.user_id = caller_id
+    where c.id = p_conversation_id and c.type = 'assistant'
+      and c.assistant_id = p_assistant_id and a.is_enabled = true
+      and (a.owner_user_id = caller_id or public.is_admin())
+  ) then raise exception 'Assistant conversation access denied.'; end if;
+  if (select count(*) from public.assistant_usage
+      where user_id = caller_id and created_at >= now() - interval '24 hours'
+        and request_status = 'success') >= 50 then
+    raise exception 'Daily assistant request limit reached.';
+  end if;
+  insert into public.messages (
+    conversation_id, sender_assistant_id, message_type, body, delivery_status, metadata
+  ) values (
+    p_conversation_id, p_assistant_id, 'text', trim(p_body), 'sent',
+    jsonb_build_object('thinking_mode', coalesce(p_thinking_mode, false),
+      'model_id', p_model_id, 'latency_ms', p_latency_ms)
+  ) returning id into message_id;
+  update public.conversations set last_message_id = message_id, last_message_at = now(), updated_at = now()
+  where id = p_conversation_id;
+  insert into public.assistant_usage (
+    assistant_id, user_id, conversation_id, model_id, input_units,
+    output_units, request_status, latency_ms, request_id
+  ) values (
+    p_assistant_id, caller_id, p_conversation_id, p_model_id,
+    p_input_units, p_output_units, 'success', p_latency_ms, p_request_id
+  );
+  return message_id;
+end;
+$;
+
+revoke execute on function public.get_or_create_assistant_conversation(uuid) from public, anon;
+revoke execute on function public.create_assistant_user_message(uuid, uuid, text) from public, anon;
+revoke execute on function public.can_request_assistant_reply() from public, anon;
+revoke execute on function public.record_assistant_response(uuid, uuid, text, text, integer, integer, integer, text, boolean) from public, anon;
+grant execute on function public.get_or_create_assistant_conversation(uuid) to authenticated;
+grant execute on function public.create_assistant_user_message(uuid, uuid, text) to authenticated;
+grant execute on function public.can_request_assistant_reply() to authenticated;
+grant execute on function public.record_assistant_response(uuid, uuid, text, text, integer, integer, integer, text, boolean) to authenticated;
+
+-- Admin Privileged Operations (audited)
+create or replace function public.admin_update_user_status(
+  target_user_id uuid,
+  next_status public.user_status,
+  reason text default ''
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admin access required.';
+  end if;
+  if exists (select 1 from public.user_roles where user_id = target_user_id and role = 'super_admin')
+     and next_status <> 'active' then
+    raise exception 'Cannot suspend or ban Super Admin.';
+  end if;
+
+  update public.profiles set status = next_status where id = target_user_id;
+
+  insert into public.audit_logs (actor_user_id, action, target_type, target_id, details)
+  values (
+    auth.uid(),
+    'admin_update_user_status',
+    'user',
+    target_user_id::text,
+    jsonb_build_object('next_status', next_status, 'reason', reason)
+  );
+end;
+$$;
+
+create or replace function public.admin_resolve_report(
+  report_id uuid,
+  next_status public.report_status,
+  note text default ''
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admin access required.';
+  end if;
+
+  update public.reports
+  set status = next_status,
+      resolution_note = note,
+      resolved_at = now(),
+      assigned_to = auth.uid()
+  where id = report_id;
+
+  insert into public.audit_logs (actor_user_id, action, target_type, target_id, details)
+  values (
+    auth.uid(),
+    'admin_resolve_report',
+    'report',
+    report_id::text,
+    jsonb_build_object('status', next_status, 'resolution_note', note)
+  );
+end;
+$$;
+
+create or replace function public.admin_update_app_settings(
+  setting_key text,
+  setting_value jsonb
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admin access required.';
+  end if;
+
+  if setting_key not in (
+    'app_name', 'default_theme', 'allow_signups', 'email_verification_required',
+    'max_file_size_bytes', 'allowed_file_types', 'voice_note_max_length_seconds',
+    'group_size_limit', 'feature_groups_enabled', 'feature_voice_notes_enabled',
+    'feature_ai_enabled', 'feature_reactions_enabled', 'ai_model_id',
+    'ai_daily_message_limit', 'ai_max_assistants_per_user', 'maintenance_mode',
+    'maintenance_message', 'terms_content', 'privacy_content'
+  ) then
+    raise exception 'Unsupported app setting key.';
+  end if;
+
+  insert into public.app_settings (key, value, updated_by)
+  values (setting_key, setting_value, auth.uid())
+  on conflict (key) do update
+  set value = excluded.value, updated_by = auth.uid(), updated_at = now();
+
+  insert into public.audit_logs (actor_user_id, action, target_type, target_id, details)
+  values (
+    auth.uid(),
+    'admin_update_app_setting',
+    'app_settings',
+    setting_key,
+    jsonb_build_object('value', setting_value)
+  );
+end;
+$$;
+
+
+-- 9. Explicit API grants and column-level mutation boundaries
+revoke all on all tables in schema public from anon;
+grant select on public.developer_profile, public.announcements to anon;
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on public.profile_directory to authenticated;
+revoke insert, update, delete on public.profile_directory from authenticated;
+
+-- Profiles: users can update only safe self-service columns.
+revoke all on public.profiles from anon;
+revoke select on public.profiles from authenticated;
+grant select (id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference)
+  on public.profiles to authenticated;
+revoke update on public.profiles from authenticated;
+grant update (full_name, avatar_path, about, title, theme_preference, last_seen_at, is_online)
+  on public.profiles to authenticated;
+
+-- Membership role changes are trusted RPC operations, never direct row updates.
+revoke update on public.conversation_members from authenticated;
+grant update (last_read_at, muted_until) on public.conversation_members to authenticated;
+
+-- Message identity, ownership, routing and delivery fields are immutable to clients.
+revoke update on public.messages from authenticated;
+grant update (body, metadata, edited_at, deleted_at) on public.messages to authenticated;
+
+-- Public helper functions are read-only authorization predicates.
+revoke execute on all functions in schema public from public, anon, authenticated;
+grant execute on function public.get_user_role() to authenticated;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_super_admin() to authenticated;
+grant execute on function public.is_conversation_member(uuid) to authenticated;
+grant execute on function public.is_group_admin(uuid) to authenticated;
+grant execute on function public.is_active_account() to authenticated;
+revoke all on public.bootstrap_state from anon, authenticated;
+
+-- Authenticated users may call guarded RPCs; trigger functions remain non-callable directly.
+grant execute on function public.create_direct_conversation(uuid) to authenticated;
+grant execute on function public.create_group(text, text, uuid[]) to authenticated;
+grant execute on function public.add_group_members(uuid, uuid[]) to authenticated;
+grant execute on function public.remove_group_member(uuid, uuid) to authenticated;
+grant execute on function public.set_message_read(uuid, uuid) to authenticated;
+grant execute on function public.admin_update_user_status(uuid, public.user_status, text) to authenticated;
+grant execute on function public.admin_resolve_report(uuid, public.report_status, text) to authenticated;
+grant execute on function public.admin_update_app_settings(text, jsonb) to authenticated;
+grant execute on function public.get_or_create_assistant_conversation(uuid) to authenticated;
+grant execute on function public.create_assistant_user_message(uuid, uuid, text) to authenticated;
+grant execute on function public.can_request_assistant_reply() to authenticated;
+grant execute on function public.record_assistant_response(uuid, uuid, text, text, integer, integer, integer, text, boolean) to authenticated;
+
+
+-- 11. API privileges required for authenticated profile reads
+-- RLS remains enabled; row visibility is still controlled by profiles_select_directory.
+GRANT SELECT (id, full_name, avatar_path, about, title, is_online, last_seen_at, status, theme_preference, created_at, updated_at) ON TABLE public.profiles TO authenticated;
+ THEN (s.value #>> '{}')::integer
+    ELSE NULL
+  END
+  INTO configured_group_limit
+  FROM public.app_settings s
+  WHERE s.key = 'group_size_limit';
+
+  effective_group_limit := coalesce(configured_group_limit, 256);
+  IF effective_group_limit < 2 OR effective_group_limit > 1000 THEN
+    effective_group_limit := 256;
   END IF;
 
-  IF NOT EXISTS (
-    SELECT 1
-    FROM unnest(coalesce(p_member_ids, '{}'::uuid[])) AS requested(user_id)
-    WHERE requested.user_id <> caller_id
-  ) THEN
+  SELECT count(DISTINCT requested.user_id)::integer
+  INTO requested_member_count
+  FROM unnest(coalesce(p_member_ids, '{}'::uuid[])) AS requested(user_id)
+  WHERE requested.user_id IS NOT NULL
+    AND requested.user_id <> caller_id;
+
+  IF requested_member_count + 1 > effective_group_limit THEN
+    RAISE EXCEPTION 'Group size exceeds the configured limit of % members.', effective_group_limit;
+  END IF;
+
+  IF requested_member_count = 0 THEN
     RAISE EXCEPTION 'Select at least one other active group member.';
   END IF;
 
@@ -1164,7 +1492,8 @@ BEGIN
     SELECT 1
     FROM unnest(coalesce(p_member_ids, '{}'::uuid[])) AS requested(user_id)
     LEFT JOIN public.profiles p ON p.id = requested.user_id
-    WHERE requested.user_id <> caller_id
+    WHERE requested.user_id IS NOT NULL
+      AND requested.user_id <> caller_id
       AND (p.id IS NULL OR p.status <> 'active')
   ) THEN
     RAISE EXCEPTION 'All group members must have active accounts.';
@@ -1177,7 +1506,8 @@ BEGIN
       ON a.id = requested.assistant_id
      AND a.owner_user_id = caller_id
      AND a.is_enabled = true
-    WHERE a.id IS NULL
+    WHERE requested.assistant_id IS NOT NULL
+      AND a.id IS NULL
   ) THEN
     RAISE EXCEPTION 'Only your enabled AI assistants can be added to this group.';
   END IF;
@@ -1210,7 +1540,8 @@ BEGIN
   FROM (
     SELECT DISTINCT unnest(coalesce(p_member_ids, '{}'::uuid[])) AS user_id
   ) requested
-  WHERE requested.user_id <> caller_id;
+  WHERE requested.user_id IS NOT NULL
+    AND requested.user_id <> caller_id;
 
   INSERT INTO public.group_assistants (
     group_conversation_id,
@@ -1222,7 +1553,8 @@ BEGIN
   SELECT conv_id, requested.assistant_id, 'mentioned_only', caller_id, true
   FROM (
     SELECT DISTINCT unnest(coalesce(p_assistant_ids, '{}'::uuid[])) AS assistant_id
-  ) requested;
+  ) requested
+  WHERE requested.assistant_id IS NOT NULL;
 
   INSERT INTO public.messages (
     conversation_id,
@@ -1252,6 +1584,9 @@ BEGIN
   RETURN conv_id;
 END;
 $function$;
+
+REVOKE EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) TO authenticated;
 
 REVOKE EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.create_group_with_settings(text, text, uuid[], uuid[], boolean, boolean) TO authenticated;
