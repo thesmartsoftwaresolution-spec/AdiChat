@@ -233,7 +233,19 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const hydrateIdentity = async (user: { id: string; email?: string | null } | null) => {
       if (!user) {
-        if (active) setState((prev) => ({ ...prev, currentUserId: null }));
+        if (active) {
+          setState((prev) => ({
+            ...prev,
+            currentUserId: null,
+            profiles: [],
+            userRoles: [],
+            assistants: [],
+            conversations: [],
+            conversationMembers: [],
+            messages: [],
+            assistantUsage: [],
+          }));
+        }
         return;
       }
 
@@ -512,7 +524,21 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const logout = useCallback(() => {
     const sb = getSupabaseClient();
     if (sb) void sb.auth.signOut();
-    setState((prev) => ({ ...prev, currentUserId: null }));
+    if (!IS_DEMO_MODE) {
+      setState((prev) => ({
+        ...prev,
+        currentUserId: null,
+        profiles: [],
+        userRoles: [],
+        assistants: [],
+        conversations: [],
+        conversationMembers: [],
+        messages: [],
+        assistantUsage: [],
+      }));
+    } else {
+      setState((prev) => ({ ...prev, currentUserId: null }));
+    }
   }, []);
 
   const updateMyProfile = useCallback(
