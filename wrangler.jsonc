@@ -14,16 +14,5 @@
     "VITE_SUPABASE_ANON_KEY": "sb_publishable_RznOywvm6GemXs1eDH_IHw_5jRXSQux",
     "APP_ORIGIN": "https://adichat.pages.dev",
     "MAX_AI_INPUT_CHARS": "4000"
-  },
-  "observability": {
-    "enabled": true,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1
-    },
-    "traces": {
-      "enabled": true,
-      "head_sampling_rate": 0.01
-    }
   }
 }
