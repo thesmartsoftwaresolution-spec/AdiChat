@@ -161,7 +161,7 @@ interface AppStateContextValue {
     language: string;
     starter_prompts: string[];
     thinking_enabled_default?: boolean;
-  }) => AIAssistant | null;
+  }) => Promise<AIAssistant | null>;
   updateAssistant: (assistantId: string, updates: Partial<AIAssistant>) => void;
   deleteAssistant: (assistantId: string) => void;
   openAssistantConversation: (assistantId: string) => Conversation | null;
@@ -237,12 +237,14 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return;
       }
 
-      const [profileResult, rolesResult] = await Promise.all([
+      const [profileResult, rolesResult, assistantsResult, conversationsResult] = await Promise.all([
         sb.from('profiles')
           .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
           .eq('id', user.id)
           .maybeSingle(),
         sb.from('user_roles').select('role').eq('user_id', user.id),
+        sb.from('ai_assistants').select('*').order('created_at', { ascending: false }),
+        sb.from('conversations').select('*').eq('type', 'assistant').order('updated_at', { ascending: false }),
       ]);
 
       if (!active) return;
@@ -251,6 +253,16 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return;
       }
 
+      const assistantConversationRows = conversationsResult.data || [];
+      const assistantConversationIds = assistantConversationRows.map((row) => row.id);
+      const assistantMessagesResult = assistantConversationIds.length
+        ? await sb.from('messages').select('*')
+            .in('conversation_id', assistantConversationIds)
+            .order('created_at', { ascending: true })
+            .limit(500)
+        : { data: [], error: null };
+
+      if (!active) return;
       const profile = { ...profileResult.data, email: user.email ?? null } as Profile;
       const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
       setState((prev) => ({
@@ -267,6 +279,19 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             created_at: profile.created_at,
           })),
         ],
+        assistants: assistantsResult.error ? prev.assistants : (assistantsResult.data || []) as AIAssistant[],
+        conversations: conversationsResult.error
+          ? prev.conversations
+          : [
+              ...assistantConversationRows as Conversation[],
+              ...prev.conversations.filter((item) => item.type !== 'assistant'),
+            ],
+        messages: assistantMessagesResult.error
+          ? prev.messages
+          : [
+              ...prev.messages.filter((item) => !assistantConversationIds.includes(item.conversation_id)),
+              ...(assistantMessagesResult.data || []) as Message[],
+            ],
       }));
     };
 
@@ -1062,7 +1087,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const createAssistant = useCallback(
-    (input: {
+    async (input: {
       name: string;
       description: string;
       personality: string;
@@ -1071,11 +1096,38 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       language: string;
       starter_prompts: string[];
       thinking_enabled_default?: boolean;
-    }): AIAssistant | null => {
+    }): Promise<AIAssistant | null> => {
       if (!state.currentUserId) return null;
       const nowIso = new Date().toISOString();
-      const id = `ai-${Date.now().toString(36)}`;
       const handle = input.name.replace(/[^a-zA-Z0-9]/g, '') || 'CustomAI';
+
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return null;
+        const { data, error } = await sb.from('ai_assistants').insert({
+          owner_user_id: state.currentUserId,
+          name: input.name.trim(),
+          handle,
+          description: input.description.trim() || null,
+          personality: input.personality.trim() || null,
+          instructions: input.instructions.trim(),
+          tone: input.tone.trim() || 'Helpful',
+          language: input.language.trim() || 'English',
+          starter_prompts: input.starter_prompts.filter(Boolean),
+          is_enabled: true,
+          thinking_enabled_default: input.thinking_enabled_default ?? true,
+        }).select('*').single();
+        if (error || !data) {
+          pushToast(error?.message || 'Unable to save assistant.', 'error');
+          return null;
+        }
+        const savedAssistant = data as AIAssistant;
+        setState((prev) => ({ ...prev, assistants: [savedAssistant, ...prev.assistants] }));
+        pushToast(`${savedAssistant.name} created`, 'success');
+        return savedAssistant;
+      }
+
+      const id = `ai-${Date.now().toString(36)}`;
       const newAssistant: AIAssistant = {
         id,
         owner_user_id: state.currentUserId,
@@ -1094,10 +1146,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         created_at: nowIso,
         updated_at: nowIso,
       };
-      setState((prev) => ({
-        ...prev,
-        assistants: [newAssistant, ...prev.assistants],
-      }));
+      setState((prev) => ({ ...prev, assistants: [newAssistant, ...prev.assistants] }));
       pushToast(`${newAssistant.name} created`, 'success');
       return newAssistant;
     },
