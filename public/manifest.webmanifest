@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "AdiChat — Realtime Chat & AI Assistants",
+  "short_name": "AdiChat",
+  "description": "Private messaging, group conversations and personal AI assistants.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#fcf8f8",
+  "theme_color": "#004327",
+  "categories": ["communication", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/adichat.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
