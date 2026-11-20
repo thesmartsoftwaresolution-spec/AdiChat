@@ -96,7 +96,7 @@ export const AIChatPage: React.FC = () => {
               to={`/assistants/${assistant.id}`}
               className="flex items-center gap-2.5 min-w-0 py-1 px-1.5 rounded-xl hover:bg-surface-container-low"
             >
-              <AssistantAvatar name={assistant.name} iconName={assistant.icon_name} size="sm" />
+              <AssistantAvatar name={assistant.name} iconName={assistant.icon_name} src={assistant.avatar_url} size="sm" />
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <h1 className="text-headline-sm text-on-surface truncate leading-tight">

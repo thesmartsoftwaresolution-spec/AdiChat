@@ -62,7 +62,7 @@ export const AddAssistantToGroupPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <AssistantAvatar name={a.name} iconName={a.icon_name} size="md" />
+                      <AssistantAvatar name={a.name} iconName={a.icon_name} src={a.avatar_url} size="md" />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <p className="text-headline-sm text-on-surface truncate">{a.name}</p>

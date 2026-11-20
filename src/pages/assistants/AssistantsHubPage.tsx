@@ -123,6 +123,7 @@ export const AssistantsHubPage: React.FC = () => {
                   <AssistantAvatar
                     name={assistant.name}
                     iconName={assistant.icon_name}
+                    src={assistant.avatar_url}
                     size="md"
                   />
                   <div className="min-w-0 flex-1">
