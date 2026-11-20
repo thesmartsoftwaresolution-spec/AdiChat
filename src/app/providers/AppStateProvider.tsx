@@ -255,7 +255,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             auditLogs: [],
             appSettings: [],
             announcements: [],
-            developerProfile: null,
+            developerProfile: SEED_DATA.developerProfile,
           }));
         }
         return;
@@ -617,11 +617,21 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         currentUserId: null,
         profiles: [],
         userRoles: [],
+        userSettings: {},
         assistants: [],
         conversations: [],
         conversationMembers: [],
+        groups: [],
         messages: [],
+        attachments: [],
+        groupAssistants: [],
         assistantUsage: [],
+        userBlocks: [],
+        reports: [],
+        auditLogs: [],
+        appSettings: [],
+        announcements: [],
+        developerProfile: SEED_DATA.developerProfile,
       }));
     } else {
       setState((prev) => ({ ...prev, currentUserId: null }));
