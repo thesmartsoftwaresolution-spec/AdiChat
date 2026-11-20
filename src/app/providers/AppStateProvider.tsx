@@ -463,6 +463,117 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }, []);
 
+  // Keep messages and conversation previews synchronized across signed-in clients.
+  // Postgres Changes applies the existing table RLS policies to each subscriber.
+  useEffect(() => {
+    const sb = getSupabaseClient();
+    const userId = state.currentUserId;
+    if (!sb || !userId || IS_DEMO_MODE) return;
+
+    let lastSeenAt = state.messages.reduce(
+      (latest, message) => message.created_at > latest ? message.created_at : latest,
+      ''
+    );
+    let hasConnected = false;
+    let active = true;
+
+    const channel = sb
+      .channel(`adichat-live-messages-${userId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages' },
+        (payload) => {
+          if (!active) return;
+          const eventType = payload.eventType;
+          if (eventType === 'DELETE') {
+            const oldMessage = payload.old as Partial<Message>;
+            if (oldMessage.id) {
+              setState((prev) => ({
+                ...prev,
+                messages: prev.messages.filter((message) => message.id !== oldMessage.id),
+              }));
+            }
+            return;
+          }
+
+          const message = payload.new as Message;
+          if (!message?.id || !message.conversation_id) return;
+          if (message.created_at > lastSeenAt) lastSeenAt = message.created_at;
+          setState((prev) => {
+            if (!prev.conversationMembers.some(
+              (member) => member.conversation_id === message.conversation_id && member.user_id === userId
+            )) return prev;
+            const exists = prev.messages.some((item) => item.id === message.id);
+            return {
+              ...prev,
+              messages: exists
+                ? prev.messages.map((item) => item.id === message.id ? message : item)
+                : [...prev.messages, message].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+            };
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'conversations' },
+        (payload) => {
+          if (!active || payload.eventType === 'DELETE') return;
+          const conversation = payload.new as Conversation;
+          if (!conversation?.id) return;
+          setState((prev) => {
+            if (!prev.conversationMembers.some(
+              (member) => member.conversation_id === conversation.id && member.user_id === userId
+            )) return prev;
+            return {
+              ...prev,
+              conversations: prev.conversations.some((item) => item.id === conversation.id)
+                ? prev.conversations.map((item) => item.id === conversation.id ? conversation : item)
+                : [conversation, ...prev.conversations],
+            };
+          });
+        }
+      )
+      .subscribe((status) => {
+        if (!active || status !== 'SUBSCRIBED') return;
+        if (hasConnected) {
+          // Recover events missed while the device was offline or the socket reconnected.
+          void sb.from('messages')
+            .select('*')
+            .gte('created_at', lastSeenAt || new Date(0).toISOString())
+            .order('created_at', { ascending: true })
+            .limit(500)
+            .then(({ data, error }) => {
+              if (!active || error || !data?.length) return;
+              const recovered = data as Message[];
+              recovered.forEach((message) => {
+                if (message.created_at > lastSeenAt) lastSeenAt = message.created_at;
+              });
+              setState((prev) => {
+                const memberConversationIds = new Set(
+                  prev.conversationMembers
+                    .filter((member) => member.user_id === userId)
+                    .map((member) => member.conversation_id)
+                );
+                const merged = new Map(prev.messages.map((message) => [message.id, message]));
+                recovered.forEach((message) => {
+                  if (memberConversationIds.has(message.conversation_id)) merged.set(message.id, message);
+                });
+                return {
+                  ...prev,
+                  messages: [...merged.values()].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+                };
+              });
+            });
+        }
+        hasConnected = true;
+      });
+
+    return () => {
+      active = false;
+      void sb.removeChannel(channel);
+    };
+  }, [state.currentUserId]);
+
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
