@@ -40,6 +40,11 @@ export const DirectChatPage: React.FC = () => {
     [state.messages, conversationId]
   );
 
+  // Follow every new incoming or outgoing message in the active conversation.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [conversationId, messages.length]);
+
   useEffect(() => {
     if (conversationId && conv) {
       markConversationRead(conversationId);
@@ -58,7 +63,6 @@ export const DirectChatPage: React.FC = () => {
       setDraft(text);
       return;
     }
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
 
   if (!conv) {
