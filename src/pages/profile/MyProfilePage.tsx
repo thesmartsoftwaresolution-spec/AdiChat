@@ -4,7 +4,7 @@ import { MobileStackLayout } from '../../components/layout/AppShells';
 import { UserAvatar } from '../../components/ui/Avatar';
 
 export const MyProfilePage: React.FC = () => {
-  const { currentUser, currentUserRoles, updateMyProfile, pushToast } = useAppState();
+  const { currentUser, currentUserRoles, updateMyProfile, uploadAvatar, pushToast } = useAppState();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName] = useState(currentUser?.full_name || '');
@@ -24,23 +24,27 @@ export const MyProfilePage: React.FC = () => {
       pushToast('Profile photo must be under 2 MB.', 'error');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        updateMyProfile({ avatar_path: reader.result });
-      }
-    };
-    reader.readAsDataURL(file);
+    if (import.meta.env.DEV) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          updateMyProfile({ avatar_path: reader.result });
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      void uploadAvatar(file);
+    }
     e.target.value = '';
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
       pushToast('Full name is required.', 'error');
       return;
     }
-    updateMyProfile({
+    await updateMyProfile({
       full_name: fullName.trim(),
       title: title.trim() || null,
       about: about.trim() || null,
@@ -90,7 +94,7 @@ export const MyProfilePage: React.FC = () => {
             {currentUser.avatar_path && (
               <button
                 type="button"
-                onClick={() => updateMyProfile({ avatar_path: null })}
+                onClick={() => void updateMyProfile({ avatar_path: null })}
                 className="h-9 px-3.5 rounded-xl bg-surface-container-low text-error text-label-sm font-semibold"
               >
                 Remove Photo

@@ -111,8 +111,9 @@ interface AppStateContextValue {
   quickSignInDemo: (userId?: string) => void;
   logout: () => void;
   // Profile & Settings
-  updateMyProfile: (updates: Partial<Pick<Profile, 'full_name' | 'about' | 'title' | 'theme_preference' | 'avatar_path'>>) => void;
-  updateMySettings: (updates: Partial<UserSettings>) => void;
+  updateMyProfile: (updates: Partial<Pick<Profile, 'full_name' | 'about' | 'title' | 'theme_preference' | 'avatar_path'>>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
+  updateMySettings: (updates: Partial<UserSettings>) => Promise<void>;
   // Direct & Group Messaging
   getOrCreateDirectConversation: (otherUserId: string) => Promise<Conversation | null>;
   markConversationRead: (conversationId: string) => Promise<void>;
@@ -321,14 +322,29 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ]);
 
       if (!active) return;
-      const ownProfile = { ...profileResult.data, email: user.email ?? null } as Profile;
-      const profileRows = (directoryResult.data || []).map((row) => ({
+      const ownProfileRaw = { ...profileResult.data, email: user.email ?? null } as Profile;
+      const profileRowsRaw = (directoryResult.data || []).map((row) => ({
         ...row,
         email: row.id === user.id ? user.email ?? null : null,
       })) as Profile[];
-      const profiles = profileRows.some((row) => row.id === user.id)
-        ? profileRows
-        : [ownProfile, ...profileRows];
+      const rawProfiles = profileRowsRaw.some((row) => row.id === user.id)
+        ? profileRowsRaw
+        : [ownProfileRaw, ...profileRowsRaw];
+      const avatarPaths = Array.from(new Set(rawProfiles
+        .map((profile) => profile.avatar_path)
+        .filter((path): path is string => Boolean(path))));
+      const signedAvatarMap = new Map<string, string>();
+      if (avatarPaths.length) {
+        const { data: signedAvatars } = await sb.storage.from('avatars').createSignedUrls(avatarPaths, 604800);
+        (signedAvatars || []).forEach((item) => {
+          if (item.path && item.signedUrl) signedAvatarMap.set(item.path, item.signedUrl);
+        });
+      }
+      const profiles = rawProfiles.map((profile) => ({
+        ...profile,
+        avatar_path: profile.avatar_path ? signedAvatarMap.get(profile.avatar_path) || null : null,
+      })) as Profile[];
+      const ownProfile = profiles.find((profile) => profile.id === user.id) || ownProfileRaw;
       const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
       const nowIso = new Date().toISOString();
       const defaultSettings: UserSettings = {
@@ -611,13 +627,57 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const updateMyProfile = useCallback(
-    (updates: Partial<Pick<Profile, 'full_name' | 'about' | 'title' | 'theme_preference' | 'avatar_path'>>) => {
+    async (updates: Partial<Pick<Profile, 'full_name' | 'about' | 'title' | 'theme_preference' | 'avatar_path'>>) => {
       if (!state.currentUserId) return;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) {
+          pushToast('Profile service is unavailable.', 'error');
+          return;
+        }
+        if (updates.avatar_path !== undefined && updates.avatar_path !== null) {
+          pushToast('Use the secure avatar upload action to change your photo.', 'error');
+          return;
+        }
+        const patch: Record<string, unknown> = {};
+        for (const key of ['full_name', 'about', 'title', 'theme_preference'] as const) {
+          if (updates[key] !== undefined) patch[key] = updates[key];
+        }
+        let oldAvatarPath: string | null = null;
+        if (updates.avatar_path === null) {
+          const current = await sb.from('profiles').select('avatar_path').eq('id', state.currentUserId).maybeSingle();
+          oldAvatarPath = current.data?.avatar_path || null;
+          patch.avatar_path = null;
+        }
+        if (!Object.keys(patch).length) return;
+        const { data, error } = await sb.from('profiles')
+          .update(patch)
+          .eq('id', state.currentUserId)
+          .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
+          .maybeSingle();
+        if (error || !data) {
+          pushToast('Profile could not be saved. Please try again.', 'error');
+          return;
+        }
+        if (oldAvatarPath) {
+          await sb.storage.from('avatars').remove([oldAvatarPath]);
+        }
+        setState((prev) => ({
+          ...prev,
+          profiles: prev.profiles.map((profile) =>
+            profile.id === state.currentUserId
+              ? { ...profile, ...data, email: profile.email ?? null, avatar_path: null }
+              : profile
+          ),
+        }));
+        pushToast('Profile saved', 'success');
+        return;
+      }
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
-        profiles: prev.profiles.map((p) =>
-          p.id === prev.currentUserId ? { ...p, ...updates, updated_at: nowIso } : p
+        profiles: prev.profiles.map((profile) =>
+          profile.id === prev.currentUserId ? { ...profile, ...updates, updated_at: nowIso } : profile
         ),
       }));
       pushToast('Profile saved', 'success');
@@ -625,14 +685,130 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     [state.currentUserId, pushToast]
   );
 
-  const updateMySettings = useCallback(
-    (updates: Partial<UserSettings>) => {
+  const uploadAvatar = useCallback(
+    async (file: File) => {
       if (!state.currentUserId) return;
+      if (file.size > 2 * 1024 * 1024) {
+        pushToast('Profile photo must be under 2 MB.', 'error');
+        return;
+      }
+      const extensionByType: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/gif': 'gif',
+      };
+      const extension = extensionByType[file.type];
+      if (!extension) {
+        pushToast('Use a JPG, PNG, WEBP, or GIF image.', 'error');
+        return;
+      }
+      if (IS_DEMO_MODE) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            setState((prev) => ({
+              ...prev,
+              profiles: prev.profiles.map((profile) =>
+                profile.id === prev.currentUserId
+                  ? { ...profile, avatar_path: reader.result as string, updated_at: new Date().toISOString() }
+                  : profile
+              ),
+            }));
+          }
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const sb = getSupabaseClient();
+      if (!sb) {
+        pushToast('Profile storage is unavailable.', 'error');
+        return;
+      }
+      const userId = state.currentUserId;
+      const current = await sb.from('profiles').select('avatar_path').eq('id', userId).maybeSingle();
+      const oldAvatarPath = current.data?.avatar_path || null;
+      const objectPath = `${userId}/${crypto.randomUUID()}.${extension}`;
+      const upload = await sb.storage.from('avatars').upload(objectPath, file, {
+        upsert: false,
+        contentType: file.type,
+        cacheControl: '3600',
+      });
+      if (upload.error) {
+        pushToast('Profile photo upload failed. Please try again.', 'error');
+        return;
+      }
+      const updated = await sb.from('profiles')
+        .update({ avatar_path: objectPath })
+        .eq('id', userId)
+        .select('id')
+        .maybeSingle();
+      if (updated.error || !updated.data) {
+        await sb.storage.from('avatars').remove([objectPath]);
+        pushToast('Profile photo could not be saved.', 'error');
+        return;
+      }
+      const signed = await sb.storage.from('avatars').createSignedUrl(objectPath, 604800);
+      if (oldAvatarPath && oldAvatarPath !== objectPath) {
+        await sb.storage.from('avatars').remove([oldAvatarPath]);
+      }
+      setState((prev) => ({
+        ...prev,
+        profiles: prev.profiles.map((profile) =>
+          profile.id === userId
+            ? { ...profile, avatar_path: signed.data?.signedUrl || null, updated_at: new Date().toISOString() }
+            : profile
+        ),
+      }));
+      pushToast(signed.data?.signedUrl ? 'Profile photo updated' : 'Profile photo saved; it will appear after refresh.', 'success');
+    },
+    [state.currentUserId, pushToast]
+  );
+
+  const updateMySettings = useCallback(
+    async (updates: Partial<UserSettings>) => {
+      if (!state.currentUserId) return;
+      const userId = state.currentUserId;
       const nowIso = new Date().toISOString();
+      const allowedKeys = [
+        'show_last_seen',
+        'show_online_status',
+        'read_receipts_enabled',
+        'notify_messages',
+        'notify_groups',
+        'notify_ai_replies',
+        'disappearing_timer',
+        'auto_download_media',
+      ] as const;
+      const patch: Record<string, unknown> = {};
+      for (const key of allowedKeys) {
+        if (updates[key] !== undefined) patch[key] = updates[key];
+      }
+      if (!Object.keys(patch).length) return;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) {
+          pushToast('Settings service is unavailable.', 'error');
+          return;
+        }
+        const { data, error } = await sb.from('user_settings')
+          .upsert({ user_id: userId, ...patch, updated_at: nowIso }, { onConflict: 'user_id' })
+          .select('*')
+          .maybeSingle();
+        if (error || !data) {
+          pushToast('Settings could not be saved. Please try again.', 'error');
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          userSettings: { ...prev.userSettings, [userId]: data as UserSettings },
+        }));
+        return;
+      }
       setState((prev) => {
-        const uid = prev.currentUserId!;
-        const current = prev.userSettings[uid] || {
-          user_id: uid,
+        const current = prev.userSettings[userId] || {
+          user_id: userId,
           show_last_seen: true,
           show_online_status: true,
           read_receipts_enabled: true,
@@ -648,12 +824,12 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...prev,
           userSettings: {
             ...prev.userSettings,
-            [uid]: { ...current, ...updates, updated_at: nowIso },
+            [userId]: { ...current, ...patch, updated_at: nowIso },
           },
         };
       });
     },
-    [state.currentUserId]
+    [state.currentUserId, pushToast]
   );
 
   const getOrCreateDirectConversation = useCallback(
