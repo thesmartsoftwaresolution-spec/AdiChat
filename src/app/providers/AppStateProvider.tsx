@@ -1180,6 +1180,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             const aiRes = await requestAssistantReply({
               prompt: trimmed,
               assistant,
+              conversationId,
               thinkingMode: shouldRecommendThinkingMode(trimmed),
               history: recentMsgs,
             });
@@ -2167,6 +2168,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const res = await requestAssistantReply({
           prompt,
           assistant,
+          conversationId: conv.id,
           thinkingMode,
           history,
         });
