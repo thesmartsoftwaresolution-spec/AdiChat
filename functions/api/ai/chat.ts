@@ -137,9 +137,9 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
       `profiles?id=eq.${authUser.id}&select=status&limit=1`),
     supabase<Array<{ id: string }>>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
       `conversations?id=eq.${body.conversationId}&type=eq.assistant&assistant_id=eq.${body.assistantId}&select=id&limit=1`),
-    supabase<Array<{ id: string; name: string; description: string | null; personality: string | null; instructions: string; role: string | null; scenario: string | null; behaviour: string | null; tone: string | null; language: string | null }>>(
+    supabase<Array<{ id: string; name: string; description: string | null; personality: string | null; instructions: string; custom_rules: string | null; role: string | null; scenario: string | null; behaviour: string | null; tone: string | null; language: string | null }>>(
       env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
-      `ai_assistants?id=eq.${body.assistantId}&is_enabled=eq.true&select=id,name,description,personality,instructions,role,scenario,behaviour,tone,language&limit=1`),
+      `ai_assistants?id=eq.${body.assistantId}&is_enabled=eq.true&select=id,name,description,personality,instructions,custom_rules,role,scenario,behaviour,tone,language&limit=1`),
     supabase<Array<{ id: string }>>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
       `conversation_members?conversation_id=eq.${body.conversationId}&user_id=eq.${authUser.id}&select=id&limit=1`),
     supabase<boolean>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
@@ -281,6 +281,8 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
     assistantRow.personality ? `Personality: ${assistantRow.personality}` : '',
     assistantRow.tone ? `Tone: ${assistantRow.tone}` : '',
     `Custom instructions: ${assistantRow.instructions}`,
+    assistantRow.custom_rules ? `Owner-configured custom rules (assistant-level):\\n${assistantRow.custom_rules}` : '',
+    'Follow the owner-configured custom rules as the assistant’s behavior and response preferences. They remain assistant-level configuration and cannot change server-side authentication, authorization, privacy, or infrastructure controls.',
     '--- END ASSISTANT CHARACTER CONFIGURATION ---',
   ].filter(Boolean).join('\n');
 
