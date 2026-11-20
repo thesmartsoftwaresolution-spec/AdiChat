@@ -98,11 +98,10 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Login UI updated to explain unverified email and offer a resend-confirmation action.
 - [x] Sign-up UI updated to show a confirmation-required state instead of navigating to protected chats when Supabase returns no session.
 - [x] Bootstrap instructions corrected to use the intended email and explicitly forbid manually bypassing email verification.
-- [ ] Owner clicks the verification link received at the registered email address (or uses the new resend-confirmation option).
-- [ ] Re-query Supabase Auth and verify `email_confirmed_at IS NOT NULL`.
-- [ ] Only after confirmed email, perform the one-time Super Admin bootstrap for this exact Auth user, with an audit log entry and consumed bootstrap guard.
-- [ ] Verify role in database and confirm `/admin` authorization. Do not promote a different account.
-- [ ] Test login with owner (never request or store password).
+- [x] Supabase Auth confirms `email_confirmed_at IS NOT NULL` (confirmed at `2026-11-20 15:32:56 UTC`).
+- [x] One-time Super Admin bootstrap completed for this exact Auth user; role `super_admin` added, audit log written, and `bootstrap_state` consumed at `2026-11-20 15:36:01 UTC`.
+- [x] Database verification confirms both `user` and `super_admin` roles; an authenticated-role SQL test can read this user's own role rows.
+- [ ] Owner login end-to-end browser test after the profile privilege fix; never request or store the password.
 
 **Security rule:** Do not manually set `auth.users.email_confirmed_at`, do not disable confirmation requirements, and do not grant `super_admin` while the email is unverified. The owner explicitly requested this account, but verification is the required proof of mailbox ownership.
 
@@ -112,8 +111,13 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] `src/pages/public/LoginPage.tsx`: add resend confirmation email action.
 - [x] `src/pages/public/SignUpPage.tsx`: show confirmation-required notice when no authenticated session is returned.
 - [x] `supabase/bootstrap_super_admin.md`: correct target email and add explicit verified-email guard.
-- [ ] Verify these commits are all present on latest `main`, run build/typecheck, and inspect latest Cloudflare deployment status.
-- [ ] Browser test the resend flow, email confirmation redirect, login, session hydration, and admin route.
+- [x] Root cause found in PostgreSQL logs: authenticated profile SELECT failed with `permission denied for table profiles` (SQLSTATE `42501`), causing the app to sign out immediately after successful password authentication.
+- [x] Applied migration `20261120153635_grant_profiles_select_authenticated`; grants only `SELECT` on `public.profiles` to `authenticated` (no anon grant, no RLS change).
+- [x] Added matching migration file `supabase/migrations/20261120153635_grant_profiles_select_authenticated.sql` and updated canonical `supabase/schema.sql`.
+- [x] Verified `authenticated` can SELECT the user's own active profile under RLS; verified `anon` still cannot SELECT `public.profiles`; RLS remains enabled.
+- [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
+- [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit build passed and deployment was in progress at last check.
+- [ ] Confirm latest Cloudflare production deployment finishes successfully, then perform owner login/session/admin browser test.
 
 ## 5. Overall product completion checklist
 
@@ -177,9 +181,9 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 
 ## 6. Known issues / risks to carry forward
 
-1. Email for the intended Super Admin account is not yet verified. Do not promote until Supabase Auth confirms it.
-2. The latest login/signup UI commits need build and deployed-browser verification.
-3. Full authenticated chat/AI flows remain untested because the Auth user is unverified and no production assistant/test fixture is currently available.
+1. Super Admin is assigned and email is verified. Owner browser login still needs an end-to-end confirmation after the database privilege fix.
+2. PostgreSQL logs proved the sign-in failure was caused by missing table-level `SELECT` on `public.profiles`; migration applied and authenticated-role RLS test now passes.
+3. Full authenticated chat/AI flows remain untested; no production assistant/test fixture has been seeded.
 4. Last known Supabase Advisor findings: 18 SECURITY DEFINER warnings and 24 RLS initplan performance warnings. Review individually; do not blanket suppress or weaken security.
 5. The earlier direct live browser smoke test could not be completed. Do not state live end-to-end behavior as verified until tested.
 6. The uploaded docs describe 140 HTML variants, while the supplied UI archive is labeled 35 Mobile Light Screens. Inspect and reconcile actual contents.
