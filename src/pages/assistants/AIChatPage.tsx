@@ -12,9 +12,7 @@ export const AIChatPage: React.FC = () => {
   const { state, currentUser, sendAiMessage } = useAppState();
 
   const assistant = state.assistants.find((a) => a.id === assistantId);
-  const [thinkingMode, setThinkingMode] = useState<boolean>(
-    assistant?.thinking_enabled_default ?? true
-  );
+  const thinkingMode = Boolean(assistant?.thinking_enabled_default);
   const [draft, setDraft] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -173,33 +171,12 @@ export const AIChatPage: React.FC = () => {
                   </h1>
                   <AIBadge compact />
                 </div>
-                <p className="text-caption text-on-surface-variant truncate">
-                  {thinkingMode
-                    ? 'High Thinking Mode • Cloudflare Workers AI · GPT-OSS 20B'
-                    : 'Fast Mode • Cloudflare Workers AI · GPT-OSS 20B (Low Thinking)'}
-                </p>
+                <p className="text-caption text-on-surface-variant truncate">AI Assistant</p>
               </div>
             </Link>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setThinkingMode((t) => !t)}
-              aria-pressed={thinkingMode}
-              className={`h-9 px-3 rounded-full text-label-sm font-semibold inline-flex items-center gap-1.5 transition-colors ${
-                thinkingMode
-                  ? 'bg-primary text-on-primary shadow-xs'
-                  : 'bg-surface-container-low text-on-surface-variant'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">psychology</span>
-              <span className="hidden sm:inline">
-                {thinkingMode ? 'Thinking: HIGH' : 'Thinking: OFF'}
-              </span>
-              <span className="sm:hidden">{thinkingMode ? 'Think' : 'Fast'}</span>
-            </button>
-
             <Link
               to={`/assistants/${assistant.id}`}
               aria-label="Assistant profile and settings"
@@ -244,7 +221,7 @@ export const AIChatPage: React.FC = () => {
             title={`Ask ${assistant.name} anything`}
             description={
               assistant.description ||
-              'Complex architectural, math, and debugging questions automatically engage High Thinking Mode.'
+              'I’m here to help. Ask a question or choose one of the suggestions below to get started.'
             }
           />
         ) : (
@@ -282,9 +259,7 @@ export const AIChatPage: React.FC = () => {
               progress_activity
             </span>
             <span className="text-caption text-on-surface-variant font-medium">
-              {thinkingMode
-                ? `${assistant.name} is deep reasoning (Cloudflare Workers AI · GPT-OSS 20B • Thinking HIGH)...`
-                : `${assistant.name} is generating reply...`}
+              `${assistant.name} is preparing a reply...`
             </span>
           </div>
         )}
@@ -365,19 +340,6 @@ export const AIChatPage: React.FC = () => {
               onChange={handleFileChange}
               className="sr-only"
             />
-            <button
-              type="button"
-              aria-label="Toggle Thinking Mode"
-              onClick={() => setThinkingMode((t) => !t)}
-              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                thinkingMode
-                  ? 'bg-secondary-container text-on-secondary-container'
-                  : 'text-on-surface-variant hover:bg-surface-container'
-              }`}
-              title="Toggle High Thinking Mode (@cf/openai/gpt-oss-20b)"
-            >
-              <span className="material-symbols-outlined text-[18px]">psychology</span>
-            </button>
             <input
               type="text"
               value={draft}
@@ -395,17 +357,6 @@ export const AIChatPage: React.FC = () => {
               <span className="material-symbols-outlined text-[20px]">send</span>
             </button>
           </form>
-          <div className="flex items-center justify-between px-2 text-timestamp text-on-surface-variant">
-            <span className="inline-flex items-center gap-1">
-              <span className="material-symbols-outlined text-[13px] text-secondary">
-                {thinkingMode ? 'neurology' : 'bolt'}
-              </span>
-              {thinkingMode
-                ? 'High Thinking Mode active (@cf/openai/gpt-oss-20b • Reasoning HIGH)'
-                : 'Fast Mode active (@cf/openai/gpt-oss-20b • Reasoning LOW)'}
-            </span>
-            <span>Markdown ready</span>
-          </div>
         </div>
       </footer>
       </div>

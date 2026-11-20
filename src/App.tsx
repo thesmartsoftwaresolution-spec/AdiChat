@@ -50,7 +50,10 @@ import { AdminAppSettingsPage } from './pages/admin/AdminAppSettingsPage';
 import { AdminAnnouncementsLogsPage } from './pages/admin/AdminAnnouncementsLogsPage';
 
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentUser } = useAppState();
+  const { currentUser, isAuthReady } = useAppState();
+  if (!isAuthReady) {
+    return <div className="min-h-screen bg-surface flex items-center justify-center" role="status"><div className="flex items-center gap-3 text-on-surface-variant"><span className="material-symbols-outlined animate-spin text-[22px]">progress_activity</span><span className="text-body-sm">Restoring your session…</span></div></div>;
+  }
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
@@ -74,7 +77,10 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentUser, isAdmin } = useAppState();
+  const { currentUser, isAdmin, isAuthReady } = useAppState();
+  if (!isAuthReady) {
+    return <div className="min-h-screen bg-surface flex items-center justify-center" role="status"><div className="flex items-center gap-3 text-on-surface-variant"><span className="material-symbols-outlined animate-spin text-[22px]">progress_activity</span><span className="text-body-sm">Restoring your session…</span></div></div>;
+  }
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }

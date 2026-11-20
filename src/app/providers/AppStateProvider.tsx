@@ -100,6 +100,7 @@ export interface ToastItem {
 interface AppStateContextValue {
   state: AdiChatStoreState;
   currentUser: Profile | null;
+  isAuthReady: boolean;
   currentUserRoles: AppRole[];
   isAdmin: boolean;
   isSuperAdminUser: boolean;
@@ -207,6 +208,7 @@ const AppStateContext = createContext<AppStateContextValue | null>(null);
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AdiChatStoreState>(loadInitialState);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [isAuthReady, setIsAuthReady] = useState<boolean>(IS_DEMO_MODE);
 
   useEffect(() => {
     if (!IS_DEMO_MODE) {
@@ -236,8 +238,12 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Restore and synchronize the real Supabase identity; local seed identities are dev-only.
   useEffect(() => {
     const sb = getSupabaseClient();
-    if (!sb) return;
+    if (!sb) {
+      setIsAuthReady(true);
+      return;
+    }
     let active = true;
+    let hydrationVersion = 0;
 
     const hydrateIdentity = async (user: { id: string; email?: string | null } | null) => {
       if (!user) {
@@ -426,10 +432,29 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }));
     };
 
+    const hydrateAndMarkReady = async (user: { id: string; email?: string | null } | null) => {
+      const version = ++hydrationVersion;
+      try {
+        await hydrateIdentity(user);
+      } catch (error) {
+        console.error('AdiChat session restoration failed.', error);
+      } finally {
+        if (active && version === hydrationVersion) setIsAuthReady(true);
+      }
+    };
+
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
-      void Promise.resolve().then(() => hydrateIdentity(session?.user ?? null));
+      void Promise.resolve().then(() => hydrateAndMarkReady(session?.user ?? null));
     });
-    void sb.auth.getSession().then(({ data }) => hydrateIdentity(data.session?.user ?? null));
+    void sb.auth.getSession()
+      .then(({ data, error }) => {
+        if (error) throw error;
+        return hydrateAndMarkReady(data.session?.user ?? null);
+      })
+      .catch((error: unknown) => {
+        console.error('AdiChat could not restore the Supabase session.', error);
+        if (active) setIsAuthReady(true);
+      });
 
     return () => {
       active = false;
@@ -2764,6 +2789,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => ({
       state,
       currentUser,
+      isAuthReady,
       currentUserRoles,
       isAdmin,
       isSuperAdminUser,
@@ -2812,6 +2838,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     [
       state,
       currentUser,
+      isAuthReady,
       currentUserRoles,
       isAdmin,
       isSuperAdminUser,
