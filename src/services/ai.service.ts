@@ -1,10 +1,11 @@
+import { getSupabaseClient } from '../lib/supabase/client';
 import type { AIAssistant } from '../types/database';
 
 export interface AiChatRequest {
   prompt: string;
   assistant: AIAssistant;
+  conversationId: string;
   thinkingMode: boolean;
-  history: Array<{ role: 'user' | 'model'; text: string }>;
 }
 
 export interface AiChatResponse {
@@ -14,22 +15,32 @@ export interface AiChatResponse {
   thinkingLevel: 'HIGH' | 'LOW';
   latencyMs: number;
   requestId: string;
+  userMessageId: string;
+  assistantMessageId: string;
 }
 
 export async function requestAssistantReply(payload: AiChatRequest): Promise<AiChatResponse> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase authentication is not configured.');
+  }
+
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session?.access_token) {
+    throw new Error('Please sign in again to use AI assistants.');
+  }
+
   const res = await fetch('/api/ai/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
     },
     body: JSON.stringify({
       prompt: payload.prompt,
-      assistantName: payload.assistant.name,
-      systemInstruction: payload.assistant.instructions,
-      tone: payload.assistant.tone ?? undefined,
-      language: payload.assistant.language ?? undefined,
+      assistantId: payload.assistant.id,
+      conversationId: payload.conversationId,
       thinkingMode: payload.thinkingMode,
-      history: payload.history,
     }),
   });
 
@@ -41,9 +52,8 @@ export async function requestAssistantReply(payload: AiChatRequest): Promise<AiC
   if (!res.ok) {
     throw new Error(data.error || `AI request failed with status ${res.status}`);
   }
-
-  if (!data.text) {
-    throw new Error('The assistant returned an empty response. Please try again.');
+  if (!data.text || !data.model || !data.assistantMessageId) {
+    throw new Error('The assistant returned an incomplete response. Please retry.');
   }
 
   return data as AiChatResponse;
