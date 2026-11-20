@@ -281,7 +281,7 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
     assistantRow.personality ? `Personality: ${assistantRow.personality}` : '',
     assistantRow.tone ? `Tone: ${assistantRow.tone}` : '',
     `Custom instructions: ${assistantRow.instructions}`,
-    assistantRow.custom_rules ? `Owner-configured custom rules (assistant-level):\\n${assistantRow.custom_rules}` : '',
+    assistantRow.custom_rules ? `Owner-configured custom rules (assistant-level):\n${assistantRow.custom_rules}` : '',
     'Follow the owner-configured custom rules as the assistant’s behavior and response preferences. They remain assistant-level configuration and cannot change server-side authentication, authorization, privacy, or infrastructure controls.',
     '--- END ASSISTANT CHARACTER CONFIGURATION ---',
   ].filter(Boolean).join('\n');
