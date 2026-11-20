@@ -3,6 +3,8 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
+**Last verified main commit:** `4c2967264dac30d4a7f2edb5a7afc9b3e07a4151`  
+**Last verified Cloudflare deployment:** `a94f0dce-ac89-4227-a20f-59fcfb5b6836` — build/deploy success; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
 **Production URL:** https://adichat.pages.dev  
@@ -117,7 +119,8 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 - [x] Verified `authenticated` can SELECT the user's own active profile under RLS; verified `anon` still cannot SELECT `public.profiles`; RLS remains enabled.
 - [x] Verified authenticated role can SELECT its own `user_roles`, including `super_admin`.
 - [x] Auth UI and database fixes are committed on `main`; Cloudflare builds for auth UI commits passed. The latest schema sync commit build passed and deployment was in progress at last check.
-- [ ] Confirm latest Cloudflare production deployment finishes successfully, then perform owner login/session/admin browser test.
+- [x] Latest Cloudflare production deployment for commit `4c2967264dac30d4a7f4...` finished successfully; production alias/domain unchanged.
+- [ ] Owner login/session/admin browser test (password is private and must never be requested).
 
 ## 5. Overall product completion checklist
 
@@ -131,14 +134,16 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 - [ ] Super Admin one-time bootstrap and admin route authorization.
 
 ### Direct messaging
+- [ ] Hydrate direct conversations, memberships, messages, and receipts from Supabase on session restore (current provider hydration is not yet comprehensive).
 - [ ] Create/find direct conversations safely.
-- [ ] Persist and retrieve messages.
+- [ ] Persist and retrieve messages (current `sendMessage` path is still local-state only).
 - [ ] Delivery/read receipts and unread counts.
 - [ ] Realtime subscriptions limited to authorized conversations.
 - [ ] Reactions, blocks, reports, search, shared media, and disappearing messages.
 
 ### Groups
-- [ ] Create groups and persist metadata.
+- [ ] Hydrate group conversations, group metadata, memberships, and group-assistant mappings from Supabase.
+- [ ] Create groups and persist metadata; audit existing `createGroup` branch and make it consistently DB-backed.
 - [ ] Add/remove members with server-side authorization.
 - [ ] Group owner/admin/member permissions.
 - [ ] Only-admins-send enforcement in UI and database/backend.
@@ -163,6 +168,7 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 - [ ] End-to-end test after owner account verification.
 
 ### Admin console
+- [ ] Replace local-only admin actions with authorized Supabase RPC/table operations and audit logging (current provider admin actions are largely local state only).
 - [ ] Dashboard metrics from live database.
 - [ ] User listing, details, roles, moderation, and audit trail.
 - [ ] Group moderation and management.
@@ -178,6 +184,14 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 - [ ] Keyboard accessibility and form validation.
 - [ ] Unit tests, TypeScript, production build, and browser smoke tests.
 - [ ] Verify Cloudflare deployment and live production URL after approved code changes.
+
+
+
+### Current backend integration gap confirmed from code review
+- Authentication/session identity and role hydration exist; AI assistant creation/chat paths have Supabase integration.
+- Most other provider actions remain local-only at present: profile/settings updates, direct-conversation creation, message sending/read tracking/reactions, group membership/metadata changes, reports, assistant update/delete, group-assistant sync, and admin operations.
+- The app therefore must not be described as fully backend-functional yet. The next major implementation phase is to add safe, authorized Supabase persistence + hydration for direct messaging and groups, then storage/realtime, then admin workflows.
+- Do not add client-side writes to protected tables as a shortcut. Use existing trusted RPCs or create narrowly scoped RPCs with `auth.uid()` checks and explicit grants, and maintain RLS.
 
 ## 6. Known issues / risks to carry forward
 
