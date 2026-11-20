@@ -1173,6 +1173,60 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (!assistant) return { ok: false, error: 'AI Assistant not found.' };
       if (!assistant.is_enabled) return { ok: false, error: 'This AI Assistant is disabled.' };
 
+      if (!IS_DEMO_MODE) {
+        const supabase = getSupabaseClient();
+        if (!supabase) return { ok: false, error: 'Supabase is not configured.' };
+
+        const { data: conversationId, error: conversationError } = await supabase.rpc(
+          'get_or_create_assistant_conversation',
+          { p_assistant_id: assistantId }
+        );
+        if (conversationError || typeof conversationId !== 'string') {
+          return { ok: false, error: conversationError?.message || 'Unable to open assistant conversation.' };
+        }
+
+        try {
+          const response = await requestAssistantReply({
+            prompt,
+            assistant,
+            conversationId,
+            thinkingMode,
+          });
+          const [conversationResult, messagesResult] = await Promise.all([
+            supabase.from('conversations').select('*').eq('id', conversationId).single(),
+            supabase.from('messages').select('*')
+              .eq('conversation_id', conversationId)
+              .order('created_at', { ascending: true })
+              .limit(100),
+          ]);
+
+          if (conversationResult.error || !conversationResult.data || messagesResult.error) {
+            return { ok: false, error: 'AI response was saved, but the conversation could not be refreshed. Reopen the chat to reload it.' };
+          }
+
+          const savedConversation = conversationResult.data as Conversation;
+          const savedMessages = (messagesResult.data || []) as Message[];
+          setState((prev) => ({
+            ...prev,
+            conversations: [
+              savedConversation,
+              ...prev.conversations.filter((item) => item.id !== conversationId),
+            ],
+            messages: [
+              ...prev.messages.filter((item) => item.conversation_id !== conversationId),
+              ...savedMessages,
+            ],
+          }));
+
+          return { ok: true, model: response.model, latencyMs: response.latencyMs };
+        } catch (error) {
+          return {
+            ok: false,
+            error: error instanceof Error ? error.message : 'Cloudflare Workers AI request failed.',
+          };
+        }
+      }
+
       const conv = openAssistantConversation(assistantId);
       if (!conv) return { ok: false, error: 'Unable to resolve assistant thread.' };
 
