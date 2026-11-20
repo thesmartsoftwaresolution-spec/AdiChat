@@ -1,0 +1,21 @@
+-- Cover foreign keys used by joins, deletes and cascading maintenance.
+create index if not exists announcements_created_by_idx on public.announcements(created_by);
+create index if not exists app_settings_updated_by_idx on public.app_settings(updated_by);
+create index if not exists assistant_usage_conversation_id_idx on public.assistant_usage(conversation_id);
+create index if not exists attachments_message_id_idx on public.attachments(message_id);
+create index if not exists bootstrap_state_consumed_by_user_id_idx on public.bootstrap_state(consumed_by_user_id);
+create index if not exists conversations_assistant_id_idx on public.conversations(assistant_id) where assistant_id is not null;
+create index if not exists conversations_last_message_id_idx on public.conversations(last_message_id);
+create index if not exists developer_profile_updated_by_idx on public.developer_profile(updated_by);
+create index if not exists group_assistants_added_by_idx on public.group_assistants(added_by);
+create index if not exists group_assistants_assistant_id_idx on public.group_assistants(assistant_id);
+create index if not exists groups_created_by_idx on public.groups(created_by);
+create index if not exists messages_reply_to_message_id_idx on public.messages(reply_to_message_id);
+create index if not exists messages_sender_assistant_id_idx on public.messages(sender_assistant_id);
+create index if not exists reports_assigned_to_idx on public.reports(assigned_to);
+create index if not exists reports_reporter_user_id_idx on public.reports(reporter_user_id);
+create index if not exists reports_target_group_conversation_id_idx on public.reports(target_group_conversation_id);
+create index if not exists reports_target_message_id_idx on public.reports(target_message_id);
+create index if not exists reports_target_user_id_idx on public.reports(target_user_id);
+create index if not exists user_blocks_blocked_user_id_idx on public.user_blocks(blocked_user_id);
+create index if not exists user_roles_granted_by_idx on public.user_roles(granted_by);
