@@ -426,8 +426,8 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [ ] Do not mark all five user issues as physically device-tested until the above manual browser checks are completed.
 
 ### Latest continuation anchor
-- Latest application code commits: 93472882df94ae9bb6149b54d3ef7d71877d05c1 (chat message actions and badge removal) and e7b533308d87fe62d132944ac7b84e6fcad2becd (Roman Urdu AI prompt).
-- Cloudflare deployment for the combined application code: 87270e61-e3d7-4449-b26b-8b29431ceb47 — build/deploy success; the existing project and production domain remain unchanged.
+- Latest application code commits: 93472882df94ae9bb6149b54d3ef7d71877d05c1 (chat message actions and badge removal), e7b533308d87fe62d132944ac7b84e6fcad2becd (Roman Urdu AI prompt), and eb8620745dafef6700fca7517b77cea408a786e1 (strict Roman Urdu enforcement).
+- Cloudflare deployment for the latest application code: 306ab9ae-2c81-45b3-87c6-3856ceed7ced — build/deploy success; the existing project and production domain remain unchanged.
 - No Supabase migration or production database mutation was required for this UI/prompt scope.
 - GitHub Actions status for these commits was not exposed by the connected status endpoint; Cloudflare build passed.
 
@@ -438,7 +438,7 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [x] Removed the per-message High Thinking Mode pill from assistant message bubbles. Thinking configuration and model inference behavior are unchanged.
 - [x] Shared MessageBubble component applies the action behavior consistently wherever assistant messages are rendered, including AI assistant chats and group chats.
 - [x] Updated application files: src/components/chat/MessageBubble.tsx and functions/api/ai/chat.ts.
-- [x] Cloudflare Pages build/deploy passed for combined application code commit e7b533308d87fe62d132944ac7b84e6fcad2becd. Existing production project adichat and domain adichat.pages.dev retained.
+- [x] Cloudflare Pages build/deploy passed for latest application code commit eb8620745dafef6700fca7517b77cea408a786e1 (deployment 306ab9ae-2c81-45b3-87c6-3856ceed7ced). Existing production project adichat and domain adichat.pages.dev retained.
 - [ ] Verify long-press behavior on physical Android/iOS and desktop context-menu behavior in a signed-in browser.
 - [ ] Verify actual assistant response language and persona behavior with a signed-in AI conversation; no user password or session token was requested.
 - [ ] Confirm production alias after the latest documentation-triggered deployment.
