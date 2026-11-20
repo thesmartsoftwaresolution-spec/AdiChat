@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "adichat",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-11-20",
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "AI_MODEL_ID": "@cf/openai/gpt-oss-20b",
+    "SUPABASE_URL": "https://qqaxxpjzkbhofjlmbvrf.supabase.co",
+    "SUPABASE_ANON_KEY": "sb_publishable_RznOywvm6GemXs1eDH_IHw_5jRXSQux",
+    "VITE_SUPABASE_URL": "https://qqaxxpjzkbhofjlmbvrf.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "sb_publishable_RznOywvm6GemXs1eDH_IHw_5jRXSQux",
+    "APP_ORIGIN": "https://adichat.pages.dev",
+    "MAX_AI_INPUT_CHARS": "4000"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  }
+}
