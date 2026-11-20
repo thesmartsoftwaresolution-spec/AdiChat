@@ -114,8 +114,8 @@ interface AppStateContextValue {
   updateMyProfile: (updates: Partial<Pick<Profile, 'full_name' | 'about' | 'title' | 'theme_preference' | 'avatar_path'>>) => void;
   updateMySettings: (updates: Partial<UserSettings>) => void;
   // Direct & Group Messaging
-  getOrCreateDirectConversation: (otherUserId: string) => Conversation | null;
-  markConversationRead: (conversationId: string) => void;
+  getOrCreateDirectConversation: (otherUserId: string) => Promise<Conversation | null>;
+  markConversationRead: (conversationId: string) => Promise<void>;
   sendMessage: (
     conversationId: string,
     body: string,
@@ -239,24 +239,47 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             currentUserId: null,
             profiles: [],
             userRoles: [],
+            userSettings: {},
             assistants: [],
             conversations: [],
             conversationMembers: [],
+            groups: [],
             messages: [],
+            attachments: [],
+            groupAssistants: [],
             assistantUsage: [],
+            userBlocks: [],
+            reports: [],
           }));
         }
         return;
       }
 
-      const [profileResult, rolesResult, assistantsResult, conversationsResult] = await Promise.all([
+      const [
+        profileResult,
+        rolesResult,
+        directoryResult,
+        assistantsResult,
+        ownMembershipsResult,
+        settingsResult,
+        blocksResult,
+        usageResult,
+      ] = await Promise.all([
         sb.from('profiles')
           .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
           .eq('id', user.id)
           .maybeSingle(),
         sb.from('user_roles').select('role').eq('user_id', user.id),
+        sb.from('profiles')
+          .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
+          .eq('status', 'active')
+          .order('full_name', { ascending: true })
+          .limit(1000),
         sb.from('ai_assistants').select('*').order('created_at', { ascending: false }),
-        sb.from('conversations').select('*').eq('type', 'assistant').order('updated_at', { ascending: false }),
+        sb.from('conversation_members').select('*').eq('user_id', user.id),
+        sb.from('user_settings').select('*').eq('user_id', user.id).maybeSingle(),
+        sb.from('user_blocks').select('*').eq('blocker_user_id', user.id),
+        sb.from('assistant_usage').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1000),
       ]);
 
       if (!active) return;
@@ -265,45 +288,84 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return;
       }
 
-      const assistantConversationRows = conversationsResult.data || [];
-      const assistantConversationIds = assistantConversationRows.map((row) => row.id);
-      const assistantMessagesResult = assistantConversationIds.length
-        ? await sb.from('messages').select('*')
-            .in('conversation_id', assistantConversationIds)
-            .order('created_at', { ascending: true })
-            .limit(500)
-        : { data: [], error: null };
+      const ownMemberships = ownMembershipsResult.data || [];
+      const conversationIds = Array.from(new Set(ownMemberships.map((row) => row.conversation_id)));
+      const [conversationsResult, allMembersResult, messagesResult] = conversationIds.length
+        ? await Promise.all([
+            sb.from('conversations').select('*').in('id', conversationIds).order('updated_at', { ascending: false }),
+            sb.from('conversation_members').select('*').in('conversation_id', conversationIds),
+            sb.from('messages').select('*').in('conversation_id', conversationIds)
+              .order('created_at', { ascending: false }).limit(1000),
+          ])
+        : [
+            { data: [], error: null },
+            { data: [], error: null },
+            { data: [], error: null },
+          ];
 
       if (!active) return;
-      const profile = { ...profileResult.data, email: user.email ?? null } as Profile;
+      const conversationRows = conversationsResult.data || [];
+      const groupIds = conversationRows.filter((row) => row.type === 'group').map((row) => row.id);
+      const messageRows = messagesResult.data || [];
+      const messageIds = messageRows.map((row) => row.id);
+      const [groupsResult, groupAssistantsResult, attachmentsResult] = await Promise.all([
+        groupIds.length
+          ? sb.from('groups').select('*').in('conversation_id', groupIds)
+          : Promise.resolve({ data: [], error: null }),
+        groupIds.length
+          ? sb.from('group_assistants').select('*').in('group_conversation_id', groupIds)
+          : Promise.resolve({ data: [], error: null }),
+        messageIds.length
+          ? sb.from('attachments').select('*').in('message_id', messageIds)
+          : Promise.resolve({ data: [], error: null }),
+      ]);
+
+      if (!active) return;
+      const ownProfile = { ...profileResult.data, email: user.email ?? null } as Profile;
+      const profileRows = (directoryResult.data || []).map((row) => ({
+        ...row,
+        email: row.id === user.id ? user.email ?? null : null,
+      })) as Profile[];
+      const profiles = profileRows.some((row) => row.id === user.id)
+        ? profileRows
+        : [ownProfile, ...profileRows];
       const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
+      const nowIso = new Date().toISOString();
+      const defaultSettings: UserSettings = {
+        user_id: user.id,
+        show_last_seen: true,
+        show_online_status: true,
+        read_receipts_enabled: true,
+        notify_messages: true,
+        notify_groups: true,
+        notify_ai_replies: true,
+        created_at: ownProfile.created_at,
+        updated_at: ownProfile.updated_at || nowIso,
+      };
+      const userSettings = settingsResult.data || defaultSettings;
+      const sortedMessages = [...messageRows].sort((a, b) => a.created_at.localeCompare(b.created_at));
+
       setState((prev) => ({
         ...prev,
         currentUserId: user.id,
-        profiles: [profile, ...prev.profiles.filter((item) => item.id !== user.id)],
-        userRoles: [
-          ...prev.userRoles.filter((item) => item.user_id !== user.id),
-          ...roles.map((role, index) => ({
-            id: `auth-role-${user.id}-${index}`,
-            user_id: user.id,
-            role,
-            granted_by: null,
-            created_at: profile.created_at,
-          })),
-        ],
-        assistants: assistantsResult.error ? prev.assistants : (assistantsResult.data || []) as AIAssistant[],
-        conversations: conversationsResult.error
-          ? prev.conversations
-          : [
-              ...assistantConversationRows as Conversation[],
-              ...prev.conversations.filter((item) => item.type !== 'assistant'),
-            ],
-        messages: assistantMessagesResult.error
-          ? prev.messages
-          : [
-              ...prev.messages.filter((item) => !assistantConversationIds.includes(item.conversation_id)),
-              ...(assistantMessagesResult.data || []) as Message[],
-            ],
+        profiles,
+        userRoles: roles.map((role, index) => ({
+          id: `auth-role-${user.id}-${index}`,
+          user_id: user.id,
+          role,
+          granted_by: null,
+          created_at: ownProfile.created_at,
+        })),
+        userSettings: { ...prev.userSettings, [user.id]: userSettings as UserSettings },
+        assistants: assistantsResult.error ? [] : (assistantsResult.data || []) as AIAssistant[],
+        conversations: (conversationRows || []) as Conversation[],
+        conversationMembers: (allMembersResult.data || ownMemberships) as AdiChatStoreState['conversationMembers'],
+        groups: (groupsResult.data || []) as GroupMetadata[],
+        messages: sortedMessages as Message[],
+        attachments: (attachmentsResult.data || []) as Attachment[],
+        groupAssistants: (groupAssistantsResult.data || []) as GroupAssistant[],
+        assistantUsage: (usageResult.data || []) as AssistantUsage[],
+        userBlocks: (blocksResult.data || []) as AdiChatStoreState['userBlocks'],
       }));
     };
 
@@ -595,11 +657,47 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const getOrCreateDirectConversation = useCallback(
-    (otherUserId: string): Conversation | null => {
+    async (otherUserId: string): Promise<Conversation | null> => {
       if (!state.currentUserId || state.currentUserId === otherUserId) return null;
       const pairKey = buildDirectPairKey(state.currentUserId, otherUserId);
-      const existing = state.conversations.find((c) => c.direct_pair_key === pairKey);
+      const existing = state.conversations.find((c) => c.type === 'direct' && c.direct_pair_key === pairKey);
       if (existing) return existing;
+
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return null;
+        const { data: conversationId, error } = await sb.rpc('create_direct_conversation', {
+          other_user_id: otherUserId,
+        });
+        if (error || !conversationId) {
+          const message = error?.message?.toLowerCase().includes('block')
+            ? 'This conversation cannot be started because a participant has blocked the other.'
+            : 'Unable to start this conversation. Please try again.';
+          pushToast(message, 'error');
+          return null;
+        }
+        const [conversationResult, membersResult] = await Promise.all([
+          sb.from('conversations').select('*').eq('id', conversationId).maybeSingle(),
+          sb.from('conversation_members').select('*').eq('conversation_id', conversationId),
+        ]);
+        if (conversationResult.error || !conversationResult.data || membersResult.error) {
+          pushToast('Conversation was created but could not be loaded. Please refresh.', 'error');
+          return null;
+        }
+        const savedConversation = conversationResult.data as Conversation;
+        setState((prev) => ({
+          ...prev,
+          conversations: [
+            savedConversation,
+            ...prev.conversations.filter((item) => item.id !== savedConversation.id),
+          ],
+          conversationMembers: [
+            ...prev.conversationMembers.filter((item) => item.conversation_id !== savedConversation.id),
+            ...(membersResult.data || []) as AdiChatStoreState['conversationMembers'],
+          ],
+        }));
+        return savedConversation;
+      }
 
       const other = state.profiles.find((p) => p.id === otherUserId);
       const nowIso = new Date().toISOString();
@@ -645,12 +743,30 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }));
       return newConv;
     },
-    [state.currentUserId, state.conversations, state.profiles]
+    [state.currentUserId, state.conversations, state.profiles, pushToast]
   );
 
   const markConversationRead = useCallback(
-    (conversationId: string) => {
+    async (conversationId: string): Promise<void> => {
       if (!state.currentUserId) return;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) return;
+        const relevantMessages = state.messages
+          .filter((message) => message.conversation_id === conversationId && !message.deleted_at)
+          .sort((a, b) => a.created_at.localeCompare(b.created_at));
+        const lastMessageId = relevantMessages.length
+          ? relevantMessages[relevantMessages.length - 1].id
+          : null;
+        const { error } = await sb.rpc('set_message_read', {
+          conv_id: conversationId,
+          last_msg_id: lastMessageId,
+        });
+        if (error) {
+          pushToast('Unable to update read status right now.', 'error');
+          return;
+        }
+      }
       const nowIso = new Date().toISOString();
       setState((prev) => ({
         ...prev,
@@ -661,7 +777,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ),
       }));
     },
-    [state.currentUserId]
+    [state.currentUserId, state.messages, pushToast]
   );
 
   const sendMessage = useCallback(
@@ -691,6 +807,81 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const nowIso = new Date().toISOString();
       const msgId = `msg_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 5)}`;
       const msgType: MessageType = options?.type || 'text';
+
+      if (!IS_DEMO_MODE) {
+        if (options?.attachment || options?.durationMs || msgType !== 'text') {
+          const message = 'Secure media and voice uploads are still being connected. Text messages are available now.';
+          pushToast(message, 'info');
+          return { ok: false, error: message };
+        }
+        const sb = getSupabaseClient();
+        if (!sb) return { ok: false, error: 'Messaging service is unavailable.' };
+        const { data: messageId, error } = await sb.rpc('send_conversation_message', {
+          p_conversation_id: conversationId,
+          p_body: trimmed,
+          p_message_type: 'text',
+          p_metadata: {},
+          p_reply_to_message_id: null,
+        });
+        if (error || !messageId) {
+          const raw = (error?.message || '').toLowerCase();
+          const message = raw.includes('blocked')
+            ? 'Message could not be sent because a participant has blocked the other.'
+            : raw.includes('only group admins')
+              ? 'Only Group Admins can send messages in this group.'
+              : 'Message could not be sent. Please try again.';
+          pushToast(message, 'error');
+          return { ok: false, error: message };
+        }
+
+        const nowIso = new Date().toISOString();
+        const optimisticMessage: Message = {
+          id: messageId as string,
+          conversation_id: conversationId,
+          sender_user_id: state.currentUserId,
+          sender_assistant_id: null,
+          message_type: 'text',
+          body: trimmed,
+          reply_to_message_id: null,
+          delivery_status: 'sent',
+          metadata: {},
+          created_at: nowIso,
+          edited_at: null,
+          deleted_at: null,
+        };
+        setState((prev) => ({
+          ...prev,
+          messages: [...prev.messages.filter((item) => item.id !== optimisticMessage.id), optimisticMessage],
+          conversations: prev.conversations.map((item) =>
+            item.id === conversationId
+              ? { ...item, last_message_id: optimisticMessage.id, last_message_at: nowIso, updated_at: nowIso }
+              : item
+          ),
+        }));
+
+        const [savedMessage, savedConversation] = await Promise.all([
+          sb.from('messages').select('*').eq('id', messageId).maybeSingle(),
+          sb.from('conversations').select('*').eq('id', conversationId).maybeSingle(),
+        ]);
+        if (savedMessage.data) {
+          setState((prev) => ({
+            ...prev,
+            messages: [
+              ...prev.messages.filter((item) => item.id !== savedMessage.data.id),
+              savedMessage.data as Message,
+            ].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+          }));
+        }
+        if (savedConversation.data) {
+          setState((prev) => ({
+            ...prev,
+            conversations: prev.conversations.map((item) =>
+              item.id === conversationId ? savedConversation.data as Conversation : item
+            ),
+          }));
+        }
+        return { ok: true };
+      }
 
       const newMsg: Message = {
         id: msgId,

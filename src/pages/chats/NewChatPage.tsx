@@ -9,6 +9,7 @@ export const NewChatPage: React.FC = () => {
   const { state, currentUser, getOrCreateDirectConversation } = useAppState();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [openingUserId, setOpeningUserId] = useState<string | null>(null);
 
   const eligibleUsers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -84,11 +85,15 @@ export const NewChatPage: React.FC = () => {
               <button
                 key={person.id}
                 type="button"
-                onClick={() => {
-                  const conv = getOrCreateDirectConversation(person.id);
+                onClick={async () => {
+                  setOpeningUserId(person.id);
+                  const conv = await getOrCreateDirectConversation(person.id);
+                  setOpeningUserId(null);
                   if (conv) navigate(`/chats/${conv.id}`);
                 }}
-                className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-surface-container-low text-left transition-colors"
+                disabled={openingUserId === person.id}
+                aria-busy={openingUserId === person.id}
+                className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-surface-container-low text-left transition-colors disabled:opacity-60"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <UserAvatar
