@@ -44,18 +44,21 @@ export const MediaViewerPage: React.FC = () => {
       title={fileName}
       subtitle={`Shared by ${uploader?.full_name || 'Member'}`}
       rightSlot={
-        <button
-          type="button"
-          aria-label="Download asset"
-          onClick={() => pushToast(`Preparing download for ${fileName}`, 'success')}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container"
-        >
-          <span className="material-symbols-outlined text-[22px]">download</span>
-        </button>
+        mediaUrl ? (
+          <a
+            href={mediaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open or download file"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+          </a>
+        ) : null
       }
     >
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-inverse-surface/5 space-y-4">
-        {mediaUrl ? (
+        {mediaUrl && (attachment?.mime_type.startsWith('image/') || message?.message_type === 'image') ? (
           <div className="max-w-3xl w-full rounded-2xl overflow-hidden shadow-xl bg-surface-container-lowest">
             <img src={mediaUrl} alt={fileName} className="w-full max-h-[70vh] object-contain" />
           </div>
@@ -69,14 +72,19 @@ export const MediaViewerPage: React.FC = () => {
               {attachment?.mime_type || 'application/octet-stream'} •{' '}
               {formatFileSize(fileSize)}
             </p>
-            <button
-              type="button"
-              onClick={() => pushToast(`Downloaded ${fileName}`, 'success')}
-              className="h-11 px-5 rounded-xl bg-primary text-on-primary text-label-md inline-flex items-center gap-2 mt-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">download</span>
-              <span>Download File</span>
-            </button>
+            {mediaUrl ? (
+              <a
+                href={mediaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-11 px-5 rounded-xl bg-primary text-on-primary text-label-md inline-flex items-center gap-2 mt-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                <span>Open / Download File</span>
+              </a>
+            ) : (
+              <p className="text-caption text-on-surface-variant">Secure download is unavailable. Reopen this chat to refresh the file link.</p>
+            )}
           </div>
         )}
       </div>

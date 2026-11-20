@@ -366,6 +366,24 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const attachmentsResult = messageIds.length
         ? await sb.from('attachments').select('*').in('message_id', messageIds)
         : { data: [], error: null };
+      const rawAttachments = (attachmentsResult.data || []) as Attachment[];
+      const attachmentSignedMap = new Map<string, string>();
+      const attachmentBuckets = new Map<string, string[]>();
+      rawAttachments.forEach((item) => {
+        const paths = attachmentBuckets.get(item.bucket_id) || [];
+        paths.push(item.object_path);
+        attachmentBuckets.set(item.bucket_id, paths);
+      });
+      await Promise.all(Array.from(attachmentBuckets.entries()).map(async ([bucketId, paths]) => {
+        const { data: signedFiles } = await sb.storage.from(bucketId).createSignedUrls(Array.from(new Set(paths)), 604800);
+        (signedFiles || []).forEach((item) => {
+          if (item.path && item.signedUrl) attachmentSignedMap.set(`${bucketId}:${item.path}`, item.signedUrl);
+        });
+      }));
+      const attachments = rawAttachments.map((item) => ({
+        ...item,
+        preview_url: attachmentSignedMap.get(`${item.bucket_id}:${item.object_path}`) || null,
+      })) as Attachment[];
       const rawAssistants = (assistantsResult.data || []) as AIAssistant[];
       const assistantAvatarPaths = Array.from(new Set(rawAssistants
         .map((assistant) => assistant.avatar_path)
@@ -395,7 +413,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         conversationMembers: (conversationMembersResult.data || []) as AdiChatStoreState['conversationMembers'],
         groups: (groupsResult.data || []) as GroupMetadata[],
         messages: sortedMessages as Message[],
-        attachments: (attachmentsResult.data || []) as Attachment[],
+        attachments,
         groupAssistants: (groupAssistantsResult.data || []) as GroupAssistant[],
         assistantUsage: (usageResult.data || []) as AssistantUsage[],
         userBlocks: (blocksResult.data || []) as AdiChatStoreState['userBlocks'],
@@ -2070,6 +2088,19 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           const attachmentResult = savedMessageIds.length
             ? await supabase.from('attachments').select('*').in('message_id', savedMessageIds)
             : { data: [], error: null };
+          const rawNewAttachments = (attachmentResult.data || []) as Attachment[];
+          const signedNewAttachments = rawNewAttachments.length
+            ? await supabase.storage.from('chat-attachments').createSignedUrls(
+                rawNewAttachments.map((item) => item.object_path), 604800
+              )
+            : { data: [] };
+          const signedNewMap = new Map((signedNewAttachments.data || [])
+            .filter((item) => item.path && item.signedUrl)
+            .map((item) => [item.path, item.signedUrl]));
+          const newAttachments = rawNewAttachments.map((item) => ({
+            ...item,
+            preview_url: signedNewMap.get(item.object_path) || null,
+          })) as Attachment[];
           setState((prev) => ({
             ...prev,
             conversations: [
@@ -2082,7 +2113,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ],
             attachments: [
               ...prev.attachments.filter((item) => item.conversation_id !== conversationId),
-              ...(attachmentResult.data || []) as Attachment[],
+              ...newAttachments,
             ],
           }));
 
