@@ -20,6 +20,8 @@ export const MessageBubble: React.FC<{
   showSenderHeader?: boolean;
   onReact?: (messageId: string, emoji: string) => void;
   onRegenerate?: () => void;
+  displayBody?: string;
+  animateIn?: boolean;
 }> = ({
   message,
   isOwn,
@@ -28,6 +30,8 @@ export const MessageBubble: React.FC<{
   showSenderHeader = false,
   onReact,
   onRegenerate,
+  displayBody,
+  animateIn = false,
 }) => {
   const [playingVoice, setPlayingVoice] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -62,7 +66,7 @@ export const MessageBubble: React.FC<{
             <span className="material-symbols-outlined text-primary text-[14px]">psychology</span>
             <span className="text-caption text-on-surface-variant">
               {message.metadata.thinking_summary ||
-                `High Thinking Mode (${message.metadata.model_id || 'gemini-4-hydrogen'})`}
+                `High Thinking Mode (${message.metadata.model_id || '@cf/openai/gpt-oss-20b'})`}
             </span>
             <span className="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
           </div>
@@ -89,8 +93,8 @@ export const MessageBubble: React.FC<{
 
             <div className="relative bg-surface-container-lowest text-on-surface rounded-2xl rounded-tl-sm p-4 pl-[22px] shadow-sm overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-primary-container rounded-r" />
-              <div className="text-body-md leading-relaxed whitespace-pre-wrap break-words">
-                {message.body}
+              <div className={`text-body-md leading-relaxed whitespace-pre-wrap break-words ${animateIn ? 'ai-response-enter' : ''}`}>
+                {displayBody ?? message.body}
               </div>
 
               {codeSnippet && (

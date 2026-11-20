@@ -175,7 +175,7 @@ interface AppStateContextValue {
     assistantId: string,
     prompt: string,
     thinkingMode: boolean
-  ) => Promise<{ ok: boolean; error?: string; model?: string; latencyMs?: number }>;
+  ) => Promise<{ ok: boolean; error?: string; model?: string; latencyMs?: number; assistantMessageId?: string }>;
   syncGroupAssistants: (
     groupId: string,
     selections: Array<{ assistantId: string; responseMode: AssistantResponseMode; enabled: boolean }>
@@ -2031,7 +2031,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ],
           }));
 
-          return { ok: true, model: response.model, latencyMs: response.latencyMs };
+          return { ok: true, model: response.model, latencyMs: response.latencyMs, assistantMessageId: response.assistantMessageId };
         } catch (error) {
           return {
             ok: false,
@@ -2134,7 +2134,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ),
         }));
 
-        return { ok: true, model: res.model, latencyMs: res.latencyMs };
+        return { ok: true, model: res.model, latencyMs: res.latencyMs, assistantMessageId: aiMsgId };
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : 'AI request failed.';
         return { ok: false, error: errMessage };

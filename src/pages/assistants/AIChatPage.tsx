@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAppState } from '../../app/providers/AppStateProvider';
 import { MessageBubble } from '../../components/chat/MessageBubble';
@@ -19,6 +19,8 @@ export const AIChatPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [lastFailedPrompt, setLastFailedPrompt] = useState<string | null>(null);
+  const [animatingMessageId, setAnimatingMessageId] = useState<string | null>(null);
+  const [displayedText, setDisplayedText] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const conv = useMemo(
@@ -53,9 +55,43 @@ export const AIChatPage: React.FC = () => {
     if (!res.ok) {
       setErrorMsg(res.error || 'Could not reach AI service.');
       setLastFailedPrompt(clean);
+    } else if (res.assistantMessageId) {
+      setDisplayedText('');
+      setAnimatingMessageId(res.assistantMessageId);
     }
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
   };
+
+  useEffect(() => {
+    if (!animatingMessageId) return;
+    const target = messages.find((message) => message.id === animatingMessageId);
+    if (!target?.body) return;
+
+    const fullText = target.body;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDisplayedText(fullText);
+      setAnimatingMessageId(null);
+      return;
+    }
+
+    let index = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    setDisplayedText('');
+    const reveal = () => {
+      const step = Math.max(2, Math.ceil(fullText.length / 180));
+      index = Math.min(fullText.length, index + step);
+      setDisplayedText(fullText.slice(0, index));
+      if (index < fullText.length) {
+        timer = setTimeout(reveal, 14);
+      } else {
+        timer = setTimeout(() => setAnimatingMessageId(null), 180);
+      }
+    };
+    reveal();
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [animatingMessageId, messages]);
 
   if (!assistant) {
     return (
@@ -190,6 +226,8 @@ export const AIChatPage: React.FC = () => {
                   : undefined
               }
               senderAssistant={m.sender_assistant_id ? assistant : undefined}
+              displayBody={m.id === animatingMessageId ? displayedText : undefined}
+              animateIn={m.id === animatingMessageId}
               onRegenerate={
                 m.sender_assistant_id
                   ? () => {
