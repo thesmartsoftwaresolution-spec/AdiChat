@@ -252,6 +252,10 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             assistantUsage: [],
             userBlocks: [],
             reports: [],
+            auditLogs: [],
+            appSettings: [],
+            announcements: [],
+            developerProfile: null,
           }));
         }
         return;
@@ -262,26 +266,45 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         rolesResult,
         directoryResult,
         assistantsResult,
-        ownMembershipsResult,
+        conversationsResult,
+        conversationMembersResult,
         settingsResult,
         blocksResult,
         usageResult,
+        groupsResult,
+        messagesResult,
+        groupAssistantsResult,
+        reportsResult,
+        auditLogsResult,
+        appSettingsResult,
+        developerProfileResult,
+        announcementsResult,
       ] = await Promise.all([
         sb.from('profiles')
           .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
           .eq('id', user.id)
           .maybeSingle(),
-        sb.from('user_roles').select('role').eq('user_id', user.id),
+        // RLS returns the caller's roles, or all roles only for a Super Admin.
+        sb.from('user_roles').select('*'),
+        // RLS returns active profiles to members and all profiles to active admins.
         sb.from('profiles')
           .select('id,full_name,avatar_path,about,title,status,last_seen_at,is_online,theme_preference,created_at,updated_at')
-          .eq('status', 'active')
           .order('full_name', { ascending: true })
           .limit(1000),
-        sb.from('ai_assistants').select('*').order('created_at', { ascending: false }),
-        sb.from('conversation_members').select('*').eq('user_id', user.id),
+        sb.from('ai_assistants').select('*').order('created_at', { ascending: false }).limit(1000),
+        sb.from('conversations').select('*').order('updated_at', { ascending: false }).limit(1000),
+        sb.from('conversation_members').select('*').limit(2000),
         sb.from('user_settings').select('*').eq('user_id', user.id).maybeSingle(),
         sb.from('user_blocks').select('*').eq('blocker_user_id', user.id),
-        sb.from('assistant_usage').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1000),
+        sb.from('assistant_usage').select('*').order('created_at', { ascending: false }).limit(1000),
+        sb.from('groups').select('*'),
+        sb.from('messages').select('*').order('created_at', { ascending: false }).limit(1000),
+        sb.from('group_assistants').select('*'),
+        sb.from('reports').select('*').order('created_at', { ascending: false }).limit(1000),
+        sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(1000),
+        sb.from('app_settings').select('*').order('key', { ascending: true }),
+        sb.from('developer_profile').select('*').eq('id', 1).maybeSingle(),
+        sb.from('announcements').select('*').order('created_at', { ascending: false }).limit(100),
       ]);
 
       if (!active) return;
@@ -290,39 +313,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return;
       }
 
-      const ownMemberships = ownMembershipsResult.data || [];
-      const conversationIds = Array.from(new Set(ownMemberships.map((row) => row.conversation_id)));
-      const [conversationsResult, allMembersResult, messagesResult] = conversationIds.length
-        ? await Promise.all([
-            sb.from('conversations').select('*').in('id', conversationIds).order('updated_at', { ascending: false }),
-            sb.from('conversation_members').select('*').in('conversation_id', conversationIds),
-            sb.from('messages').select('*').in('conversation_id', conversationIds)
-              .order('created_at', { ascending: false }).limit(1000),
-          ])
-        : [
-            { data: [], error: null },
-            { data: [], error: null },
-            { data: [], error: null },
-          ];
-
-      if (!active) return;
-      const conversationRows = conversationsResult.data || [];
-      const groupIds = conversationRows.filter((row) => row.type === 'group').map((row) => row.id);
-      const messageRows = messagesResult.data || [];
-      const messageIds = messageRows.map((row) => row.id);
-      const [groupsResult, groupAssistantsResult, attachmentsResult] = await Promise.all([
-        groupIds.length
-          ? sb.from('groups').select('*').in('conversation_id', groupIds)
-          : Promise.resolve({ data: [], error: null }),
-        groupIds.length
-          ? sb.from('group_assistants').select('*').in('group_conversation_id', groupIds)
-          : Promise.resolve({ data: [], error: null }),
-        messageIds.length
-          ? sb.from('attachments').select('*').in('message_id', messageIds)
-          : Promise.resolve({ data: [], error: null }),
-      ]);
-
-      if (!active) return;
       const ownProfileRaw = { ...profileResult.data, email: user.email ?? null } as Profile;
       const profileRowsRaw = (directoryResult.data || []).map((row) => ({
         ...row,
@@ -341,12 +331,16 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (item.path && item.signedUrl) signedAvatarMap.set(item.path, item.signedUrl);
         });
       }
+      if (!active) return;
       const profiles = rawProfiles.map((profile) => ({
         ...profile,
         avatar_path: profile.avatar_path ? signedAvatarMap.get(profile.avatar_path) || null : null,
       })) as Profile[];
       const ownProfile = profiles.find((profile) => profile.id === user.id) || ownProfileRaw;
-      const roles = (rolesResult.data || []).map((row) => row.role as AppRole);
+      const allRoleRows = (rolesResult.data || []) as Array<{
+        id: string; user_id: string; role: AppRole; granted_by: string | null; created_at: string;
+      }>;
+      const ownRoles = allRoleRows.filter((row) => row.user_id === user.id);
       const nowIso = new Date().toISOString();
       const defaultSettings: UserSettings = {
         user_id: user.id,
@@ -356,33 +350,40 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         notify_messages: true,
         notify_groups: true,
         notify_ai_replies: true,
+        disappearing_timer: 'off',
+        auto_download_media: 'wifi',
         created_at: ownProfile.created_at,
         updated_at: ownProfile.updated_at || nowIso,
       };
       const userSettings = settingsResult.data || defaultSettings;
+      const messageRows = messagesResult.data || [];
+      const messageIds = messageRows.map((row) => row.id);
+      const attachmentsResult = messageIds.length
+        ? await sb.from('attachments').select('*').in('message_id', messageIds)
+        : { data: [], error: null };
+      if (!active) return;
       const sortedMessages = [...messageRows].sort((a, b) => a.created_at.localeCompare(b.created_at));
 
       setState((prev) => ({
         ...prev,
         currentUserId: user.id,
         profiles,
-        userRoles: roles.map((role, index) => ({
-          id: `auth-role-${user.id}-${index}`,
-          user_id: user.id,
-          role,
-          granted_by: null,
-          created_at: ownProfile.created_at,
-        })),
+        userRoles: allRoleRows,
         userSettings: { ...prev.userSettings, [user.id]: userSettings as UserSettings },
-        assistants: assistantsResult.error ? [] : (assistantsResult.data || []) as AIAssistant[],
-        conversations: (conversationRows || []) as Conversation[],
-        conversationMembers: (allMembersResult.data || ownMemberships) as AdiChatStoreState['conversationMembers'],
+        assistants: (assistantsResult.data || []) as AIAssistant[],
+        conversations: (conversationsResult.data || []) as Conversation[],
+        conversationMembers: (conversationMembersResult.data || []) as AdiChatStoreState['conversationMembers'],
         groups: (groupsResult.data || []) as GroupMetadata[],
         messages: sortedMessages as Message[],
         attachments: (attachmentsResult.data || []) as Attachment[],
         groupAssistants: (groupAssistantsResult.data || []) as GroupAssistant[],
         assistantUsage: (usageResult.data || []) as AssistantUsage[],
         userBlocks: (blocksResult.data || []) as AdiChatStoreState['userBlocks'],
+        reports: (reportsResult.data || []) as ModerationReport[],
+        auditLogs: (auditLogsResult.data || []) as AuditLog[],
+        appSettings: (appSettingsResult.data || []) as AppSetting[],
+        developerProfile: (developerProfileResult.data as DeveloperProfile | null) ?? prev.developerProfile,
+        announcements: (announcementsResult.data || []) as Announcement[],
       }));
     };
 
