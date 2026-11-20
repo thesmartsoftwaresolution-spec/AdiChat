@@ -17,6 +17,8 @@ export const AssistantProfilePage: React.FC = () => {
   const [scenario, setScenario] = useState(assistant?.scenario || '');
   const [behaviour, setBehaviour] = useState(assistant?.behaviour || assistant?.personality || '');
   const [instructions, setInstructions] = useState(assistant?.instructions || '');
+  const [customRules, setCustomRules] = useState(assistant?.custom_rules || '');
+  const [savingRules, setSavingRules] = useState(false);
   const [tone, setTone] = useState(assistant?.tone || 'Friendly');
   const [language, setLanguage] = useState(assistant?.language || 'English');
   const [thinkingDefault, setThinkingDefault] = useState(Boolean(assistant?.thinking_enabled_default));
@@ -83,6 +85,7 @@ export const AssistantProfilePage: React.FC = () => {
     setScenario(assistant.scenario || '');
     setBehaviour(assistant.behaviour || assistant.personality || '');
     setInstructions(assistant.instructions || '');
+    setCustomRules(assistant.custom_rules || '');
     setTone(assistant.tone || 'Friendly');
     setLanguage(assistant.language || 'English');
     setThinkingDefault(Boolean(assistant.thinking_enabled_default));
@@ -109,6 +112,7 @@ export const AssistantProfilePage: React.FC = () => {
       behaviour: behaviour.trim() || null,
       personality: behaviour.trim() || null,
       instructions: instructions.trim(),
+      custom_rules: customRules.trim() || null,
       tone,
       language,
       thinking_enabled_default: thinkingDefault,
@@ -123,6 +127,15 @@ export const AssistantProfilePage: React.FC = () => {
     } else {
       setError('Assistant changes could not be saved. Please try again.');
     }
+  };
+
+  const handleSaveRules = async () => {
+    if (!canEdit || savingRules || customRules.length > 12000) return;
+    setSavingRules(true);
+    setError(null);
+    const saved = await updateAssistant(assistant.id, { custom_rules: customRules.trim() || null });
+    setSavingRules(false);
+    if (!saved) setError('Custom Rules could not be saved. Please try again.');
   };
 
   const handleShare = async () => {
@@ -198,6 +211,12 @@ export const AssistantProfilePage: React.FC = () => {
             <div><label htmlFor="edit-ai-scenario" className="block text-label-sm text-on-surface mb-1.5">Scenario</label><textarea id="edit-ai-scenario" rows={3} maxLength={2000} value={scenario} onChange={(e) => setScenario(e.target.value)} className="w-full p-3.5 rounded-xl bg-surface-container-lowest outline-none text-body-md text-on-surface resize-y" /></div>
             <div><label htmlFor="edit-ai-behaviour" className="block text-label-sm text-on-surface mb-1.5">Behaviour</label><textarea id="edit-ai-behaviour" rows={3} maxLength={2000} value={behaviour} onChange={(e) => setBehaviour(e.target.value)} className="w-full p-3.5 rounded-xl bg-surface-container-lowest outline-none text-body-md text-on-surface resize-y" /></div>
             <div><label htmlFor="edit-ai-instructions" className="block text-label-sm text-on-surface mb-1.5">Custom Instructions *</label><textarea id="edit-ai-instructions" required rows={5} maxLength={12000} value={instructions} onChange={(e) => setInstructions(e.target.value)} className="w-full p-3.5 rounded-xl bg-surface-container-lowest outline-none text-body-md text-on-surface resize-y" /></div>
+            <section className="p-3.5 rounded-xl bg-surface-container-lowest border border-primary/15 space-y-2">
+              <div className="flex items-center justify-between gap-2"><label htmlFor="edit-ai-custom-rules" className="text-label-sm font-semibold text-on-surface">Custom Rules</label><span className="text-timestamp text-on-surface-variant tabular-nums">{customRules.length} / 12,000</span></div>
+              <p className="text-timestamp text-on-surface-variant">Apne assistant ke behavior, response preferences aur content rules yahan likhein. Blank karke Save Rules dabane se rules clear ho jayenge.</p>
+              <textarea id="edit-ai-custom-rules" rows={5} maxLength={12000} value={customRules} onChange={(e) => setCustomRules(e.target.value)} placeholder="Misal: Har jawab tafseeli Roman Urdu mein do. Mere diye hue role aur scenario ke mutabiq jawab do..." className="w-full p-3.5 rounded-xl bg-surface-container-low outline-none text-body-md text-on-surface resize-y" />
+              <button type="button" onClick={() => void handleSaveRules()} disabled={savingRules || !canEdit || customRules.length > 12000} className="w-full h-10 rounded-xl bg-secondary-container text-on-secondary-container text-label-sm font-semibold disabled:opacity-60">{savingRules ? 'Saving Rules…' : 'Save Rules'}</button>
+            </section>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div><label htmlFor="edit-ai-tone" className="block text-label-sm text-on-surface mb-1.5">Response Tone</label><input id="edit-ai-tone" value={tone} onChange={(e) => setTone(e.target.value)} className="w-full h-11 px-3 rounded-xl bg-surface-container-lowest outline-none text-body-sm text-on-surface" /></div>
               <div><label htmlFor="edit-ai-language" className="block text-label-sm text-on-surface mb-1.5">Language</label><input id="edit-ai-language" value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full h-11 px-3 rounded-xl bg-surface-container-lowest outline-none text-body-sm text-on-surface" /></div>
