@@ -7,6 +7,7 @@ export interface AiChatRequest {
   conversationId: string;
   thinkingMode: boolean;
   replyToMessageId?: string;
+  history?: Array<{ role: 'user' | 'model'; text: string }>;
   attachment?: {
     bucketId: 'chat-attachments';
     objectPath: string;

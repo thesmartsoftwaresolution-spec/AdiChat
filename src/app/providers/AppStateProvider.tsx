@@ -5,6 +5,7 @@ import { requestAssistantReply } from '../../services/ai.service';
 import type {
   AIAssistant,
   Announcement,
+  AppSetting,
   AppRole,
   AssistantResponseMode,
   AssistantUsage,
@@ -1267,7 +1268,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       assistantIds: string[];
       onlyAdminsSend?: boolean;
       allowAiAutoRespond?: boolean;
-    }): Conversation | null => {
+    }): Promise<Conversation | null> => {
       if (!state.currentUserId) return null;
       if (!IS_DEMO_MODE) {
         const sb = getSupabaseClient();
@@ -1388,7 +1389,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         sender_assistant_id: null,
         message_type: 'system',
         body: `Group "${input.name.trim()}" created with ${uniqueMembers.length} participants`,
-        reply_to_message_id: options?.replyToMessageId || null,
+        reply_to_message_id: null,
         delivery_status: 'read',
         metadata: {},
         created_at: nowIso,
@@ -2138,7 +2139,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         sender_assistant_id: null,
         message_type: 'text',
         body: prompt,
-        reply_to_message_id: null,
+        reply_to_message_id: options?.replyToMessageId || null,
         delivery_status: 'read',
         metadata: {},
         created_at: nowIso,
@@ -2317,7 +2318,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...prev,
           profiles: profileResult.data
             ? prev.profiles.map((profile) => profile.id === userId
-                ? { ...profile, status: profileResult.data.status, updated_at: profileResult.data.updated_at }
+                ? { ...profile, status: profileResult.data?.status ?? profile.status, updated_at: profileResult.data?.updated_at ?? profile.updated_at }
                 : profile)
             : prev.profiles,
           auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
@@ -2348,7 +2349,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const superAdminIds = new Set(state.userRoles.filter((role) => role.role === 'super_admin').map((role) => role.user_id));
       const eligible = userIds.filter((id) => !superAdminIds.has(id));
       if (!eligible.length) {
-        pushToast('No eligible accounts were selected.', 'warning');
+        pushToast('No eligible accounts were selected.', 'info');
         return 0;
       }
       if (!IS_DEMO_MODE) {
@@ -2574,7 +2575,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             : prev.profiles,
           messages: action === 'delete_message' && targetReport?.target_message_id && messageResult.data
             ? prev.messages.map((message) => message.id === targetReport.target_message_id
-                ? { ...message, deleted_at: messageResult.data.deleted_at }
+                ? { ...message, deleted_at: messageResult.data?.deleted_at ?? message.deleted_at }
                 : message)
             : prev.messages,
           auditLogs: (logsResult.data || prev.auditLogs) as AuditLog[],
