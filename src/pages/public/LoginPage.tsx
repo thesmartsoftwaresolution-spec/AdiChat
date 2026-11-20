@@ -7,8 +7,8 @@ export const LoginPage: React.FC = () => {
   const { login, quickSignInDemo } = useAppState();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('adeel@adichat.internal');
-  const [password, setPassword] = useState('EmeraldPine#2026');
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'adeel@adichat.internal' : '');
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'EmeraldPine#2026' : '');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -110,33 +110,35 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="p-4 rounded-2xl bg-surface-container-low space-y-2.5">
-          <p className="text-label-sm text-on-surface-variant font-semibold">
-            Quick Demo Accounts
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                quickSignInDemo('u-adeel');
-                navigate('/chats');
-              }}
-              className="h-10 px-3 rounded-xl bg-surface-container-lowest text-primary text-label-sm font-semibold shadow-xs hover:bg-surface-container"
-            >
-              Adeel (Super Admin)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                quickSignInDemo('u-hamza');
-                navigate('/chats');
-              }}
-              className="h-10 px-3 rounded-xl bg-surface-container-lowest text-on-surface text-label-sm font-semibold shadow-xs hover:bg-surface-container"
-            >
-              Hamza (Standard User)
-            </button>
+        {import.meta.env.DEV && (
+          <div className="p-4 rounded-2xl bg-surface-container-low space-y-2.5">
+            <p className="text-label-sm text-on-surface-variant font-semibold">
+              Quick Demo Accounts
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  quickSignInDemo('u-adeel');
+                  navigate('/chats');
+                }}
+                className="h-10 px-3 rounded-xl bg-surface-container-lowest text-primary text-label-sm font-semibold shadow-xs hover:bg-surface-container"
+              >
+                Adeel (Super Admin)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  quickSignInDemo('u-hamza');
+                  navigate('/chats');
+                }}
+                className="h-10 px-3 rounded-xl bg-surface-container-lowest text-on-surface text-label-sm font-semibold shadow-xs hover:bg-surface-container"
+              >
+                Hamza (Standard User)
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <p className="text-center text-body-sm text-on-surface-variant">
           Don&apos;t have an account?{' '}
