@@ -1,5 +1,5 @@
 const CACHE_NAME = 'adichat-shell-v1';
-const APP_SHELL = ['/', '/offline.html', '/manifest.webmanifest', '/icons/adichat.svg'];
+const APP_SHELL = ['/', '/offline.html', '/manifest.webmanifest', '/icons/adichat.svg', '/icons/adichat-192.png', '/icons/adichat-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
