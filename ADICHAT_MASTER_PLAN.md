@@ -426,7 +426,20 @@ This scope is approved. Continue without pausing for routine steps; ask again on
 - [ ] Do not mark all five user issues as physically device-tested until the above manual browser checks are completed.
 
 ### Latest continuation anchor
-- Main commit: c1d2abf3c87b5808496a012241703204fb1e383b.
-- Cloudflare deployment: 8f340ace-6747-4372-b398-d0042023fa6f — build/deploy success.
-- GitHub CI run: 44793771866 — success.
-- No Supabase migration or production database mutation was required for this scope.
+- Latest application code commits: 93472882df94ae9bb6149b54d3ef7d71877d05c1 (chat message actions and badge removal) and e7b533308d87fe62d132944ac7b84e6fcad2becd (Roman Urdu AI prompt).
+- Cloudflare deployment for the combined application code: 87270e61-e3d7-4449-b26b-8b29431ceb47 — build/deploy success; the existing project and production domain remain unchanged.
+- No Supabase migration or production database mutation was required for this UI/prompt scope.
+- GitHub Actions status for these commits was not exposed by the connected status endpoint; Cloudflare build passed.
+
+## Latest maintenance update — Roman Urdu and message actions (2026-11-20)
+
+- [x] Server-side AI system prompt now requires all assistants to reply in Roman Urdu (Urdu in Latin script), regardless of the assistant profile's saved language. Character identity, role, scenario, behaviour, tone and custom instructions remain active.
+- [x] Assistant message action row (Copy, Ask about this, Regenerate, reactions and feedback) is hidden by default and revealed by a 500 ms long press. Context-menu and keyboard context-menu gestures also reveal it.
+- [x] Removed the per-message High Thinking Mode pill from assistant message bubbles. Thinking configuration and model inference behavior are unchanged.
+- [x] Shared MessageBubble component applies the action behavior consistently wherever assistant messages are rendered, including AI assistant chats and group chats.
+- [x] Updated application files: src/components/chat/MessageBubble.tsx and functions/api/ai/chat.ts.
+- [x] Cloudflare Pages build/deploy passed for combined application code commit e7b533308d87fe62d132944ac7b84e6fcad2becd. Existing production project adichat and domain adichat.pages.dev retained.
+- [ ] Verify long-press behavior on physical Android/iOS and desktop context-menu behavior in a signed-in browser.
+- [ ] Verify actual assistant response language and persona behavior with a signed-in AI conversation; no user password or session token was requested.
+- [ ] Confirm production alias after the latest documentation-triggered deployment.
+
