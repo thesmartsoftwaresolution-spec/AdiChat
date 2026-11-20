@@ -34,7 +34,7 @@ function json(data: unknown, status: number, origin: string | null) {
     headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
     headers.set('Access-Control-Max-Age', '86400');
   }
-  return new Response(JSON.stringify(data), { status, headers });
+  return new Response(status === 204 ? null : JSON.stringify(data), { status, headers });
 }
 
 function isAllowedOrigin(origin: string | null, configured: string): boolean {
@@ -74,7 +74,7 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
   if (!isAllowedOrigin(origin, env.APP_ORIGIN)) {
     return json({ error: 'Origin not allowed.', code: 'FORBIDDEN' }, 403, null);
   }
-  if (request.method === 'OPTIONS') return json({}, 204, origin);
+  if (request.method === 'OPTIONS') return json(null, 204, origin);
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, origin);
 
   const authorization = request.headers.get('Authorization') || '';
@@ -93,7 +93,11 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
 
   let body: { conversationId?: string; assistantId?: string; prompt?: string; thinkingMode?: boolean };
   try {
-    body = await request.json() as typeof body;
+    const rawBody = await request.text();
+    if (rawBody.length > 64_000) {
+      return json({ error: 'Request body is too large.', code: 'INVALID_REQUEST' }, 413, origin);
+    }
+    body = JSON.parse(rawBody) as typeof body;
   } catch {
     return json({ error: 'Invalid JSON request.', code: 'INVALID_REQUEST' }, 400, origin);
   }
@@ -107,7 +111,6 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
     return json({ error: `A valid assistant, conversation and prompt (1-${maxInput} characters) are required.`, code: 'INVALID_REQUEST' }, 400, origin);
   }
 
-  const headers = { apikey: env.SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` };
   const [profile, conversation, assistant, membership, quota] = await Promise.all([
     supabase<Array<{ status: string }>>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, token,
       `profiles?id=eq.${authUser.id}&select=status&limit=1`),
