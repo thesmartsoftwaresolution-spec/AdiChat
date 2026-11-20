@@ -7,7 +7,7 @@ type PagesContext = {
     AI: {
       run: (
         model: string,
-        input: { messages: AiMessage[]; max_tokens: number; reasoning_effort: 'low' | 'high' }
+        input: { messages: AiMessage[]; max_tokens: number }
       ) => Promise<{
         response?: string;
         choices?: Array<{ message?: { content?: string | null; reasoning_content?: string | null } }>;
@@ -21,7 +21,7 @@ type PagesContext = {
   };
 };
 
-const MODEL_ID = '@cf/openai/gpt-oss-20b';
+const MODEL_ID = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const DEFAULT_MAX_INPUT = 4000;
 const MAX_HISTORY_MESSAGES = 8;
 
@@ -281,7 +281,7 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
 
   const modelId = env.AI_MODEL_ID || MODEL_ID;
   if (modelId !== MODEL_ID) {
-    return json({ error: 'Configured AI model is not the approved model.', code: 'MODEL_CONFIGURATION_ERROR' }, 503, origin);
+    return json({ error: 'Configured AI model does not match the application model.', code: 'MODEL_CONFIGURATION_ERROR' }, 503, origin);
   }
 
   const startedAt = Date.now();
@@ -293,7 +293,6 @@ export async function onRequest({ request, env }: PagesContext): Promise<Respons
         ...history.slice(-(MAX_HISTORY_MESSAGES + 1)),
       ],
       max_tokens: 1024,
-      reasoning_effort: body.thinkingMode === false ? 'low' : 'high',
     });
     const text = (result.response || result.choices?.[0]?.message?.content || '').trim();
     if (!text) throw new Error('Model returned an empty response.');
