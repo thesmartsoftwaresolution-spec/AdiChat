@@ -83,7 +83,7 @@ function shouldRespond(body: string, assistant: GroupAssistantContext) {
   if (assistant.response_mode === 'every_message') return true;
   const mentions = (body.match(/@([a-zA-Z0-9_]+)/g) || []).map((item) => item.slice(1).toLowerCase());
   const handle = assistant.handle.replace(/^@/, '').toLowerCase();
-  const compactName = assistant.name.replace(/\\s+/g, '').toLowerCase();
+  const compactName = assistant.name.replace(/\s+/g, '').toLowerCase();
   return mentions.includes(handle) || mentions.includes(compactName);
 }
 
