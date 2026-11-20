@@ -3,8 +3,8 @@
 > **Purpose:** This is the durable hand-off file for future ChatGPT sessions. Read this file and the six project specification documents before doing further work. Continue from the latest verified GitHub `main`, Supabase production database, and existing Cloudflare deployment. Do not rely on chat history as the source of truth.
 
 **Last updated:** 2026-11-20  
-**Last verified main commit before this plan update:** `c36d4c5b1045bf06c479e47359d0ad7ae29448e7`  
-**Last verified Cloudflare deployment:** `a9f293fd-7e2a-4dce-bcee-7dbad8bc8425` — build/deploy success; production alias unchanged.  
+**Last verified main commit before this plan update:** `869b39bd9475594380e799db26fd7e25384601fd`  
+**Last verified Cloudflare deployment:** `e1240a6a-1de8-4506-9ec3-6664c6013a3e` — build/deploy success; production alias unchanged.  
 **Repository:** https://github.com/thesmartsoftwaresolution-spec/AdiChat  
 **Required branch:** `main` only  
 **Production URL:** https://adichat.pages.dev  
@@ -91,13 +91,15 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
   - `20261120155554_harden_privileged_helpers_and_group_membership`
 - [x] AI assistant conversation and quota/persistence RPCs are present.
 - [x] Foreign-key indexes were added.
-- [ ] Reconcile canonical `supabase/schema.sql` fully against all applied migrations.
-- [ ] Review remaining Supabase Security Advisor findings (last known: 18 SECURITY DEFINER warnings).
+- [x] Verified all 16 applied migration files exist in `supabase/migrations/` and their SQL exactly matches the recorded Supabase migration statements.
+- [ ] Reconcile canonical `supabase/schema.sql` fully against the complete database object inventory; all new RPCs and recent grants are included, but full clean-room replay is still pending.
+- [ ] Review remaining Supabase Security Advisor findings (last verified: 20 SECURITY DEFINER warnings; helper functions now require active accounts and all public SECURITY DEFINER functions use fixed search paths).
 - [ ] Review remaining Performance Advisor RLS initplan findings (last known: 24).
 - [ ] Review `public.rls_auto_enable()` trigger function and `bootstrap_state` access controls.
 - [ ] Verify all relevant RLS policies, storage policies, realtime publication tables, and functions against the approved schema.
 - [x] Rollback-only SQL test verified message insertion, conversation last-message update, read receipt insertion, group only-admins-send rejection, and cross-conversation read-receipt rejection; transaction rolled back and no test data persisted.
 - [x] Rollback-only SQL validation confirmed invalid self-DM and group-without-other-member requests are rejected.
+- [x] Rollback-only authenticated tests verified safe profile updates succeed while `profiles.status` updates are denied; user settings upsert succeeds; group add/remove and report insert succeed; all test transactions rolled back.
 - [ ] Test real authenticated flows with a second active account and record evidence.
 
 ### Existing account and Super Admin bootstrap
@@ -108,19 +110,25 @@ The connected GitHub repository `thesmartsoftwaresolution-spec/AdiChat` on `main
 
 - [x] Exact Auth account found.
 - [x] Matching profile found: `Adeel Bhatti`; profile status is `active`.
-- [x] Existing role is currently `user`.
-- [x] `bootstrap_state` currently has no consumed row.
+- [x] Initial role was `user`; the one-time bootstrap added `super_admin`. Both `user` and `super_admin` role rows exist; `get_user_role()` resolves `super_admin` by priority.
+- [x] `bootstrap_state` was initially empty and is now consumed by the one-time bootstrap for this exact account.
 - [x] Root cause of current login failure identified: Auth user is not email-confirmed (`email_confirmed_at IS NULL`, `confirmed_at IS NULL`).
 - [x] Login currently swallowed the useful Supabase auth error and displayed generic invalid credentials.
 - [x] Login UI updated to explain unverified email and offer a resend-confirmation action.
 - [x] Sign-up UI updated to show a confirmation-required state instead of navigating to protected chats when Supabase returns no session.
 - [x] Bootstrap instructions corrected to use the intended email and explicitly forbid manually bypassing email verification.
 - [x] Supabase Auth confirms `email_confirmed_at IS NOT NULL` (confirmed at `2026-11-20 15:32:56 UTC`).
+- [x] Fixed the second login failure cause: the session provider selected profile columns without matching authenticated SELECT grants. Only the required public profile columns are now selectable; `email` remains inaccessible, RLS stays enabled, and the authenticated-role query was verified.
 - [x] One-time Super Admin bootstrap completed for this exact Auth user; role `super_admin` added, audit log written, and `bootstrap_state` consumed at `2026-11-20 15:36:01 UTC`.
 - [x] Database verification confirms both `user` and `super_admin` roles; an authenticated-role SQL test can read this user's own role rows.
 - [ ] Owner login end-to-end browser test after the profile privilege fix; never request or store the password.
 
 **Security rule:** Do not manually set `auth.users.email_confirmed_at`, do not disable confirmation requirements, and do not grant `super_admin` while the email is unverified. The owner explicitly requested this account, but verification is the required proof of mailbox ownership.
+
+### GitHub CI
+
+- [x] Added `.github/workflows/ci.yml` for `npm run lint`, `npm test`, and `npm run build` on pushes to `main`.
+- [ ] Verify the GitHub Actions run result; the connected GitHub status interface has not exposed a workflow conclusion yet.
 
 ### GitHub auth changes in current work
 
@@ -158,26 +166,28 @@ Track each capability against PRD/TRD/App Flow/Backend Schema and Stitch referen
 - [x] Persist text messages through `send_conversation_message`; server enforces active account, membership, block status, group only-admins-send, reply-target membership, and input limits.
 - [x] Persist last-read marker through hardened `set_message_read`; invalid cross-conversation message IDs are rejected.
 - [ ] Delivery receipts, unread counters, and realtime subscriptions limited to authorized conversations.
-- [ ] Reactions, blocks, reports, search, secure media/voice storage, and disappearing messages.
+- [x] Persist user blocks/unblocks and user/group reports through Supabase with reporter/owner RLS.
+- [ ] Reactions, message search, secure chat media/voice storage, and disappearing messages.
 - [ ] End-to-end direct chat test requires a second real active account; production test records were not created.
 
 ### Groups
 - [x] Hydrate group conversations, group metadata, memberships, and group-assistant mappings from Supabase.
 - [x] Create groups and persist metadata through atomic `create_group_with_settings`; validate active members and owned/enabled assistants, store group settings and initial system message.
 - [x] Use `app_settings.group_size_limit` for the group cap, with 256 as the current UI-aligned fallback; no hard-coded group-assistant count cap.
-- [ ] Add/remove members with server-side authorization.
-- [ ] Group owner/admin/member permissions.
+- [x] Add/remove members through server-side RPCs; targets must be active and only group admins/platform admins can manage other members.
+- [x] Group metadata and settings update atomically through `update_group_settings`.
+- [x] Member mute preference persists using a column-scoped update permission; member roles remain protected.
 - [x] Only-admins-send enforcement in the message RPC/database; UI shows posting restriction.
-- [ ] Add/remove group members with server-side authorization and audit trail.
-- [ ] Group metadata editing, mute, mentions, reports, and audit events.
-- [ ] Group AI assistant membership and response modes.
+- [x] Group reports persist through the moderation reports table.
+- [x] Group AI assistant membership and response modes persist through `sync_group_assistants`; only enabled assistants owned by the caller can be linked.
+- [ ] Group assistant runtime responses, mentions, audit events, and full owner/admin/member UI permission coverage.
 
 ### Media and storage
-- [ ] Validate upload type, size, and ownership.
-- [ ] Private bucket access and signed URLs where appropriate.
-- [ ] Image/file/voice uploads and downloads.
-- [ ] Attachment metadata and cleanup lifecycle.
-- [ ] Test storage policies and upsert permissions.
+- [x] Profile avatar uploads validate type/size, use the private `avatars` bucket under the user's UUID folder, and display through signed URLs.
+- [x] Profile avatar replacement/removal updates the profile path and cleans up the old object after success.
+- [ ] Chat image/file/voice uploads and downloads.
+- [ ] Attachment metadata and cleanup lifecycle for chat media.
+- [ ] Test all chat storage policies and upsert permissions.
 
 ### AI assistants
 - [x] Cloudflare Workers AI server-side integration deployed.
