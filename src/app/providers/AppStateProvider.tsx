@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { SEED_DATA, type AdiChatStoreState } from '../../data/seed';
 import { getSupabaseClient, isSupabaseConfigured } from '../../lib/supabase/client';
-import { requestAssistantReply } from '../../services/ai.service';
+import { requestAssistantReply, requestGroupAssistantReplies } from '../../services/ai.service';
 import type {
   AIAssistant,
   Announcement,
@@ -1131,6 +1131,40 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               item.id === conversationId ? savedConversation.data as Conversation : item
             ),
           }));
+        }
+
+        if (
+          convCheck?.type === 'group' &&
+          state.groups.some((group) => group.conversation_id === conversationId && group.allow_ai_auto_respond) &&
+          state.groupAssistants.some((item) => item.group_conversation_id === conversationId && item.is_enabled)
+        ) {
+          try {
+            const replies = await requestGroupAssistantReplies(conversationId, messageId as string);
+            const replyIds = replies.map((reply) => reply.assistantMessageId);
+            if (replyIds.length) {
+              const [replyMessages, updatedConversation] = await Promise.all([
+                sb.from('messages').select('*').in('id', replyIds),
+                sb.from('conversations').select('*').eq('id', conversationId).maybeSingle(),
+              ]);
+              if (!replyMessages.error && replyMessages.data?.length) {
+                setState((prev) => ({
+                  ...prev,
+                  messages: [
+                    ...prev.messages.filter((item) => !replyIds.includes(item.id)),
+                    ...(replyMessages.data || []) as Message[],
+                  ].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+                  conversations: prev.conversations.map((item) =>
+                    item.id === conversationId && updatedConversation.data
+                      ? updatedConversation.data as Conversation
+                      : item
+                  ),
+                }));
+              }
+            }
+          } catch (error) {
+            const reason = error instanceof Error ? error.message : 'AI assistant service is unavailable.';
+            pushToast(`Message sent, but group assistants could not reply: ${reason}`, 'info');
+          }
         }
         return { ok: true };
       }
