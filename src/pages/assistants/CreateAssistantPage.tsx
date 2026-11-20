@@ -31,25 +31,30 @@ export const CreateAssistantPage: React.FC = () => {
     }
 
     setSaving(true);
-    const created = await createAssistant({
-      name,
-      description,
-      personality,
-      instructions,
-      tone,
-      language,
-      starter_prompts: starterText
-        .split('\n')
-        .map((s) => s.trim())
-        .filter(Boolean),
-      thinking_enabled_default: thinkingDefault,
-    });
-    setSaving(false);
+    try {
+      const created = await createAssistant({
+        name,
+        description,
+        personality,
+        instructions,
+        tone,
+        language,
+        starter_prompts: starterText
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean),
+        thinking_enabled_default: thinkingDefault,
+      });
 
-    if (created) {
-      navigate(`/assistants/${created.id}/chat`);
-    } else {
-      setError('Assistant save nahi ho saka. Apni session aur connection check karke dobara koshish karein.');
+      if (created) {
+        navigate(`/assistants/${created.id}/chat`);
+      } else {
+        setError('Assistant save nahi ho saka. Apni session aur connection check karke dobara koshish karein.');
+      }
+    } catch {
+      setError('Assistant save nahi ho saka. Dobara koshish karein.');
+    } finally {
+      setSaving(false);
     }
   };
 
