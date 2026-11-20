@@ -75,3 +75,34 @@ export async function requestAssistantReply(payload: AiChatRequest): Promise<AiC
 
   return data as AiChatResponse;
 }
+
+
+export interface GroupAiReply {
+  assistantId: string;
+  assistantMessageId: string;
+}
+
+export async function requestGroupAssistantReplies(
+  conversationId: string,
+  messageId: string,
+): Promise<GroupAiReply[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error('Supabase authentication is not configured.');
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session?.access_token) throw new Error('Please sign in again to use group assistants.');
+
+  const response = await fetch('/api/ai/group-chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ conversationId, messageId }),
+  });
+  const data = await response.json().catch(() => ({})) as {
+    responses?: GroupAiReply[];
+    error?: string;
+  };
+  if (!response.ok) throw new Error(data.error || `Group assistant request failed with status ${response.status}`);
+  return Array.isArray(data.responses) ? data.responses : [];
+}
