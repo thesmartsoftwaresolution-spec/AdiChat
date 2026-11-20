@@ -1278,3 +1278,8 @@ grant execute on function public.get_or_create_assistant_conversation(uuid) to a
 grant execute on function public.create_assistant_user_message(uuid, uuid, text) to authenticated;
 grant execute on function public.can_request_assistant_reply() to authenticated;
 grant execute on function public.record_assistant_response(uuid, uuid, text, text, integer, integer, integer, text, boolean) to authenticated;
+
+
+-- 11. API privileges required for authenticated profile reads
+-- RLS remains enabled; row visibility is still controlled by profiles_select_directory.
+GRANT SELECT ON TABLE public.profiles TO authenticated;
