@@ -39,6 +39,11 @@ export const GroupChatPage: React.FC = () => {
     [state.messages, groupId]
   );
 
+  // Keep the latest group message visible, including messages from other members.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [groupId, messages.length]);
+
   useEffect(() => {
     if (groupId && groupMeta) {
       markConversationRead(groupId);
@@ -64,7 +69,6 @@ export const GroupChatPage: React.FC = () => {
         setDraft(text);
         return;
       }
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 60);
     } finally {
       setSending(false);
     }
