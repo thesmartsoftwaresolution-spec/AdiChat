@@ -71,6 +71,7 @@ export interface ConversationMember {
   last_read_at: string | null;
   muted_until: string | null;
   is_blocked: boolean;
+  cleared_at?: string | null;
   created_at: string;
 }
 
