@@ -172,7 +172,7 @@ interface AppStateContextValue {
     thinking_enabled_default?: boolean;
   }) => Promise<AIAssistant | null>;
   updateAssistant: (assistantId: string, updates: Partial<AIAssistant>, avatarFile?: File | null) => Promise<boolean>;
-  deleteAssistant: (assistantId: string) => void;
+  deleteAssistant: (assistantId: string) => Promise<boolean>;
   openAssistantConversation: (assistantId: string) => Conversation | null;
   sendAiMessage: (
     assistantId: string,
@@ -2127,15 +2127,57 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const deleteAssistant = useCallback(
-    (assistantId: string) => {
+    async (assistantId: string): Promise<boolean> => {
+      const assistant = state.assistants.find((item) => item.id === assistantId);
+      if (!assistant || !state.currentUserId || assistant.owner_user_id !== state.currentUserId) {
+        pushToast('You can only delete AI assistants that you created.', 'error');
+        return false;
+      }
+
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) {
+          pushToast('Assistant deletion service is unavailable.', 'error');
+          return false;
+        }
+
+        const { data: deletedAssistant, error } = await sb
+          .from('ai_assistants')
+          .delete()
+          .eq('id', assistantId)
+          .eq('owner_user_id', state.currentUserId)
+          .select('id, avatar_path')
+          .maybeSingle();
+
+        if (error || !deletedAssistant) {
+          pushToast(error?.message || 'Assistant could not be deleted. Check that you own this assistant.', 'error');
+          return false;
+        }
+
+        if (deletedAssistant.avatar_path) {
+          const { error: storageError } = await sb.storage.from('avatars').remove([deletedAssistant.avatar_path]);
+          if (storageError) {
+            pushToast('Assistant deleted, but its old profile photo could not be cleaned up.', 'info');
+          }
+        }
+      }
+
       setState((prev) => ({
         ...prev,
-        assistants: prev.assistants.filter((a) => a.id !== assistantId),
-        groupAssistants: prev.groupAssistants.filter((ga) => ga.assistant_id !== assistantId),
+        assistants: prev.assistants.filter((item) => item.id !== assistantId),
+        groupAssistants: prev.groupAssistants.filter((item) => item.assistant_id !== assistantId),
+        assistantUsage: prev.assistantUsage.filter((item) => item.assistant_id !== assistantId),
+        conversations: prev.conversations.map((item) =>
+          item.assistant_id === assistantId ? { ...item, assistant_id: null } : item
+        ),
+        messages: prev.messages.map((item) =>
+          item.sender_assistant_id === assistantId ? { ...item, sender_assistant_id: null } : item
+        ),
       }));
-      pushToast('AI assistant deleted', 'info');
+      pushToast('AI assistant deleted', 'success');
+      return true;
     },
-    [pushToast]
+    [state.assistants, state.currentUserId, pushToast]
   );
 
   const openAssistantConversation = useCallback(
