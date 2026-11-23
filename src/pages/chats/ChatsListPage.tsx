@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../app/providers/AppStateProvider';
 import { AppTabLayout } from '../../components/layout/AppShells';
 import { AssistantAvatar, UserAvatar } from '../../components/ui/Avatar';
-import { EmptyState } from '../../components/ui/Feedback';
+import { ConfirmDialog, EmptyState } from '../../components/ui/Feedback';
 
 type ChatFilter = 'all' | 'unread' | 'ai' | 'groups';
 
@@ -18,12 +18,17 @@ function formatShortTime(iso: string | null): string {
 }
 
 export const ChatsListPage: React.FC = () => {
-  const { state, currentUser, openAssistantConversation } = useAppState();
+  const { state, currentUser, openAssistantConversation, deleteConversationForMe, deleteConversationForEveryone, isAdmin } = useAppState();
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ChatFilter>('all');
   const [briefingOpen, setBriefingOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState<{ id: string; name: string; canDeleteForEveryone: boolean } | null>(null);
+  const [deleteMode, setDeleteMode] = useState<'choose' | 'confirm-me' | 'confirm-everyone' | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTriggered = useRef(false);
 
   const publishedBanner = useMemo(
     () => state.announcements.find((a) => a.status === 'published' && a.show_as_banner),
@@ -92,6 +97,10 @@ export const ChatsListPage: React.FC = () => {
           isMuted,
           route,
         };
+      })
+      .filter((item) => {
+        const ownMember = state.conversationMembers.find((member) => member.conversation_id === item.conv.id && member.user_id === currentUser?.id);
+        return !ownMember?.cleared_at || Boolean(item.lastMsg && item.lastMsg.created_at > ownMember.cleared_at);
       })
       .sort((a, b) =>
         (b.conv.last_message_at || b.conv.updated_at).localeCompare(
@@ -271,7 +280,42 @@ export const ChatsListPage: React.FC = () => {
               <Link
                 key={item.conv.id}
                 to={item.route}
-                onClick={() => {
+                onContextMenu={(event) => {
+                  event.preventDefault();
+                  longPressTriggered.current = true;
+                  setSelectedChat({
+                    id: item.conv.id,
+                    name: item.displayName,
+                    canDeleteForEveryone: item.conv.type !== 'group' || isAdmin || state.conversationMembers.some((member) => member.conversation_id === item.conv.id && member.user_id === currentUser?.id && member.member_role === 'admin'),
+                  });
+                  setDeleteMode('choose');
+                }}
+                onTouchStart={() => {
+                  longPressTriggered.current = false;
+                  longPressTimer.current = setTimeout(() => {
+                    longPressTriggered.current = true;
+                    setSelectedChat({
+                      id: item.conv.id,
+                      name: item.displayName,
+                      canDeleteForEveryone: item.conv.type !== 'group' || isAdmin || state.conversationMembers.some((member) => member.conversation_id === item.conv.id && member.user_id === currentUser?.id && member.member_role === 'admin'),
+                    });
+                    setDeleteMode('choose');
+                  }, 550);
+                }}
+                onTouchEnd={() => {
+                  if (longPressTimer.current) clearTimeout(longPressTimer.current);
+                  longPressTimer.current = null;
+                }}
+                onTouchMove={() => {
+                  if (longPressTimer.current) clearTimeout(longPressTimer.current);
+                  longPressTimer.current = null;
+                }}
+                onClick={(event) => {
+                  if (longPressTriggered.current) {
+                    event.preventDefault();
+                    longPressTriggered.current = false;
+                    return;
+                  }
                   if (item.conv.type === 'assistant' && item.assistant) {
                     openAssistantConversation(item.assistant.id);
                   }
@@ -370,6 +414,39 @@ export const ChatsListPage: React.FC = () => {
           </div>
         )}
 
+        {selectedChat && deleteMode === 'choose' && (
+          <div role="dialog" aria-modal="true" aria-labelledby="chat-delete-title" className="fixed inset-0 z-[80] bg-inverse-surface/45 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => { if (!deleting) { setDeleteMode(null); setSelectedChat(null); } }}>
+            <div className="w-full max-w-sm rounded-2xl bg-surface-container-lowest p-5 shadow-2xl space-y-3" onClick={(event) => event.stopPropagation()}>
+              <h2 id="chat-delete-title" className="text-headline-sm text-on-surface">Delete {selectedChat.name}?</h2>
+              <p className="text-body-sm text-on-surface-variant">Choose whether to remove this chat only from your account or permanently delete it for everyone.</p>
+              <button type="button" disabled={deleting} onClick={() => setDeleteMode('confirm-me')} className="w-full h-11 rounded-xl bg-surface-container-low text-on-surface text-label-md font-semibold">Delete for me</button>
+              {selectedChat.canDeleteForEveryone && <button type="button" disabled={deleting} onClick={() => setDeleteMode('confirm-everyone')} className="w-full h-11 rounded-xl bg-error text-on-error text-label-md font-semibold">Delete for everyone</button>}
+              <button type="button" disabled={deleting} onClick={() => { setDeleteMode(null); setSelectedChat(null); }} className="w-full h-10 rounded-xl text-on-surface-variant text-label-md">Cancel</button>
+            </div>
+          </div>
+        )}
+        <ConfirmDialog
+          open={Boolean(selectedChat && (deleteMode === 'confirm-me' || deleteMode === 'confirm-everyone'))}
+          title={deleteMode === 'confirm-everyone' ? 'Delete chat for everyone?' : 'Delete chat for me?'}
+          description={deleteMode === 'confirm-everyone' ? 'This permanently deletes the conversation and its messages for every participant. This action cannot be undone.' : 'This clears the chat history from your account only. Other participants will keep their conversation and messages.'}
+          confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+          destructive
+          onCancel={() => { if (!deleting) setDeleteMode('choose'); }}
+          onConfirm={() => {
+            if (!selectedChat || deleting) return;
+            setDeleting(true);
+            const action = deleteMode === 'confirm-everyone'
+              ? deleteConversationForEveryone(selectedChat.id)
+              : deleteConversationForMe(selectedChat.id);
+            void action.then((ok) => {
+              setDeleting(false);
+              if (ok) {
+                setDeleteMode(null);
+                setSelectedChat(null);
+              }
+            });
+          }}
+        />
         <div className="flex items-center justify-center py-4 opacity-70">
           <div className="flex items-center gap-1.5 text-caption text-on-surface-variant">
             <span className="material-symbols-outlined text-[14px] text-secondary">lock</span>
