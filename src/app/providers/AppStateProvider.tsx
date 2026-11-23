@@ -1164,20 +1164,23 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return false;
         }
       }
-      setState((prev) => ({
-        ...prev,
-        conversationMembers: prev.conversationMembers.map((member) =>
-          member.conversation_id === conversationId && member.user_id === prev.currentUserId
-            ? { ...member, cleared_at: nowIso }
-            : member
-        ),
-        messages: prev.messages.filter(
-          (message) => message.conversation_id !== conversationId || message.created_at > nowIso
-        ),
-        attachments: prev.attachments.filter(
-          (attachment) => attachment.conversation_id !== conversationId
-        ),
-      }));
+      setState((prev) => {
+        const clearedMessageIds = new Set(
+          prev.messages
+            .filter((message) => message.conversation_id === conversationId && message.created_at <= nowIso)
+            .map((message) => message.id)
+        );
+        return {
+          ...prev,
+          conversationMembers: prev.conversationMembers.map((member) =>
+            member.conversation_id === conversationId && member.user_id === prev.currentUserId
+              ? { ...member, cleared_at: nowIso }
+              : member
+          ),
+          messages: prev.messages.filter((message) => !clearedMessageIds.has(message.id)),
+          attachments: prev.attachments.filter((attachment) => !clearedMessageIds.has(attachment.message_id)),
+        };
+      });
       pushToast('Chat deleted for you.', 'success');
       return true;
     },
