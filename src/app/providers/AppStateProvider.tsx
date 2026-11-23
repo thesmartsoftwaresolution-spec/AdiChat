@@ -2171,7 +2171,17 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           item.assistant_id === assistantId ? { ...item, assistant_id: null } : item
         ),
         messages: prev.messages.map((item) =>
-          item.sender_assistant_id === assistantId ? { ...item, sender_assistant_id: null } : item
+          item.sender_assistant_id === assistantId
+            ? {
+                ...item,
+                sender_assistant_id: null,
+                metadata: {
+                  ...item.metadata,
+                  deleted_assistant_id: assistantId,
+                  deleted_assistant_name: assistant.name,
+                },
+              }
+            : item
         ),
       }));
       pushToast('AI assistant deleted', 'success');
