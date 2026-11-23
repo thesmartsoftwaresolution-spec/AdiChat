@@ -28,6 +28,7 @@ export const AssistantProfilePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
   const activeGroups = useMemo(() => {
@@ -57,6 +58,7 @@ export const AssistantProfilePage: React.FC = () => {
   }
 
   const canEdit = assistant.owner_user_id === currentUser?.id || isAdmin;
+  const canDelete = assistant.owner_user_id === currentUser?.id;
   const avgLatency = weeklyUsage.length
     ? weeklyUsage.reduce((sum, item) => sum + (item.latency_ms || 0), 0) / weeklyUsage.length / 1000
     : 0;
@@ -276,22 +278,31 @@ export const AssistantProfilePage: React.FC = () => {
         <section className="p-4 rounded-2xl bg-error-container/40 border border-error/10 space-y-2">
           <div className="flex items-center gap-2 text-error"><span className="material-symbols-outlined text-[18px]">warning</span><h3 className="text-label-md">Danger Zone</h3></div>
           <p className="text-body-sm font-semibold text-error">Delete Assistant</p>
-          <p className="text-caption text-on-surface-variant">Permanent deletion can affect associated history and analytics.</p>
-          <button type="button" disabled={!import.meta.env.DEV || !canEdit} onClick={() => setConfirmDelete(true)} title={!import.meta.env.DEV ? 'Permanent deletion is disabled in production.' : undefined} className="w-full h-11 rounded-xl bg-error text-on-error text-label-sm font-semibold disabled:opacity-40">
+          <p className="text-caption text-on-surface-variant">Delete your assistant permanently. Its group assignments and usage records will be removed; existing chat conversations and messages will remain in your history.</p>
+          {canDelete && <button type="button" disabled={deleting} onClick={() => setConfirmDelete(true)} className="w-full h-11 rounded-xl bg-error text-on-error text-label-sm font-semibold disabled:opacity-40">
             <span className="material-symbols-outlined text-[16px] align-middle mr-1">delete</span>Delete Assistant
-          </button>
-          {!import.meta.env.DEV && <p className="text-timestamp text-on-surface-variant">Production deletion is disabled to protect conversation history.</p>}
+          </button>}
         </section>
       </div>
 
       <ConfirmDialog
         open={confirmDelete}
         title={`Delete ${assistant.name}?`}
-        description="This removes the assistant from your hub and any groups where it is assigned."
-        confirmLabel="Delete Assistant"
+        description="This permanently deletes the assistant and removes its group assignments and usage records. Your existing chat conversations and messages will be kept."
+        confirmLabel={deleting ? 'Deleting…' : 'Delete Assistant'}
         destructive
-        onCancel={() => setConfirmDelete(false)}
-        onConfirm={() => { deleteAssistant(assistant.id); navigate('/assistants'); }}
+        onCancel={() => { if (!deleting) setConfirmDelete(false); }}
+        onConfirm={() => {
+          if (deleting || !canDelete) return;
+          setDeleting(true);
+          void deleteAssistant(assistant.id).then((deleted) => {
+            if (deleted) {
+              setConfirmDelete(false);
+              navigate('/assistants');
+            }
+            setDeleting(false);
+          });
+        }}
       />
     </MobileStackLayout>
   );
