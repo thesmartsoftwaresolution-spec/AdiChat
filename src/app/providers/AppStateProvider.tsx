@@ -120,6 +120,8 @@ interface AppStateContextValue {
   // Direct & Group Messaging
   getOrCreateDirectConversation: (otherUserId: string) => Promise<Conversation | null>;
   markConversationRead: (conversationId: string) => Promise<void>;
+  deleteConversationForMe: (conversationId: string) => Promise<boolean>;
+  deleteConversationForEveryone: (conversationId: string) => Promise<boolean>;
   sendMessage: (
     conversationId: string,
     body: string,
@@ -1142,6 +1144,79 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }));
     },
     [state.currentUserId, state.messages, pushToast]
+  );
+
+  const deleteConversationForMe = useCallback(
+    async (conversationId: string): Promise<boolean> => {
+      if (!state.currentUserId) return false;
+      const nowIso = new Date().toISOString();
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) {
+          pushToast('Chat deletion service is unavailable.', 'error');
+          return false;
+        }
+        const { data, error } = await sb.rpc('clear_conversation_for_me', {
+          p_conversation_id: conversationId,
+        });
+        if (error || data !== true) {
+          pushToast(error?.message || 'This chat could not be deleted for your account.', 'error');
+          return false;
+        }
+      }
+      setState((prev) => ({
+        ...prev,
+        conversationMembers: prev.conversationMembers.map((member) =>
+          member.conversation_id === conversationId && member.user_id === prev.currentUserId
+            ? { ...member, cleared_at: nowIso }
+            : member
+        ),
+        messages: prev.messages.filter(
+          (message) => message.conversation_id !== conversationId || message.created_at > nowIso
+        ),
+        attachments: prev.attachments.filter(
+          (attachment) => attachment.conversation_id !== conversationId
+        ),
+      }));
+      pushToast('Chat deleted for you.', 'success');
+      return true;
+    },
+    [state.currentUserId, pushToast]
+  );
+
+  const deleteConversationForEveryone = useCallback(
+    async (conversationId: string): Promise<boolean> => {
+      if (!state.currentUserId) return false;
+      const conversation = state.conversations.find((item) => item.id === conversationId);
+      if (!conversation) return false;
+      if (!IS_DEMO_MODE) {
+        const sb = getSupabaseClient();
+        if (!sb) {
+          pushToast('Chat deletion service is unavailable.', 'error');
+          return false;
+        }
+        const { data, error } = await sb.rpc('delete_conversation_for_everyone', {
+          p_conversation_id: conversationId,
+        });
+        if (error || data !== true) {
+          pushToast(error?.message || 'You are not allowed to delete this chat for everyone.', 'error');
+          return false;
+        }
+      }
+      setState((prev) => ({
+        ...prev,
+        conversations: prev.conversations.filter((item) => item.id !== conversationId),
+        conversationMembers: prev.conversationMembers.filter((item) => item.conversation_id !== conversationId),
+        messages: prev.messages.filter((item) => item.conversation_id !== conversationId),
+        attachments: prev.attachments.filter((item) => item.conversation_id !== conversationId),
+        groups: prev.groups.filter((item) => item.conversation_id !== conversationId),
+        groupAssistants: prev.groupAssistants.filter((item) => item.group_conversation_id !== conversationId),
+        assistantUsage: prev.assistantUsage.filter((item) => item.conversation_id !== conversationId),
+      }));
+      pushToast('Chat and its history deleted for everyone.', 'success');
+      return true;
+    },
+    [state.currentUserId, state.conversations, pushToast]
   );
 
   const sendMessage = useCallback(
@@ -3007,6 +3082,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       updateMySettings,
       getOrCreateDirectConversation,
       markConversationRead,
+      deleteConversationForMe,
+      deleteConversationForEveryone,
       sendMessage,
       toggleReaction,
       createGroup,
